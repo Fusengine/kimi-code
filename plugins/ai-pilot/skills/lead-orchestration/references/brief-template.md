@@ -9,6 +9,7 @@ A brief summarised from memory drifts from the owner's request: parts get droppe
 ```markdown
 ## OWNER RULES (verbatim)
 > "<exact owner sentence(s), copied, not paraphrased>"
+- Owner's verb: "<audit / fix / ...>", quoted -- a read-only verb (audit, analyse, explain, check) means WRITE: none.
 - Standing decisions (from docs/decisions.md): <dated lines that apply> -- execute them, do not re-debate.
 - Protected target (only if the owner named it): <path> -- owner's words: "<quote>"
 
@@ -22,6 +23,7 @@ Context: <what exists, why this mandate, what was already tried and failed>
 1. <part 1 -- the deliverable, as an acceptance criterion>
 2. <part 2>
 N. Negative: <"do not touch X">
+- "Everywhere" request: one line per place (component / route path) -- one test and one real capture each.
 
 ## TOOLS
 - Skills to load before editing: <SOLID skill from solid-detection>, <domain skills>, verification

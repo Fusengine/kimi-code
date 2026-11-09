@@ -51,6 +51,8 @@ The proof required for each type of deliverable is the global `AGENTS.md` COORDI
 
 **Look before done (canonical rule):** open the real output -- rendered page/screenshot (native vision: look at it), extracted frames, runtime log of the real target (running dev server, real DB, installed build) -- and state what you see in it. Tests green or isolated fixtures ≠ done; a crash fix first reproduces the crash in a test, and "error gone" ≠ behaviour correct.
 
+**After each deploy:** for each touched module, verify its runtime prerequisites exist in production -- data installed by something that actually runs there, event/handler bindings, permissions/roles, scheduled tasks, queues with a live consumer, migrations applied.
+
 **Step 4: Check for regressions**
 Run the full test suite. Compare results before and after. No new failures, no new warnings.
 
