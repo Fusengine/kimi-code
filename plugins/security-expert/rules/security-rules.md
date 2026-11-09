@@ -5,19 +5,19 @@ alwaysApply: true
 
 # Security Rules
 
-## OWASP Top 10 2025 Compliance
+## OWASP Top 10:2025 Compliance
 
-Every scan MUST check all 10 categories:
-- **A01** Broken Access Control
-- **A02** Cryptographic Failures
-- **A03** Injection (SQLi, XSS, CMDi)
-- **A04** Insecure Design
-- **A05** Security Misconfiguration
-- **A06** Vulnerable Components
+Every scan MUST check all 10 categories (source: https://top10.owasp.org/2025/):
+- **A01** Broken Access Control (includes SSRF, CSRF)
+- **A02** Security Misconfiguration
+- **A03** Software Supply Chain Failures
+- **A04** Cryptographic Failures
+- **A05** Injection (SQLi, XSS, CMDi)
+- **A06** Insecure Design
 - **A07** Authentication Failures
-- **A08** Data Integrity Failures
-- **A09** Logging & Monitoring Failures
-- **A10** Server-Side Request Forgery
+- **A08** Software or Data Integrity Failures
+- **A09** Security Logging and Alerting Failures
+- **A10** Mishandling of Exceptional Conditions
 
 ## Zero Tolerance Rules
 

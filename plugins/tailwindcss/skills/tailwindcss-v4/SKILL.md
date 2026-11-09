@@ -12,7 +12,7 @@ Not the day-to-day CSS-first configuration reference (`tailwindcss-core` owns `@
 
 # Tailwind CSS v4.3 Core
 
-Current stable: `tailwindcss` 4.3.3 (July 2026). Minor releases since v4.0: v4.1 (text shadows, masks), v4.2 (mauve/olive/mist/taupe palettes, `@tailwindcss/webpack`, logical `pbs`/`mbs`/`inline-*`/`block-*`/`inset-s|e|bs|be` utilities, `font-features-*`; `start-*`/`end-*` deprecated), v4.3 (scrollbar utilities, `@container-size`, `zoom-*`, `tab-*`, stacked/compound `@variant`, `--default()` in functional `@utility`).
+Current stable: `tailwindcss` 4.3.5 (2026-11-06). Minor releases since v4.0: v4.1 (text shadows, masks), v4.2 (mauve/olive/mist/taupe palettes, `@tailwindcss/webpack`, logical `pbs`/`mbs`/`inline-*`/`block-*`/`inset-s|e|bs|be` utilities, `font-features-*`; `start-*`/`end-*` deprecated), v4.3 (scrollbar utilities, `@container-size`, `zoom-*`, `tab-*`, stacked/compound `@variant`, `--default()` in functional `@utility`; v4.3.4 adds `@tailwindcss/turbopack`, a Turbopack loader for Next.js).
 
 ## Documentation
 

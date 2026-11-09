@@ -31,24 +31,13 @@ Execute GitHub issue with complete EPCT workflow:
    git checkout -b issue-$ISSUE_NUMBER-[slug]
    ```
 
-4. **Commit Changes**:
-   ```bash
-   git commit -m "$(cat <<'EOF'
-   feat: [ISSUE_TITLE]
+4. **WIP Commit** (hand-off to the commit agent):
+   Launch agent `commit` with `mode: wip`, the files changed for the issue, and the summary for the message (`feat: [ISSUE_TITLE]`, body `Fixes #$ISSUE_NUMBER` + one line per change). It commits on the working branch only: no push, no bump, no PR, no merge, no tag.
 
-   Fixes #$ISSUE_NUMBER
-
-   - [Change 1]
-   - [Change 2]
-
-
-   EOF
-   )"
-   ```
-
-5. **Create PR**:
-   ```bash
-   gh pr create --title "Fixes #$ISSUE_NUMBER: [TITLE]" --body "$(cat <<'EOF'
+5. **Create PR** (hand-off to the commit agent):
+   This command never pushes, opens a PR, merges, rebases, force-pushes or tags itself. Once EPCT's TEST phase is green, launch agent `commit` in **full mode** (rules `06-tooling-rules`, Git & GitHub Flow):
+   - Brief it with: `mode: full`, `--no-merge`, the files of the issue, the PR title `Fixes #$ISSUE_NUMBER: [TITLE]` and this body:
+   ```markdown
    ## Summary
    Resolves #$ISSUE_NUMBER
 
@@ -57,15 +46,15 @@ Execute GitHub issue with complete EPCT workflow:
 
    ## Test Plan
    [How tested]
-
-   EOF
-   )"
    ```
+   - It pushes the branch, opens the PR and waits for CI; no merge here — the merge, tag and release happen at the end of the mandate, announced (D4) (merge is always a real `--merge`, never squash).
+   - Blocked (secret in the diff, push rejected) → it stops with `status: blocked`; fix through EPCT, hand off again. CI red → `status: left-open`, `ci: failed:<check>`: fix through EPCT, hand off again.
 
 6. **Link Issue**:
    ```bash
    gh issue comment $ISSUE_NUMBER --body "PR created: [PR_URL]"
    ```
+   `[PR_URL]` = the `pr:` line of the commit agent's report.
 
 **Arguments**:
 - $ARGUMENTS = GitHub issue number

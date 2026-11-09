@@ -33,7 +33,7 @@ After: Run **sniper** for validation.
 | **Presets** | Short code bundling style, base color, theme, chart color, icons, fonts, radius, menu color/accent (build on ui.shadcn.com/create) |
 | **Radius scale** | `--radius` drives `--radius-sm` ... `--radius-4xl` via `@theme inline` |
 
-## Theme CLI (verified on shadcn 4.21.0)
+## Theme CLI (verified on shadcn 4.23.0)
 
 ```bash
 {runner} shadcn@latest init --preset <code>                 # new project from a preset

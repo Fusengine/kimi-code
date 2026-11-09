@@ -5,7 +5,7 @@ description: Use when writing or refactoring Ruby/Rails code, structuring app/mo
 
 
 <objective>
-SOLID Ruby enforces a modular architecture for Ruby 4.0+/Rails 8: every feature lives under `app/modules/[feature]/` (controllers, services, repositories, contracts, models) with shared code in `app/modules/core/`, contracts (duck-typing modules) live only in `contracts/` directories, `# frozen_string_literal: true` is required in every file, and every public method carries YARD documentation.
+SOLID Ruby enforces a modular architecture for Ruby 4.0+/Rails 8.1+: every feature lives under `app/modules/[feature]/` (controllers, services, repositories, contracts, models) with shared code in `app/modules/core/`, contracts (duck-typing modules) live only in `contracts/` directories, `# frozen_string_literal: true` is required in every file, and every public method carries YARD documentation.
 
 Before writing any new code it requires a DRY check against `app/modules/core/services` and `app/modules/core/contracts`. See `solid-principles.md` for the overview, the per-principle references for SRP/OCP/LSP/ISP/DIP detail, and the templates for module/service/contract/model/error/test scaffolding.
 </objective>

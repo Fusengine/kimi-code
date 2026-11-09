@@ -77,7 +77,7 @@ Numbered steps...
 
 ## llms.txt
 
-**Not required by Google** (its crawlers ignore it) — useful for other LLMs, where early adopters report improved citation accuracy. Place at site root: `https://example.com/llms.txt`
+**No effect on Google Search**: Google clarified on 2026-06-15 that it is not needed and neither helps nor hurts visibility or rankings (https://developers.google.com/search/docs/fundamentals/ai-optimization-guide#mythbusting). Optional only for other services/LLM tools that read it; the 5 pts in the score reflect non-Google tooling, never Google ranking. Place at site root: `https://example.com/llms.txt`
 ```
 # Site Name
 > One-line description

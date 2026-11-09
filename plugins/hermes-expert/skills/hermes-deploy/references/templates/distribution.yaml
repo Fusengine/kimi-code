@@ -1,0 +1,18 @@
+# distribution.yaml - manifest at the root of company/profiles/<name>/ (Hermes 0.23.0).
+# Keys from hermes_cli/profile_distribution.py (DistributionManifest). `name` is the only required key.
+# Never write `source` or `installed_at`: `hermes profile install` adds them.
+# Install: hermes profile install <dir> --name <name> --yes --force (company-tree.md)
+
+name: <profile-name>                  # lowercase [a-z0-9-]
+version: 1.0.0                        # default 0.1.0
+description: "<Role - one line; also passed to `hermes profile describe --text`>"
+hermes_requires: ">=0.23.0"
+author: <company>
+license: Proprietary
+env_requires:                         # NAMES only - values go in the profile .env, set by the owner
+  - name: <ENV_VAR_NAME>
+    description: "<what it unlocks>"
+    required: false                   # default true
+    # default: "<non-secret default>"
+# distribution_owned:                 # optional: extra paths `profile update` may overwrite
+#   - <relative/path>

@@ -1,7 +1,7 @@
 {
   "name": "fuse-tanstack-start",
   "version": "1.0.6",
-  "description": "Expert TanStack Start (React, RC) full-stack framework with file-based routing, createServerFn server functions, selective SSR, and Nitro deployment",
+  "description": "Expert TanStack Start (React, 1.x stable) full-stack framework with file-based routing, createServerFn server functions, selective SSR, and Nitro deployment",
   "author": {
     "name": "Fusengine",
     "email": "hello@fusengine.ch",
@@ -24,7 +24,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Tanstack Start",
-    "shortDescription": "Expert TanStack Start (React, RC) full-stack framework with file-based routing, createServerFn server functions, sele...",
+    "shortDescription": "Expert TanStack Start (React, 1.x stable) full-stack framework with file-based routing, createServerFn server functio...",
     "developerName": "Fusengine"
   },
   "hooks": [

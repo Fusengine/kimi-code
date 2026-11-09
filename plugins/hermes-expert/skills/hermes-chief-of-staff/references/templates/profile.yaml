@@ -1,0 +1,122 @@
+# Hermes chief-of-staff profile - universal template (schema by example).
+# Filled by the hermes-expert agent from the owner's own document (hermes-deploy)
+# - the owner never writes it - then read to generate SOUL.md, .hermes.md,
+# config.yaml fragments and cron jobs. Placeholders only: "<...>" = required,
+# "" or [] = optional. Never put secrets here: list .env VARIABLE NAMES only.
+# Hermes baseline: 0.23.0 - run the Freshness check before using it.
+
+schema_version: 1
+
+owner:
+  name: "<owner first name>"
+  languages: ["<primary language, e.g. en>"]      # first = default reply language
+  tone: "<short and direct | warm | formal>"
+  signature: |
+    <signature block exactly as the owner signs>
+  address_form_default: "<informal | formal>"     # e.g. tu/vous, du/Sie
+  contacts:                                       # per-contact overrides
+    - match: "<email address or @domain>"
+      address_form: "<informal | formal>"
+      language: ""
+
+entities:                                         # sealed spaces (partition)
+  - id: "<company-id>"
+    kind: company
+    label: "<company name>"
+    workspace_root: "<absolute path, e.g. /srv/workspace/company>"
+    kanban_board: "<board slug>"
+  - id: "<private-id>"
+    kind: private
+    label: "<private space label>"
+    workspace_root: "<absolute path, e.g. /srv/workspace/private>"
+    kanban_board: "<board slug>"
+
+agents:
+  chief:
+    profile: "<hermes profile name>"
+    display_name: "<assistant name>"
+    model: "<model id - verify with `hermes model`>"
+    provider: "<model.provider, e.g. openrouter | anthropic | nous | auto>"
+    sees: all
+  managers:
+    - profile: "<hermes profile name>"
+      display_name: "<manager name>"
+      entity: "<company-id | private-id>"
+      role: "<domain, e.g. research | development | legal | sales | finance | mail>"
+      keeps: "<judgement work the manager never hands down>"
+      model: "<model id>"
+      provider: "<model.provider>"
+      reasoning_effort: ""                        # none|minimal|low|medium|high|xhigh|max|ultra
+      topology: "<kanban | profile_routes>"       # see roles-topology.md
+      employees:
+        enabled: false                            # true only when the pilot holds
+        does: "<volume work given to employees>"
+        model: "<cheaper model id>"               # -> delegation.model
+        provider: ""                              # -> delegation.provider
+        reasoning_effort: "medium"                # -> delegation.reasoning_effort (code-only key)
+        # max_concurrent_children: <n>            # optional; unset = code default 10 (delegate_tool_config.py)
+        max_spawn_depth: 1                        # employees are leaves
+
+schedules:
+  timezone: "<IANA zone, e.g. Europe/Zurich>"
+  morning_brief: "0 8 * * *"
+  pilot_check: "every 2h"                         # silent unless a card is stuck or a deliverable is ready; "" = off
+  evening_review: "0 18 * * *"
+  weekly_review: "0 8 * * 1"
+  monthly_dashboard: "0 8 1 * *"
+  mail_triage: "every 2h"                         # only if mailboxes are declared
+  weekly_cleanup: "0 17 * * 5"
+  daily_reset:
+    method: "<plugin | manual>"                   # plugin = hermes-session-reset-policy
+
+channels:
+  chat_platform: "<slack | telegram | discord | ...>"
+  owner_conversation: "<owner-only delivery target for briefs and private items, e.g. slack:<owner DM id>>"
+  decisions_channel: "<delivery target, e.g. slack:<channel id>>"
+  decisions_channel_audience: "<owner-only | shared>"   # shared = private items never go there
+  allowed_users_env: "<e.g. SLACK_ALLOWED_USERS>" # .env variable NAME only
+
+mailboxes:                                        # one email adapter = one mailbox per profile
+  - address: "<mailbox address>"
+    entity: "<company-id | private-id>"
+    profile: "<profile that reads it>"
+    access: "<email-adapter | himalaya | mcp>"
+    send_allowed: false                           # true only via the owner's existing send mechanism (outbound.send_mechanism), after a go
+    credentials_env: ["<EMAIL_ADDRESS>", "<EMAIL_PASSWORD>"]
+
+mail_triage:
+  ignore_senders: []                              # deliberate ignore list
+  silent_when_nothing_new: true
+  urgent_rule: "<e.g. due < 48h, client blocked, money waiting>"
+
+voice:
+  reply_with_voice: false
+  style: "written for the ear, under 20 seconds, no ids or paths"
+  primary_tts: "<tts.provider, e.g. edge | elevenlabs | openai>"
+  primary_voice: "<voice name for the primary provider, e.g. tts.edge.voice>"
+  fallback_tts: "<second provider - pattern, not built-in>"
+  fallback_voice: "<voice for the fallback provider, e.g. tts.piper.voice name or absolute .onnx path>"
+  stt: "<stt.provider, e.g. local | groq | openai>"
+  incident_to: "<manager profile that receives voice failures>"
+
+workspace:
+  roots: ["<absolute path of each entity root>"]
+  chief_root: "<absolute common parent of all entity roots: the chief's terminal.cwd and cron --workdir>"
+  scripts_root: "<absolute path, outside document roots>"
+  scratch_root: "<absolute path, outside the workspace>"
+  dossier_pattern: "YYYY-MM_subject"
+  deliverable_pattern: "YYYY-MM-DD_subject_vN.ext"
+
+irreversible_actions:                             # always a decision path: "Ready. I recommend X. Go?"
+  - send_email
+  - send_external_message
+  - pay
+  - sign
+  - delete
+  - move_or_mark_mail
+  - touch_private_space
+  - change_live_config
+
+outbound:                                         # go gate (hermes-security): the agent never holds a send credential; the plugin ships no send script
+  agent_os_user: "<OS user Hermes runs as>"
+  send_mechanism: "<existing send mechanism found by SSH discovery (path / how triggered), or none>"

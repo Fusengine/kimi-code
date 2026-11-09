@@ -1,7 +1,7 @@
 {
   "name": "fusengine",
   "version": "1.0.24",
-  "description": "Fusengine agentic suite for Kimi Code (K3): 24 plugins, 197 skills, APEX workflow, harness-powered hooks",
+  "description": "Fusengine agentic suite for Kimi Code (K3): 25 plugins, 211 skills, APEX workflow, harness-powered hooks",
   "author": {
     "name": "Fusengine",
     "url": "https://github.com/fusengine"
@@ -25,6 +25,7 @@
     "./plugins/commit-pro/skills/",
     "./plugins/design-expert/skills/",
     "./plugins/go-expert/skills/",
+    "./plugins/hermes-expert/skills/",
     "./plugins/laravel-expert/skills/",
     "./plugins/nextjs-expert/skills/",
     "./plugins/php-expert/skills/",
@@ -252,6 +253,16 @@
       "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/hooks/kimi-hook-shim.mjs\" core"
     },
     {
+      "event": "PreToolUse",
+      "matcher": "Write|Edit",
+      "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/hooks/kimi-hook-shim.mjs\" core"
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "",
+      "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/hooks/kimi-hook-shim.mjs\" core"
+    },
+    {
       "event": "SessionStart",
       "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/hooks/kimi-hook-shim.mjs\" rules",
       "timeout": 10
@@ -401,7 +412,7 @@
     }
   ],
   "systemPromptPath": "./plugins/ai-pilot/APEX-SUBAGENT.md",
-  "skillInstructions": "Kimi Code tool mapping for Fusengine skills and agents:\n- Task tool → Agent tool; TeamCreate → AgentSwarm (min 4 subagents).\n- WebFetch → FetchURL; TodoWrite → TodoList.\n- Skill tool references map to Kimi Code's native Skill tool.\n- Read/Write/Edit/Bash/Grep/Glob/WebSearch keep their native names.",
+  "skillInstructions": "Kimi Code tool mapping for Fusengine skills and agents:\n- Task tool → Agent tool; TeamCreate → parallel Agent calls, or AgentSwarm when the owner turned swarm mode on; at most 6 agents concurrently.\n- WebFetch → FetchURL; TodoWrite → TodoList.\n- Skill tool references map to Kimi Code's native Skill tool.\n- Read/Write/Edit/Bash/Grep/Glob/WebSearch keep their native names.",
   "interface": {
     "displayName": "Fusengine Suite",
     "shortDescription": "APEX workflow, domain experts, design pipeline, harness-enforced SOLID/DRY guards",

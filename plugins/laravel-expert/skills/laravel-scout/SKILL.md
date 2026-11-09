@@ -113,7 +113,7 @@ $keyword = Post::search($query)->get();
 $semantic = Post::whereVectorSimilarTo('embedding', $embedding, minSimilarity: 0.4)->limit(10)->get();
 ```
 
-### Scout 11 (current 11.8, L13 compatible)
+### Scout 11 (current 11.9, L13 compatible)
 - `where()` accepts comparison operators: `User::search('*')->where('age', '>', 30)->get()`
 - Custom engines: `$builder->wheres` becomes a list of `['field', 'operator', 'value']`
 - Algolia uses `filters` (instead of `numericFilters`); `scout:delete-all-indexes` (Meilisearch) only deletes indexes with the `SCOUT_PREFIX` prefix

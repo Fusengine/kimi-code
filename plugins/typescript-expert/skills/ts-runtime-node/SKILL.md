@@ -5,7 +5,7 @@ description: Use when running TypeScript directly on Node.js without a build ste
 
 
 <objective>
-This skill covers running .ts/.mts/.cts files directly on Node 24 LTS (or Node 26) via native type
+This skill covers running .ts/.mts/.cts files directly on Node 26 LTS (or Node 24 LTS) via native type
 stripping: what erases cleanly versus what throws ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX (enum,
 namespace with runtime code, parameter properties, import aliases), why tsconfig.json
 paths/downleveling are ignored at runtime, and mandatory explicit file extensions and import
@@ -76,7 +76,7 @@ project/
 |-------|-----------|-----------------|
 | **Type Stripping** | [type-stripping.md](references/type-stripping.md) | Running `.ts` natively, understanding what erases and what errors |
 | **When tsx** | [tsx-when-needed.md](references/tsx-when-needed.md) | Native stripping is insufficient (paths, enums, decorators, `.tsx`) |
-| **Node 24 / 26 features** | [references/node24-features.md](references/node24-features.md) | Watch mode, `node:test`, ESM resolution, relevant built-ins, Node 26 changes |
+| **Node 26 / 24 features** | [references/node24-features.md](references/node24-features.md) | Watch mode, `node:test`, ESM resolution, relevant built-ins, Node 26 changes |
 
 ### Templates
 

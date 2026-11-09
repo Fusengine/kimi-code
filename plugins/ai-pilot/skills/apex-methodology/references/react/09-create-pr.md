@@ -1,26 +1,32 @@
 ---
 name: 09-create-pr
-description: Create Pull Request for React features
+description: Run React pre-PR checks, prepare the PR, hand the release to the commit agent
 prev_step: references/react/08-check-test.md
 next_step: null
 ---
 
 # 09 - Create PR (React/Vite)
 
-**Create Pull Request for React features.**
+**Run the React pre-PR checks, prepare the PR title and body, then hand the push / PR / CI / merge / tag to agent `commit` (full mode).** This phase never pushes, opens, merges or tags anything itself.
 
 ## When to Use
 
-- After all validation passes
+- After all validation passes (eLicit, Verify, sniper)
 - After tests pass
-- When ready for code review
+- At the end of the mandate, when the work is ready to leave the working branch
 
 ---
 
-## Pre-PR Checklist
+## Pre-PR Checks (run by the APEX agent)
+
+```bash
+bun run tsc --noEmit && \
+bun run lint && \
+bun run test && \
+bun run build
+```
 
 ```text
-[ ] Branch up-to-date with main
 [ ] sniper validation passes
 [ ] All tests pass (bun run test)
 [ ] Build succeeds (bun run build)
@@ -29,15 +35,28 @@ next_step: null
 [ ] Self-review completed
 ```
 
+Paste each command + result in your REPORT; a check not run is reported "not verified".
+
+### Common Failures (fix before the hand-off)
+
+| Failure | Fix |
+| --- | --- |
+| TypeScript error | Fix types locally |
+| ESLint error | Run lint --fix |
+| Test failure | Debug with --ui |
+| Build failure | Check imports/exports |
+
 ---
 
-## Sync with Main
+## Hand-off to the Commit Agent (end of mandate)
 
-```bash
-git fetch origin main
-git rebase origin/main
-git push origin feature/branch-name
-```
+This phase never runs `git push`, `gh pr create`, `gh pr merge`, a rebase onto main, a force-push or a tag. Once the checks above are green and the Verify + sniper proofs are in the REPORT, the release goes to agent `commit` in **full mode** (template HARD STOP 1; rules `06-tooling-rules`, Git & GitHub Flow):
+
+- It pushes the working branch, opens the PR, waits for CI, merges with a real `--merge` commit — never squash, which would orphan the release tag's bump commit — then tags post-merge and watches the release run.
+- The lead launches it at the end of the mandate and announces the merge/release in the report to the owner; an APEX sub-agent never launches it and never runs those commands itself.
+- Brief it with: `mode: full`, the PR title and body below, and the files of the mandate.
+- Blocked (merge conflict, secret in the diff) → it stops with `status: blocked`; CI red → `status: left-open`, `ci: failed:<check>`. Either way: fix through the APEX loop (`06-fix-issue.md`), re-run the checks, hand off again.
+- Branch out of date with main → the commit agent's flow handles it; never rebase and force-push a shared branch yourself (force-push needs the owner).
 
 ---
 
@@ -56,7 +75,7 @@ test(UserProfile): add integration tests
 
 ---
 
-## PR Description Template (React)
+## PR Body Template (handed to the commit agent)
 
 ```markdown
 ## Summary
@@ -103,27 +122,6 @@ Closes #123
 
 ---
 
-## Create PR with gh CLI
-
-```bash
-gh pr create \
-  --title "feat(UserCard): add user profile component" \
-  --body "$(cat <<'EOF'
-## Summary
-- Add UserCard component for user display
-- Create useUser hook for data fetching
-
-## Test Plan
-- [ ] Component renders correctly
-- [ ] Hook handles loading/error states
-
-Closes #123
-EOF
-)"
-```
-
----
-
 ## PR Best Practices (React)
 
 ### Size Guidelines
@@ -153,70 +151,18 @@ Split if:
 
 ---
 
-## After PR Created
-
-### Monitor CI
-
-```bash
-gh pr view --web
-gh pr checks
-```
-
-### Common CI Failures
-
-| Failure | Fix |
-| --- | --- |
-| TypeScript error | Fix types locally |
-| ESLint error | Run lint --fix |
-| Test failure | Debug with --ui |
-| Build failure | Check imports/exports |
-
----
-
-## Merge
-
-```bash
-# After approval (merge commit — never squash, it orphans the release tag's bump commit)
-gh pr merge --merge --delete-branch
-```
-
----
-
-## Post-Merge
-
-```bash
-git checkout main
-git pull origin main
-git branch -d feature/branch-name
-```
-
----
-
-## PR Checklist
+## After the Hand-off
 
 ```text
-[ ] Branch synced with main
-[ ] Conventional PR title
-[ ] Description complete
-[ ] Tests documented
-[ ] Screenshots for UI
-[ ] CI passing
-[ ] Review requested
+[ ] Commit agent report read: PR URL, CI result, merge commit, tag
+[ ] Report to the owner: merge/release announced, with the PR URL and tag
 ```
 
 ---
 
-## Update Task Phase
+## Task Phase
 
-At the **start** of this phase, record it (and mark the task `completed` once the PR is opened) in `.kimi/apex/task.json`:
-
-```bash
-jq --arg p "create-pr" '.tasks[.current_task].phase = $p' .kimi/apex/task.json \
-  > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-# after the PR is created:
-jq '.tasks[.current_task].status = "completed"' .kimi/apex/task.json \
-  > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-```
+Phase: `create-pr`. `.kimi-code/apex/` is harness state, read-only for agents and the lead: never create or write anything there. Kimi has no task-board sync: the lead tracks the phase in its `TodoList` (`done` once the commit agent reports the merge); state the phase in your REPORT and keep tracking in the agents' REPORTs and `docs/decisions.md`.
 
 ---
 
@@ -232,5 +178,5 @@ jq '.tasks[.current_task].status = "completed"' .kimi/apex/task.json \
 06-fix-issue      -> Fixed any issues
 07-add-test       -> Added Vitest tests
 08-check-test     -> Verified tests pass
-09-create-pr      -> Created and merged PR
+09-create-pr      -> Checks green, handed off to the commit agent (PR, CI, merge, tag)
 ```

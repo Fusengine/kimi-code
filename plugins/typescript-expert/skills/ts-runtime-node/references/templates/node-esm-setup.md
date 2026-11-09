@@ -1,10 +1,10 @@
 ---
 name: node-esm-setup
-description: Complete ESM Node 24 project running TypeScript natively (no build step)
+description: Complete ESM Node 26 LTS project running TypeScript natively (no build step)
 keywords: template, node, esm, type-stripping, node-test, tsconfig
 ---
 
-# Template: Node 24 ESM + Native TypeScript
+# Template: Node 26 LTS ESM + Native TypeScript
 
 Copy-paste ready. Runs `.ts` directly via native stripping, type-checks with `tsc`,
 tests with `node:test`. No bundler, no `ts-node`.
@@ -26,7 +26,7 @@ tests with `node:test`. No bundler, no `ts-node`.
   },
   "devDependencies": {
     "typescript": "^7.0.2",
-    "@types/node": "^24.0.0"
+    "@types/node": "^26.0.0"
   }
 }
 ```
@@ -85,7 +85,7 @@ export function greet(opts: GreetOptions): string {
 ```ts
 import { greet } from "./greeting.ts";
 
-console.log(greet({ name: "Node 24", shout: true }));
+console.log(greet({ name: "Node 26", shout: true }));
 ```
 
 ## `test/greeting.test.ts`

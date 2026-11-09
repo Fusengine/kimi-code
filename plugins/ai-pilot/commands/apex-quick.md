@@ -5,19 +5,19 @@ argument-hint: "<fix description>"
 
 # APEX Quick Flow
 
-Fast-track workflow for simple bug fixes, typos, and minor changes. No multi-agent orchestration: the lead spawns ONE domain-expert agent that edits; the main session never edits inline.
+Fast-track workflow for a trivial 1-3 line change (typo, one-line bug fix, config value). No multi-agent orchestration: the lead spawns ONE domain-expert agent that edits; the main session never edits inline. It skips Brainstorm, the Analyze trio and the task split — never eLicit, the functional check, or sniper.
 
 ---
 
 ## When to Use
 
-✅ **Use APEX Quick:**
+✅ **Use APEX Quick (trivial 1-3 line change only):**
 - Typo fixes
 - Single-line bug fixes
-- Simple refactoring (rename, move)
-- Minor UI tweaks
-- Config changes
-- Documentation updates
+- A local rename touching 1-3 lines
+- A one-value UI tweak (text, class, token)
+- A config value change
+- A short documentation fix
 
 ❌ **Use Full APEX instead:**
 - New features
@@ -39,8 +39,8 @@ Fast-track workflow for simple bug fixes, typos, and minor changes. No multi-age
 │  └─────────┘   └─────────┘   └─────────┘   └────────┘ │
 │      │             │             │             │       │
 │      ▼             ▼             ▼             ▼       │
-│   Find file     Apply        1 quick      Linter      │
-│   + line        minimal      technique    check       │
+│   Find file     Apply        1 quick      Run tests   │
+│   + line        minimal      technique    or run it   │
 │                 change                                 │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -86,11 +86,14 @@ Expert applies 1 quick technique based on fix type:
 ### Step 4: VERIFY
 
 ```
-Quick verification:
-- Run linter on changed file(s)
-- TypeScript check (if applicable)
-- No full test suite
+Real functional check (executed, never linter-only):
+- Run the tests covering the changed code, or run the build / the
+  program / the page and observe the corrected behaviour
+- Report the command + its output (or screenshot path) as proof
+- Linter / type check on the changed file(s) too, but they are not the proof
 ```
+
+Then the main session verifies on disk and runs sniper (full, never skipped).
 
 ---
 
@@ -105,7 +108,7 @@ Quick verification:
 1. LOCATE: Grep "login" → Found LoginButton.tsx:23
 2. FIX: Change "Logi" → "Login"
 3. REVIEW: DOC-03 check → OK
-4. VERIFY: eslint LoginButton.tsx → 0 errors
+4. VERIFY: bun test LoginButton → pass; rendered button reads "Login"
 
 ✅ Done in single pass
 ```
@@ -119,7 +122,8 @@ Quick verification:
 | Agents | 3+ parallel | 1 expert |
 | Phases | 4-5 (A-P-E-L-X) | 4 (Locate-Fix-Review-Verify) |
 | TaskCreate | Yes | No |
-| Sniper | Full 6-phase | Linter only |
+| Verify | Full verification skill | Real functional check (tests or run) |
+| Sniper | Full | Full (run by the main session) |
 | Use case | Features, refactoring | Fixes, typos |
 
 ---
@@ -127,7 +131,7 @@ Quick verification:
 ## Quick Flow Rules
 
 ### DO:
-- ✅ Use for changes <20 lines
+- ✅ Use for a trivial 1-3 line change; anything larger → full APEX
 - ✅ Single file preferred
 - ✅ Quick self-review
 - ✅ Immediate verification
@@ -154,8 +158,8 @@ Quick verification:
 - Result: ✅ OK
 
 ### Verification
-- Linter: ✅ 0 errors
-- TypeScript: ✅ OK
+- Functional check: {command run} → {observed output}
+- Linter / types: ✅ 0 errors
 
 **Status**: ✅ Fixed
 ```

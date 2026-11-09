@@ -212,14 +212,9 @@ Use outdated Laravel 10 patterns
 
 ---
 
-## Update Task Phase
+## Task Phase
 
-At the **start** of this phase, record it in `.kimi/apex/task.json`:
-
-```bash
-jq --arg p "analyze-code" '.tasks[.current_task].phase = $p' .kimi/apex/task.json \
-  > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-```
+Phase: `analyze-code`. `.kimi-code/apex/` is harness state, read-only for agents and the lead: never create or write anything there. Kimi has no task-board sync: the lead tracks the phase in its `TodoList`; state the phase in your REPORT and keep tracking in the agents' REPORTs and `docs/decisions.md`.
 
 ---
 

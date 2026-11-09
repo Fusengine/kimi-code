@@ -9,7 +9,7 @@ description: Current date awareness (2026)
 
 ## Current Context
 
-- **Date**: January 2026
+- **Date**: November 2026
 - **Google Algorithm**: Post-2025 Spam Update + AI Overviews
 - **AI Search**: Mature phase (ChatGPT, Gemini, Kimi, Perplexity, Copilot)
 - **Zero-Click**: 60% of searches don't result in clicks
@@ -37,14 +37,16 @@ description: Current date awareness (2026)
 ## Active Guidelines
 
 ### Google (2026)
-- **Quality Rater Guidelines**: January 2025 update
+- **Quality Rater Guidelines**: use the latest published PDF (verify the edition date before citing)
+- **AI features**: official guide at developers.google.com/search/docs/fundamentals/ai-optimization-guide (May 2026) — Google treats "GEO/AEO" as SEO; `llms.txt` has no effect on Google Search (clarified 2026-06-15)
+- **Structured data**: FAQ rich result no longer shown (May 7, 2026); HowTo, SpecialAnnouncement, practice problems, course info, estimated salary, learning video, vehicle listing also retired
 - **Core Web Vitals**: INP replaces FID
 - **AI Content**: Allowed if human value added
 - **Spam Update**: Scaled content abuse enforcement
 
 ### Schema.org
-- **Version**: 16.0+ (2026)
-- **Priority**: Article, Product, LocalBusiness, FAQ, HowTo, Organization
+- **Version**: 30.1 (released 2026-09-16; check schema.org/docs/releases.html)
+- **Priority**: Article, Product, LocalBusiness, Organization, BreadcrumbList, VideoObject (FAQ and HowTo no longer produce Google rich results)
 
 ### Open Graph
 - **Standard**: OG 2.0

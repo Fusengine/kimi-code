@@ -32,6 +32,8 @@ cd my-app
 bun dev
 ```
 
+Since 16.4, `create-next-app` enables Cache Components by default (`cacheComponents: true` in `next.config.ts`), plus experimental agent feedback.
+
 ## Upgrade Existing Project
 
 ```bash

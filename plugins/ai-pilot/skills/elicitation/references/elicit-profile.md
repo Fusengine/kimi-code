@@ -1,6 +1,6 @@
 # Elicit Profile (optional, per-repo)
 
-`.kimi/apex/elicit-profile.md`, if present, tunes technique selection
+`docs/elicit-profile.md`, if present, tunes technique selection
 (Step 2) for the current repo without editing the skill itself.
 
 Not required. Absence means: use `SKILL.md`'s Auto-Detection Matrix and
@@ -44,7 +44,7 @@ Not required. Absence means: use `SKILL.md`'s Auto-Detection Matrix and
 
 ## When to Create One
 
-Create `.kimi/apex/elicit-profile.md` when a repo repeatedly surfaces
+Create `docs/elicit-profile.md` when a repo repeatedly surfaces
 irrelevant findings (e.g. UX-05 on a CLI-only repo) or repeatedly misses a
 category the default matrix does not cover for that stack. Do not create it
 speculatively -- it is a corrective, not a default scaffold.

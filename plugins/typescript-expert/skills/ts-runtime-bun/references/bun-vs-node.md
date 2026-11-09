@@ -16,7 +16,7 @@ either way.
 
 ## Transpiler behavior
 
-| Aspect | Node 24 / 26 (native) | Bun 1.4 |
+| Aspect | Node 26 / 24 (native) | Bun 1.4 |
 |--------|------------------|---------|
 | Mechanism | **Type stripping** — erases types only | **Full transpile** via Bun's transpiler |
 | `.tsx` / JSX | Unsupported natively | Supported |

@@ -13,14 +13,14 @@ description: Research-first workflow for SEO/GEO
 
 Before ANY recommendation, check current official sources:
 
-```bash
+```text
 # Google Official
 - Google Search Central (developers.google.com/search)
 - Quality Rater Guidelines (latest PDF)
 - Google Search Status Dashboard
 
 # Schema.org
-- schema.org (check version 16.0+)
+- schema.org (check latest release: schema.org/docs/releases.html, 30.1 as of 2026-09)
 - Structured Data Testing Tool
 
 # Platform-Specific
@@ -72,7 +72,7 @@ Verify recommended tools are:
 - Updated recently (check changelog)
 - Compatible with current standards
 
-```bash
+```text
 # Traditional SEO
 ✅ Ahrefs (check API v4)
 ✅ SEMrush (verify license)
@@ -89,10 +89,10 @@ Verify recommended tools are:
 Before implementing ANY SEO strategy:
 
 - [ ] Checked Google Search Central for updates (last 30 days)
-- [ ] Reviewed Quality Rater Guidelines (2025 version)
+- [ ] Reviewed Quality Rater Guidelines (latest published PDF)
 - [ ] Analyzed top 10 SERP results
 - [ ] Tested keyword in 3+ AI platforms
-- [ ] Verified schema.org types (v16.0+)
+- [ ] Verified schema.org types against the latest release (30.1 as of 2026-09) and Google's supported-features list
 - [ ] Confirmed tools compatibility
 - [ ] Checked for AI Overview presence
 - [ ] Reviewed E-E-A-T signals in top results

@@ -11,7 +11,7 @@ related: project-anatomy.md, common-mistakes.md, templates/minimal-project.md
 # Project Setup — TanStack Start
 
 Load when installing Start or configuring the build tool. Targets
-`@tanstack/react-start` v1.168.58 (peer deps: `vite >=7`, `react >=18 || >=19`;
+`@tanstack/react-start` v1.169.5 (peer deps: `vite >=8`, `react >=18 || >=19`;
 engines `node >=22.12.0`).
 
 ## 1. Install Dependencies

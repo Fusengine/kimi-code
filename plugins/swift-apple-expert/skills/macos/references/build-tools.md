@@ -116,3 +116,5 @@ Terminate running app.
 - ❌ Don't distribute Debug builds
 
 **Xcode 27 notes:** Xcode 27 runs only on Apple silicon Macs (macOS Tahoe 26.6+). With a macOS 27.0 deployment target, `ARCHS_STANDARD` no longer includes `x86_64` — add it to `ARCHS` explicitly if you still ship Universal. The macOS 27 SDK back-deploys Universal apps to macOS 12+.
+
+**Xcode 27.2 notes (macOS 27.2 SDK):** the ld64 linker is removed (`-ld_classic` no longer works: delete it from `OTHER_LDFLAGS` and scripts). The macOS SDK in 27.2 wrongly lists 27.1 as a valid deployment target: use 27.0 or 27.2. Xcode 27.2 can store the project in an opt-in JSON format. All Intel software is incompatible with macOS 28. Full list: swift-core `references/sdk-27-changes.md`. Sources: https://developer.apple.com/documentation/xcode-release-notes/xcode-27-release-notes , https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes

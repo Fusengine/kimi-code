@@ -5,7 +5,7 @@ description: Article schema for blog posts and news
 
 # Article Schema (BlogPosting, NewsArticle)
 
-**JSON-LD structured data for blog posts and news articles (Schema.org 16.0).**
+**JSON-LD structured data for blog posts and news articles (Schema.org 30.x; latest release 30.1, 2026-09-16).**
 
 ## Why Article Schema Matters
 

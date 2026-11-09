@@ -1,0 +1,19 @@
+# Hermes Agent 0.23.0 - delegation block, default backend, one-level manager -> workers.
+# Paste into the manager profile's config.yaml. Replace <PLACEHOLDERS>.
+# Verify after editing: hermes config get delegation.<key> ; hermes doctor
+
+delegation:
+  backend: default
+  model: "<WORKER_MODEL_ID>"          # cheap worker model; empty = inherit the parent's model
+  provider: "<PROVIDER>"              # empty = inherit the parent's provider/credentials
+  max_spawn_depth: 1                  # flat: workers are leaves (recommended)
+  orchestrator_enabled: true
+  max_concurrent_children: 10         # explicit on purpose: docs say 10 or 3 depending on the page
+  max_iterations: 250                 # lower for fleets of short tasks
+  child_timeout_seconds: 0            # 0 = no cap; e.g. 1800 for unattended runs (inactivity, floor 30)
+  subagent_auto_approve: false        # children auto-deny dangerous commands
+  # reasoning_effort: low             # CODE-ONLY key (tools/delegate_tool_config.py), undocumented;
+  #                                   # none|minimal|low|medium|high|xhigh|max|ultra; unset = parent's level
+  # fallback_providers:               # optional child fallback chain; [] disables child fallback
+  #   - provider: "<FALLBACK_PROVIDER>"
+  #     model: "<FALLBACK_MODEL_ID>"

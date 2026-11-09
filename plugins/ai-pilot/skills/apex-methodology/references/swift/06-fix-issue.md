@@ -91,21 +91,21 @@ git checkout -b bugfix/ISSUE-123-profile-crash
 ```bash
 xcodebuild test -scheme MyApp
 swiftlint --strict
-git commit -m "fix(profile): handle nil user (#123)"
+```
+
+Both green → the lead hands the commit to agent `commit` in **WIP mode** (`mode: wip`: one conventional commit on the working branch — no bump, no push, no PR, no merge, no tag); an APEX sub-agent never runs `git commit` itself. Never squash or rebase: a follow-up fix is its own commit. Suggested message, passed to the commit agent:
+
+```text
+fix(profile): handle nil user (#123)
 ```
 
 ## Escalation
 
 **Attempt cap before escalation.** Diagnosis is hypothesis-driven: one candidate cause documented → one atomic fix → immediate retest. The same fix twice is forbidden; a new attempt needs a new hypothesis (fresh research first). After 3 failed cycles on the same issue, STOP and escalate with a root-cause note (what was tried, sources consulted, why each attempt failed) — do not keep trying or widen the scope to work around it. Canonical implementation: sniper's Fix Retry Loop.
 
-## Update Task Phase
+## Task Phase
 
-At the **start** of this phase, record it in `.kimi/apex/task.json`:
-
-```bash
-jq --arg p "fix-issue" '.tasks[.current_task].phase = $p' .kimi/apex/task.json \
-  > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-```
+Phase: `fix-issue`. `.kimi-code/apex/` is harness state, read-only for agents and the lead: never create or write anything there. Kimi has no task-board sync: the lead tracks the phase in its `TodoList`; state the phase in your REPORT and keep tracking in the agents' REPORTs and `docs/decisions.md`.
 
 ## Next Phase
 

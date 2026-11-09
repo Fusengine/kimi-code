@@ -30,7 +30,7 @@ description: GEO compliance checklist for AI platforms
 
 ## Schema Markup
 
-- [ ] FAQ schema implemented
+- [ ] Visible FAQ section (FAQPage schema optional: Google FAQ rich result removed May 2026)
 - [ ] Article schema with author/publisher
 - [ ] Organization/Person schema
 - [ ] JSON-LD validated

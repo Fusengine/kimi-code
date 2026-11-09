@@ -29,8 +29,9 @@ related: rendering.md, static-generation.md
 ## Enable Cache Components
 ```typescript
 // next.config.ts
-const nextConfig = { cacheComponents: true }
+const nextConfig = { cacheComponents: true, partialPrefetching: true }
 export default nextConfig
+// Recommended for every app since 16.4 (create-next-app default; Next.js 17 default). See cache-components.md.
 ```
 
 ## use cache Directive

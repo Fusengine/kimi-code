@@ -5,7 +5,7 @@ description: Use when building a documentation site with Astro Starlight — sid
 
 
 <objective>
-Sets up and customizes Astro Starlight (0.42+, latest 0.42.4; requires Astro 7.2.10+ — 0.41 dropped Astro 6), the documentation theme built on Astro 7: filesystem-based or manual sidebar configuration, built-in Pagefind full-text search (or DocSearch for high-traffic/large docs), automatic dark/light mode, and the plugin ecosystem — `starlight-blog`, `starlight-openapi`, `starlight-typedoc`, `starlight-versions`, `starlight-llms-txt` for AI discoverability.
+Sets up and customizes Astro Starlight (0.42+, latest 0.42.10; requires Astro 7.2.10+ — 0.41 dropped Astro 6), the documentation theme built on Astro 7: filesystem-based or manual sidebar configuration, built-in Pagefind full-text search (or DocSearch for high-traffic/large docs), automatic dark/light mode, and the plugin ecosystem — `starlight-blog`, `starlight-openapi`, `starlight-typedoc`, `starlight-versions`, `starlight-llms-txt` for AI discoverability.
 
 Also covers multi-language documentation with hreflang support and Content Layer API integration (`docsLoader`, schema) specific to Starlight's content model, plus CSS custom property theming. Does not cover generic Astro Content Layer usage outside Starlight (astro-content) or non-Starlight i18n routing (astro-i18n) — those are handled by their own skills.
 </objective>

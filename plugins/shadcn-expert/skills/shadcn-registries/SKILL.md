@@ -5,7 +5,7 @@ description: Use when configuring shadcn/ui registries (namespaced, GitHub, dyna
 
 
 <objective>
-Configures shadcn/ui registries, `components.json`, and the shadcn CLI (4.21.0) — covering the default `@shadcn` registry (Base UI, Radix or React Aria styles, chosen with `init --base`), built-in directory registries such as `@basecn`, custom namespaced registries, GitHub registries (`owner/repo/item#ref`, public and private) and registry authoring (`include`, `registry validate`, dynamic search).
+Configures shadcn/ui registries, `components.json`, and the shadcn CLI (4.23.0) — covering the default `@shadcn` registry (Base UI, Radix or React Aria styles, chosen with `init --base`), built-in directory registries such as `@basecn`, custom namespaced registries, GitHub registries (`owner/repo/item#ref`, public and private) and registry authoring (`include`, `registry validate`, dynamic search).
 
 Documents the `components.json` schema (style, Tailwind config paths, aliases) and enforces using the detected package manager's runner (`bunx`/`npx`/`pnpm dlx`/`yarn dlx`) plus the shadcn MCP for CLI commands, never a manual component copy.
 </objective>
@@ -102,7 +102,7 @@ project/
 {runner} shadcn@latest registry add @acme=https://acme.com/r/{name}.json
 ```
 
-Flags above are from `npx shadcn@4.21.0 <cmd> --help` (2026-09-27). Details and sources: [registry-config.md](references/registry-config.md).
+Flags above are from `npx shadcn@4.23.0 <cmd> --help` (2026-11-08). Details and sources: [registry-config.md](references/registry-config.md).
 
 ### MCP (MANDATORY)
 

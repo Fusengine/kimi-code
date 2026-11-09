@@ -38,7 +38,7 @@ const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 const manifest = {
 	name: "fusengine",
 	version: pkg.version,
-	description: "Fusengine agentic suite for Kimi Code (K3): 24 plugins, 197 skills, APEX workflow, harness-powered hooks",
+	description: "Fusengine agentic suite for Kimi Code (K3): 25 plugins, 211 skills, APEX workflow, harness-powered hooks",
 	author: { name: "Fusengine", url: "https://github.com/fusengine" },
 	homepage: "https://github.com/fusengine/kimi-code",
 	repository: "https://github.com/fusengine/kimi-code",
@@ -52,7 +52,7 @@ const manifest = {
 	// it carries the hand-written APEX sub-agent preamble. The corpus rules are
 	// NOT here: sub-agents already get them through the natively loaded AGENTS.md.
 	systemPromptPath: "./plugins/ai-pilot/APEX-SUBAGENT.md",
-	skillInstructions: "Kimi Code tool mapping for Fusengine skills and agents:\n- Task tool → Agent tool; TeamCreate → AgentSwarm (min 4 subagents).\n- WebFetch → FetchURL; TodoWrite → TodoList.\n- Skill tool references map to Kimi Code's native Skill tool.\n- Read/Write/Edit/Bash/Grep/Glob/WebSearch keep their native names.",
+	skillInstructions: "Kimi Code tool mapping for Fusengine skills and agents:\n- Task tool → Agent tool; TeamCreate → parallel Agent calls, or AgentSwarm when the owner turned swarm mode on; at most 6 agents concurrently.\n- WebFetch → FetchURL; TodoWrite → TodoList.\n- Skill tool references map to Kimi Code's native Skill tool.\n- Read/Write/Edit/Bash/Grep/Glob/WebSearch keep their native names.",
 	interface: {
 		displayName: "Fusengine Suite",
 		shortDescription: "APEX workflow, domain experts, design pipeline, harness-enforced SOLID/DRY guards",

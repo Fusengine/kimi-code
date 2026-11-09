@@ -246,7 +246,7 @@ beforeEach(fn () => app(PermissionRegistrar::class)->forgetCachedPermissions());
 
 ## Laravel 13 Notes
 
-Spatie Permission **8.x** (current 8.3, requires PHP 8.3+ and Laravel 12/13) is **Laravel 13 compatible**. L13 integrations:
+Spatie Permission **8.x** (current 8.5, requires PHP 8.3+ and Laravel 12/13) is **Laravel 13 compatible**. L13 integrations:
 
 - **Upgrade v6 → v7 → v8**: event classes suffixed `Event` (`RoleAttachedEvent`…), commands suffixed `Command`, `clearClassPermissions()` removed, `findByName()` / `findOrCreate()` accept `BackedEnum|string` (v8) — see [events.md](references/events.md)
 - **Cache**: the `permission.cache.key` key stays explicit (`spatie.permission.cache`) in `config/permission.php` → unaffected by L13's switch to hyphenated prefixes

@@ -26,7 +26,7 @@ After implementation, run **sniper** for validation.
 
 ## What's New in React 19.3
 
-Stable in 19.3 (react/react-dom 19.3.0, 2026-09-09; `@types/react` 19.3 needs TypeScript ≥ 5.6):
+Stable in 19.3 (react/react-dom 19.3.0, 2026-09-09; current patch 19.3.1, 2026-10-14; `@types/react` 19.3 needs TypeScript ≥ 5.6):
 
 | API | Purpose | Guide |
 |-----|---------|-------|

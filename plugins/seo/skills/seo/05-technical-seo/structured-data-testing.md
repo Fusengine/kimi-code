@@ -34,12 +34,12 @@ Steps:
 
 ### 3. Google Search Console
 
-```bash
+```text
 Path: Search Console → Enhancements
 
 Reports:
 - Article
-- FAQ
+- FAQ (legacy: rich result removed May 2026, report no longer applies)
 - Product
 - Breadcrumb
 - Local Business

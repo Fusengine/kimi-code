@@ -11,25 +11,25 @@ related: scan-patterns.md, owasp-top10.md
 
 ## Introspection Control
 - **Risk**: Schema exposure reveals types, fields, relationships
-- **Severity**: HIGH | **OWASP**: A05
+- **Severity**: HIGH | **OWASP**: A02
 - **Grep**: `introspection:\s*true`, `__schema`, `__type`
 - **Fix**: Set `introspection: false` in production
 
 ## Query Depth Limiting
 - **Risk**: Deeply nested queries cause N+1 and resource exhaustion
-- **Severity**: HIGH | **OWASP**: A04
+- **Severity**: HIGH | **OWASP**: A06
 - **Grep**: Missing `depthLimit`, `maxDepth`, `validationRules`
 - **Fix**: Use `graphql-depth-limit`, max depth = 10
 
 ## Query Complexity Analysis
 - **Risk**: Flat but expensive queries (large lists, computed fields)
-- **Severity**: HIGH | **OWASP**: A04
+- **Severity**: HIGH | **OWASP**: A06
 - **Grep**: Missing `costAnalysis`, `complexityLimit`, `fieldCost`
 - **Fix**: Assign cost per field, enforce max complexity (1000)
 
 ## Batching Attack Prevention
 - **Risk**: Multiple operations in one request bypass rate limiting
-- **Severity**: MEDIUM | **OWASP**: A04
+- **Severity**: MEDIUM | **OWASP**: A06
 - **Grep**: `allowBatchedHttpRequests:\s*true`, missing batch limits
 - **Fix**: Set `maxBatchSize: 5` or disable batching
 
@@ -41,19 +41,19 @@ related: scan-patterns.md, owasp-top10.md
 
 ## Persisted Queries
 - **Risk**: Arbitrary query execution enables attack surface exploration
-- **Severity**: MEDIUM | **OWASP**: A04
+- **Severity**: MEDIUM | **OWASP**: A06
 - **Grep**: Missing `persistedQueries`, `allowedOperations`
 - **Fix**: Whitelist known queries, reject unknown query strings
 
 ## Input Validation
 - **Risk**: Injection via GraphQL arguments (SQL, NoSQL, LDAP)
-- **Severity**: CRITICAL | **OWASP**: A03
+- **Severity**: CRITICAL | **OWASP**: A05
 - **Grep**: `${args.` in resolvers, raw SQL in resolvers
 - **Fix**: Parameterized queries, validate input types and length
 
 ## Rate Limiting
 - **Risk**: Query flood causes denial of service
-- **Severity**: HIGH | **OWASP**: A04
+- **Severity**: HIGH | **OWASP**: A06
 - **Grep**: Missing rate limit middleware on `/graphql` endpoint
 - **Fix**: Combine request-based and cost-based rate limiting
 
@@ -61,11 +61,11 @@ related: scan-patterns.md, owasp-top10.md
 
 | Pattern | Severity | OWASP |
 |---------|----------|-------|
-| `introspection:\s*true` | HIGH | A05 |
-| Missing `depthLimit` / `maxDepth` | HIGH | A04 |
-| Missing `complexityLimit` / `costAnalysis` | HIGH | A04 |
-| `allowBatchedHttpRequests:\s*true` | MEDIUM | A04 |
+| `introspection:\s*true` | HIGH | A02 |
+| Missing `depthLimit` / `maxDepth` | HIGH | A06 |
+| Missing `complexityLimit` / `costAnalysis` | HIGH | A06 |
+| `allowBatchedHttpRequests:\s*true` | MEDIUM | A06 |
 | Resolvers without auth checks | CRITICAL | A01 |
-| Missing `persistedQueries` config | MEDIUM | A04 |
-| `\$\{args\.` in SQL/query strings | CRITICAL | A03 |
-| No rate limit on `/graphql` endpoint | HIGH | A04 |
+| Missing `persistedQueries` config | MEDIUM | A06 |
+| `\$\{args\.` in SQL/query strings | CRITICAL | A05 |
+| No rate limit on `/graphql` endpoint | HIGH | A06 |

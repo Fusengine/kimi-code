@@ -138,7 +138,13 @@ TabView {
 | `.toolbarMinimizationBehavior(_:for:)` | Control toolbar minimization on scroll |
 | `.asyncImageURLSession(_:)` | Custom `URLSession` (caching) for `AsyncImage` |
 | `Tab(role: .prominent)` | Separate trailing tab in the tab bar |
+| `Document` protocol (read + write) / `ReadableDocument` | Replace the deprecated `FileDocument` / `ReferenceFileDocument` in `DocumentGroup` |
+| `.bordered` text field style + `textInputBorderShape(_:)` | Replace the soft-deprecated `.squareBorder` / `.roundedBorder` |
+| `.sceneAccessory` + `ExternalNonInteractiveAccessory` | Non-interactive content on external display scenes (no longer automatic) |
+| `ArrangementView` (27.1, all platforms) | Primary/secondary split or overlay layout; see `hig-iphone-duo.md` |
 
-Source: developer.apple.com/documentation/updates/swiftui (June 2026); each symbol re-checked on developer.apple.com (Oct 2026).
+`PreviewProvider` is deprecated (iOS 27.0): use `#Preview`.
+
+Source: developer.apple.com/documentation/updates/swiftui (June 2026); symbols re-checked on developer.apple.com (Oct 2026); deprecations and 27.x notes from the iOS & iPadOS 27 / 27.2 release notes (Nov 2026), see swift-core `references/sdk-27-changes.md`.
 
 → See `templates/view-structure.md` for code examples

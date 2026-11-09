@@ -146,9 +146,39 @@ After step 5 succeeds, execute the `post-commit` skill (CHANGELOG + version bump
 
 This runs for ALL repos — the skill auto-detects the repo type internally.
 
+**Bump range**: the skill's Step 0 block decides (single source — do not restate it here): `--no-bump` in `$ARGUMENTS` → skipped; branch already bumped with nothing new since → skipped; otherwise bumps what changed since the last bump (or since the fork point). A re-push round on the same PR never stacks a bump; a plugin changed after the first bump is never merged unbumped.
+
 ### Step 7: Auto-Release (push + PR + CI watch + merge)
 
-After post-commit completes, if current branch is a feature branch (not main/master), run the **remote-flow decision tree** below — **no Y/N prompts** in FULL mode.
+#### Step 7.0: Base branch + release target (every mode, on the current branch, BEFORE any push or merge)
+
+`gh pr merge --delete-branch` switches to the base branch and deletes the local feature branch, so the release target is captured here, while the branch is still checked out and not yet merged. Self-contained: it relies on no variable from another step or shell.
+
+```bash
+# Base branch: caller's PR_BASE > the open PR's base > remote default branch > first local main/master/develop
+base_branch="${PR_BASE:-$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null)}"
+[ -n "$base_branch" ] || base_branch="$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)"
+base_branch="${base_branch#origin/}"
+if [ -z "$base_branch" ]; then
+  for b in main master develop; do
+    git rev-parse --verify --quiet "refs/heads/$b" >/dev/null && { base_branch="$b"; break; }
+  done
+fi
+git fetch --quiet origin "$base_branch" 2>/dev/null
+# Fork point; HEAD on the base branch itself (LOCAL solo repo) → last commit only
+fork="$(git merge-base HEAD "origin/$base_branch" 2>/dev/null || git merge-base HEAD "$base_branch" 2>/dev/null)"
+[ "$fork" = "$(git rev-parse HEAD)" ] && fork="$(git rev-parse -q --verify HEAD~1)"
+# Release target = the last bump commit in fork..HEAD only (never older history)
+bump_line=""
+[ -n "$fork" ] && bump_line="$(git log -1 -E --format='%H %s' --grep='^chore: (bump marketplace and CHANGELOG|update CHANGELOG) to [0-9]+\.[0-9]+\.[0-9]+$' "$fork..HEAD")"
+bump_sha="${bump_line%% *}"
+version="$(printf '%s\n' "$bump_line" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+$')"
+echo "base_branch=$base_branch bump_sha=${bump_sha:-none} version=${version:-none}"
+```
+
+`bump_sha` empty → no tag in Step 8 (`--no-bump` on every run, or nothing bumped on this branch). Shell variables do not survive a new shell: the echoed line is the record — if Step 8 runs in another shell, set these three values literally from it first.
+
+After that, if current branch is a feature branch (not main/master), run the **remote-flow decision tree** below — **no Y/N prompts** in FULL mode.
 
 #### Remote-flow decision tree (run first, every time)
 
@@ -161,14 +191,14 @@ git remote -v
   In this mode, tag right away (see Step 8, LOCAL/DEGRADED branch): local `git tag` only, never pushed automatically.
   Output explicitly:
   ```text
-  📍 Pas de remote configuré — rituel distant sauté (push/PR/merge).
-  Commandes manuelles pour plus tard :
+  📍 No remote configured — remote ritual skipped (push/PR/merge).
+  Manual commands for later:
     git remote add origin <url>
     git push -u origin <current-branch>
-    gh pr create --base main --title "<subject>" --body-file - <<'EOF'
+    gh pr create --base <base_branch> --title "<subject>" --body-file - <<'EOF'
     <body>
     EOF
-    (après merge) git tag vX.Y.Z && git push origin vX.Y.Z
+    (after merge) git tag vX.Y.Z <bump_sha> && git push origin vX.Y.Z
   ```
 
 - **Non-empty output → a remote exists.** Check tooling next:
@@ -194,7 +224,7 @@ git remote -v
    ```
 2. **Create the PR if absent** (else reuse the existing one), body piped via `--body-file -` on stdin — never inline in `--body`, to avoid quoting/escaping issues, and no temp file to write or clean up:
    ```bash
-   gh pr view --json url -q .url 2>/dev/null || gh pr create --base main --title "<commit subject>" --body-file - <<'EOF'
+   gh pr view --json url -q .url 2>/dev/null || gh pr create --base "$base_branch" --title "<commit subject>" --body-file - <<'EOF'
    ## Summary
    - <bullets from commit body>
 
@@ -208,31 +238,37 @@ git remote -v
    None / <description>
    EOF
    ```
-3. **Surveillance + merge auto** — real merge commit, **never squash** (squash rewrites the branch's commits into a brand-new one on `main`; a `--merge` commit keeps them intact, including the bump commit Step 8 tags). Full rationale: `git-flow` skill's "CI Gate Before Merge" section. Branch on **whether required status checks are configured** (`gh pr merge --auto` only ever waits for *required* checks — on a repo where checks run but aren't required, `--auto` merges immediately without waiting):
+3. **CI watch — always, `--no-merge` included** (it is what fills the report's `ci:` line; a caller looping on red CI reads it). Checks take a few seconds to register after `gh pr create`/a push — never `--watch` immediately ([cli/cli#7401](https://github.com/cli/cli/issues/7401)): poll until checks register (bounded, ~90s), THEN watch. **Never pipe** the `--watch` call itself (e.g. `| tail`): a pipe swallows the exit code.
+   ```bash
+   pr=<pr>
+   max_attempts=18   # 18 × 5s ≈ 90s
+   attempt=0
+   until gh pr checks "$pr" 2>&1 | grep -qv "no checks reported"; do
+     attempt=$((attempt + 1))
+     [ "$attempt" -ge "$max_attempts" ] && { echo "Timeout: no checks registered — verify before treating as zero-CI." >&2; break; }
+     sleep 5
+   done
+   gh pr checks "$pr" --watch
+   ci_rc=$?
+   ```
+   `ci_rc` 0 → `ci: watched-and-passed`. Non-zero → `ci: failed:<check>` (name it from `gh pr checks "$pr"`). Poll timed out → verify zero CI (no workflow under `.github/workflows/` triggers on `pull_request`/`push`) → `ci: no-checks-verified`; otherwise report the timeout, never assume zero CI.
+4. **Merge** — skipped under `--no-merge` (stop after step 3, PR left open). Real merge commit, **never squash** (squash rewrites the branch's commits into a brand-new one on `main`; a `--merge` commit keeps them intact). The release tag points to the bump commit; merge (never squash) keeps it in main's history — squash would orphan it. Full rationale: `git-flow` skill's "CI Gate Before Merge" section. Branch on **whether required status checks are configured** (`gh pr merge --auto` only ever waits for *required* checks — on a repo where checks run but aren't required, `--auto` merges immediately without waiting):
    1. **Required checks configured** (verify: `gh pr checks <pr> --required` returns checks, not `no required checks reported`) → the only case `--auto` actually gates, no race:
       ```bash
       gh pr merge <pr> --auto --merge --delete-branch
       ```
-   2. **Checks exist but none are required** → don't use `--auto` here (it wouldn't wait). Checks take a few seconds to register after `gh pr create`/a push — never `--watch` immediately ([cli/cli#7401](https://github.com/cli/cli/issues/7401)): poll until checks register (bounded, ~90s), THEN watch. **Never pipe** the final `--watch` call itself (e.g. `| tail`): a pipe swallows the exit code and lets a merge proceed after failing CI. Chain with `&&` so the merge only runs if checks passed:
+   2. **Checks exist but none are required** → don't use `--auto` here (it wouldn't wait). Gate on step 3's exit code, so the merge only runs if checks passed:
       ```bash
-      pr=<pr>
-      max_attempts=18   # 18 × 5s ≈ 90s
-      attempt=0
-      until gh pr checks "$pr" 2>&1 | grep -qv "no checks reported"; do
-        attempt=$((attempt + 1))
-        [ "$attempt" -ge "$max_attempts" ] && { echo "Timeout: no checks registered — verify before treating as zero-CI." >&2; break; }
-        sleep 5
-      done
-      gh pr checks "$pr" --watch && gh pr merge "$pr" --merge --delete-branch
+      [ "$ci_rc" -eq 0 ] && gh pr merge "$pr" --merge --delete-branch
       ```
-   3. **Repo has no CI checks at all** (verified, not assumed), merge immediately:
+   3. **Repo has no CI checks at all** (step 3 reported `no-checks-verified`), merge immediately:
       ```bash
       gh pr merge <pr> --merge --delete-branch
       ```
    A non-required check never blocks the merge — only *required* checks gate; mark CI checks required in branch protection so case 1 has teeth.
-4. Output PR URL + merge status. On successful merge, proceed to **Step 8** to create/push the release tag on `main`.
+5. Output PR URL + `ci:` + merge status. On successful merge, proceed to **Step 8** to create/push the release tag on the bump commit captured in Step 7.0.
 
-**Leave the PR OPEN (push + PR only, do NOT merge, skip Step 8's push) if**:
+**Leave the PR OPEN (push + PR + CI watch, do NOT merge, skip Step 8's push) if**:
 - User passes `--no-merge` in `$ARGUMENTS`
 - CI checks **FAIL** → report the failing check, leave PR open for the user
 - Branch protection rejects the merge → report, leave open
@@ -241,28 +277,36 @@ git remote -v
 
 ### Step 8: Release Tag — timing depends on the Step 7 mode
 
-`vX.Y.Z` is the version bumped by `post-commit` in Step 6.
+The release tag points to the **bump commit** captured in Step 7.0 (`base_branch`, `bump_sha`, `version`), never to the merge commit or the base branch's tip. Never re-read it here: after the merge the feature branch may be gone and the base branch carries other releases' bumps. Empty `bump_sha` → no tag.
 
 #### FULL mode (remote + `gh` OK) — tag only after a validated merge
 
-Only runs once Step 7 actually merged the PR (never before — a tag created before the merge is validated could end up on a commit that CI rejects or that never reaches `main`).
+Only runs once Step 7 actually merged the PR (never before — a tag created before the merge is validated could end up on a commit that CI rejects or that never reaches the base branch). Every step is chained: any failure prints `TAG FAILED` and stops, never ✅. An existing tag is accepted only if it already points at `bump_sha` (idempotent re-run).
 
 ```bash
-git checkout main && git pull --ff-only
-git fetch --prune   # drop remote-tracking refs (origin/*) of branches already deleted on the remote
-git tag vX.Y.Z
-git push origin vX.Y.Z
-git merge-base --is-ancestor vX.Y.Z main && echo "tag on main ✅"
+if [ -z "$bump_sha" ]; then
+  echo "no tag: no bump commit between the fork point and HEAD (Step 7.0)"
+else
+  git checkout "$base_branch" && git pull --ff-only origin "$base_branch" && git fetch --prune \
+    && { git merge-base --is-ancestor "$bump_sha" "$base_branch" || { echo "bump commit $bump_sha not in $base_branch (merge not landed?)" >&2; false; }; } \
+    && { existing="$(git rev-parse -q --verify "refs/tags/v$version^{commit}")"
+         if [ -z "$existing" ]; then git tag "v$version" "$bump_sha"
+         elif [ "$existing" != "$bump_sha" ]; then echo "v$version already exists on $existing, not on $bump_sha" >&2; false; fi; } \
+    && git push origin "v$version" \
+    && [ "$(git rev-list -n1 "v$version")" = "$bump_sha" ] \
+    && echo "v$version -> bump commit $bump_sha, on $base_branch ✅" \
+    || { echo "TAG FAILED: v$version -> $bump_sha on $base_branch (see the error above)" >&2; false; }
+fi
 ```
 
 **Why the tag waits for post-merge**: the merge strategy is `--merge` (real merge commit, never `--squash`), so the branch's commits — including the bump commit — do land on `main` intact once the merge succeeds. The risk this guards against isn't squash-orphaning, it's *sequencing*: a tag pushed before Step 7 confirms the merge could point at a commit that CI later fails, or that branch protection blocks from ever reaching `main`. Waiting for a validated merge, then verifying with `git merge-base --is-ancestor`, keeps the tag meaningful.
 
 #### LOCAL mode (no remote) / DEGRADED mode (no `gh`) — tag locally, never auto-push
 
-There is no PR/merge to wait for, so tag right after the Step 6 bump commit, on the current branch:
+There is no PR/merge to wait for, so tag the bump commit captured in Step 7.0 right away:
 
 ```bash
-git tag vX.Y.Z
+[ -n "$bump_sha" ] && git tag "v$version" "$bump_sha"
 ```
 
 Do **not** run `git push origin vX.Y.Z` automatically — there is either no remote to push to, or no confirmed merge yet. Print the manual command for the user to run once the remote/`gh` prerequisite is met and the change has actually landed on `main`.

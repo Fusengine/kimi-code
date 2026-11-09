@@ -100,7 +100,7 @@ Emergency response in 2h, free estimates. ABC Plumbing,
 
 5. Local FAQ (200-300 words)
    - Area-specific questions
-   - FAQ schema for rich snippets
+   - FAQ schema optional (Google no longer shows the FAQ rich result since May 2026)
 
 6. CTA + NAP (50 words)
    - Complete contact info
@@ -336,7 +336,7 @@ Recommended UTMs:
 □ LocalBusiness Schema
 □ Google Maps embed
 □ Local testimonials
-□ FAQ with Schema
+□ FAQ section (schema optional, no Google rich result)
 □ Optimized local images
 □ Clear CTA
 □ Mobile-friendly

@@ -32,7 +32,7 @@ next_step: steps/step-03-apply-review.md
 
 ## YOUR TASK:
 
-**Before selecting**: if `.kimi/apex/elicit-profile.md` exists, apply its
+**Before selecting**: if `docs/elicit-profile.md` exists, apply its
 `Exclude` / `Always Apply` / `Add for Code Type` precedence (see
 `references/elicit-profile.md`) to whatever this step would otherwise select.
 Also apply `{prior_artifact}` from Step 0 if present: deselect `"pass"`
@@ -60,7 +60,7 @@ techniques by default, prioritize `"fail"`/`"deferred"` ones.
 5. **{technique_5}** ({category})
    → {what_it_checks}
 
-Choix: [1-5] ou "all" ou "skip"
+Choice: [1-5] or "all"
 ```
 
 #### 2. Wait for User Response
@@ -69,7 +69,6 @@ Choix: [1-5] ou "all" ou "skip"
 Parse user input:
 - "1, 3, 5" → Select techniques 1, 3, 5
 - "all"     → Select all 5 techniques
-- "skip"    → End elicitation, go to sniper
 - "1"       → Select technique 1 only
 ```
 

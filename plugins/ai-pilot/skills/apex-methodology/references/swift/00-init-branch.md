@@ -30,17 +30,16 @@ hotfix/1.2.1-critical-fix     # Hotfixes
 ```bash
 git checkout develop && git pull origin develop
 git checkout -b feature/AUTH-123-login-screen
-git push -u origin feature/AUTH-123-login-screen
 ```
+
+The branch stays local; agent `commit` pushes it at the end of the mandate (full mode).
 
 ## SPM Package Versioning
 
-```bash
-# Tag release (SemVer)
-git tag -a 1.2.0 -m "Release 1.2.0"
-git push origin 1.2.0
+Release tags (SemVer, e.g. `1.2.0`) are created only by agent `commit` in full mode, after the merge is confirmed — never by hand in this phase.
 
-# Package.swift dependency
+```swift
+// Package.swift dependency
 .package(url: "https://github.com/org/Package", from: "1.2.0")
 ```
 
@@ -56,45 +55,21 @@ Pods/
 
 ## Merge Strategy
 
-```bash
-# Rebase before PR
-git fetch origin && git rebase origin/develop
-
-# Squash merge
-git checkout develop
-git merge --squash feature/AUTH-123-login-screen
-git commit -m "feat(auth): add Apple Sign-In (#123)"
-```
+Merges are done only by agent `commit` (full mode, end of mandate): PR into the base branch, CI wait, then a real `--merge` commit — never squash, which would orphan the release tag's bump commit. No manual rebase, merge or commit in this phase.
 
 ## Branch Protection Rules
 
 - Require PR reviews (min 1)
 - Require status checks (SwiftLint, tests)
-- Require linear history
 - No force push to main/develop
 
 ## Release Process
 
-```bash
-git checkout -b release/1.2.0 develop
-# Bump version, update CHANGELOG
-git checkout main && git merge --no-ff release/1.2.0
-git tag -a 1.2.0 -m "Release 1.2.0"
-git push origin main --tags
-git checkout develop && git merge main
-```
+Version bump, CHANGELOG, merge and post-merge tag are all run by agent `commit` in full mode, announced by the lead in the report (template HARD STOP 1). This phase only creates the working branch.
 
-## Update Task Phase
+## Task Phase
 
-At the **start** of this phase, record it (and the resolved task subject) in `.kimi/apex/task.json`:
-
-```bash
-jq --arg p "init-branch" --arg s "$TASK_SUBJECT" \
-  '.tasks[.current_task].phase = $p | .tasks[.current_task].subject = $s' \
-  .kimi/apex/task.json > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-```
-
-Replace `$TASK_SUBJECT` with the real task description, quoted for the shell.
+Phase: `init-branch`. `.kimi-code/apex/` is harness state, read-only for agents and the lead: never create or write anything there. Kimi has no task-board sync: the lead tracks the phase in its `TodoList`; state the phase in your REPORT and keep tracking in the agents' REPORTs and `docs/decisions.md`.
 
 ## Next Phase
 

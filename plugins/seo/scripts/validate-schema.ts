@@ -49,7 +49,7 @@ function validate(block: unknown, i: number): Issue[] {
   if (!obj["@type"]) out.push({ index: i, type: "?", level: "error", message: "Missing @type" });
   else if (!KNOWN.has(t)) out.push({ index: i, type: t, level: "warning", message: `Uncommon type "${t}"` });
   if (DEPRECATED.has(t)) out.push({ index: i, type: t, level: "warning", message: `"${t}" deprecated` });
-  if (RESTRICTED.has(t)) out.push({ index: i, type: t, level: "info", message: `"${t}" restricted to gov/health` });
+  if (RESTRICTED.has(t)) out.push({ index: i, type: t, level: "info", message: `"${t}" no longer yields a Google rich result (removed May 2026); keep only if Q&A is visible on the page` });
   return out;
 }
 

@@ -11,7 +11,7 @@ related: choosing-framework.md, templates/pest-setup.md
 
 ## Overview
 
-Pest 5 (current 5.2) is an expressive testing framework built on the PHPUnit 13 engine. It
+Pest 5 (current 5.3) is an expressive testing framework built on the PHPUnit 13 engine. It
 requires **PHP 8.4+** and is framework-agnostic (works without Laravel). Upgrading from
 Pest 4 is `"pestphp/pest": "^5.0"` plus `^5.0` for every Pest plugin; PHPUnit 13's
 breaking changes apply (see [phpunit-12.md](phpunit-12.md)).

@@ -10,7 +10,7 @@ priority: medium
 
 ## When to Use
 
-- Leveraging Astro 6/7 stable features (7.1–7.3 additions at the end)
+- Leveraging Astro 6/7 stable features (7.1–7.4 additions at the end)
 - Setting up font optimization
 - Implementing Content Security Policy
 - Using Live Content Collections for real-time data
@@ -72,7 +72,7 @@ Query with `getLiveCollection()` / `getLiveEntry()`.
 
 Astro 7 removed the Go compiler entirely — the Rust compiler is now the only `.astro` file compiler, no flag needed (`experimental.rustCompiler` no longer exists). It also enforces **strict HTML parsing**: unclosed tags and invalid HTML now raise a build error instead of being silently auto-corrected. Audit existing `.astro` templates for unclosed tags before upgrading.
 
-## Astro 7.1 – 7.3 Additions
+## Astro 7.1 – 7.4 Additions
 
 | Version | Feature | Usage |
 |---------|---------|-------|
@@ -86,5 +86,10 @@ Astro 7 removed the Go compiler entirely — the Rust compiler is now the only `
 | 7.2 | Relative logger entrypoint | `logger: { entrypoint: './src/custom-logger.js' }` |
 | 7.3 | Multiple preview servers | `astro preview --ignore-lock` |
 | 7.3 | Logger in extension points | Custom image services (`transform(..., logger)`) and cache providers (`onRequest({ logger }, next)`) receive Astro's logger |
+| 7.4 | Build timings | `astro build --timings` prints where build time goes (phases, Vite plugins, Markdown, rendering, images, integrations) |
+| 7.4 | Separate build/runtime image services | `image: { service: { build: { entrypoint }, runtime: { entrypoint } } }` — `build` for prerendered pages and dev, `runtime` for on-demand pages and the image endpoint; a single service still works |
+| 7.4 | `notFound()` handler | `import { notFound, pages } from 'astro/hono'` (also in `astro/fetch`) — add before `pages()` so custom entrypoints render `404.astro`; the all-in-one `astro()` handler already includes it |
+| 7.4 | Font provider `getFontProperties()` | Optional in Astro 7 (required in Astro 8); built-in providers implement it; Astro warns about weights/subsets a provider cannot serve; the `init()` context gains `fetch()` |
+| 7.4 | Node.js floor raised | Minimum Node 22.22.0 in 7.4.0 (22.23.4 as of 7.4.7), following Astro's Node.js support policy |
 
-Experimental (opt-in, not stable): `experimental.collectionStorage: 'chunked'` (7.1) and `experimental.incrementalBuild` + per-path `cacheKey` in `getStaticPaths()` (7.2).
+Experimental (opt-in, not stable): `experimental.collectionStorage: 'chunked'` (7.1), `experimental.incrementalBuild` + per-path `cacheKey` in `getStaticPaths()` (7.2), `experimental.parallelPrerender` (7.4, renders static pages across CPU cores at the cost of memory) and `experimental.redirectPage` (7.4, custom `src/pages/3xx.astro` for static-build redirects).

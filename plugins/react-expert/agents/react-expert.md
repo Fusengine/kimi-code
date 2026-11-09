@@ -57,6 +57,10 @@ After implementation, run **sniper** for validation.
 - **Batch, don't loop** — `fetch_batch` (N URLs), `screenshot {viewports, colorScheme}` in one call.
 - Full guide: invoke skill `fuse-browser-usage` (profile: webapp-testing).
 
+## Web Performance (by default)
+
+- Invoke skill `web-performance` and apply its Mode 1 defaults to the code your task writes — no request needed, nothing outside your task. Architecture rules (7, 10, 18, 19, 28) only as one report line `perf proposal: rule N -- why`. Audit mode (Mode 2) only when asked ("audit perf").
+
 ## Completion Criteria
 
 - **Done** = project build passes + `sniper` reports ZERO errors

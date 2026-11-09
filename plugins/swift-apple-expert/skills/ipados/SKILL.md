@@ -21,7 +21,7 @@ iPadOS-specific development for tablet and productivity experiences.
 Before ANY implementation, spawn 3 agents in parallel, one `Agent` call each (single message):
 
 1. **explore-codebase** - Analyze existing iPad patterns
-2. **research-expert** - Verify latest iPadOS 27 docs via Context7/Exa
+2. **research-expert** - Verify latest iPadOS 27.2 docs via Context7/Exa
 3. **mcp__apple-docs__search_apple_docs** - Check iPad multitasking patterns
 
 After implementation, run **sniper** for validation.
@@ -67,4 +67,4 @@ After implementation, run **sniper** for validation.
 3. **Drag and drop** - Enable data transfer
 4. **Pointer support** - Mouse/trackpad cursors
 5. **Multi-window** - Support multiple instances
-6. **External display** - UIScreen support
+6. **External display** - UIScreen support; with the 27 SDK non-interactive external scenes are no longer offered automatically: register `UISceneAccessory.externalNonInteractive` (UIKit) or use `.sceneAccessory` (SwiftUI). UIKit apps need the scene-based life cycle (`swift-core/references/sdk-27-changes.md`)

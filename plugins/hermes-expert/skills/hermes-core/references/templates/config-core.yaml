@@ -1,0 +1,54 @@
+# Hermes Agent 0.23.0 - core config.yaml fragment for one profile.
+# Path: ~/.hermes/config.yaml (default profile) or ~/.hermes/profiles/<PROFILE>/config.yaml
+# Every key below is in cli-config.yaml.example or user-guide/configuration.md, except
+# platform_toolsets (source cited inline).
+# Replace <PLACEHOLDERS>. Secrets never go here: use `hermes config set NAME value` (-> .env).
+# After editing: hermes config check && hermes doctor
+
+model:
+  default: "<MAIN_MODEL_ID>"          # confirm the exact id with `hermes model` on this machine
+  provider: "<PROVIDER>"              # auto | openrouter | nous | anthropic | custom | ...
+  # base_url: "<https://endpoint/v1>" # only for provider: custom
+
+fallback_providers:                   # optional LLM fallback chain, tried in order
+  - provider: "<FALLBACK_PROVIDER>"
+    model: "<FALLBACK_MODEL_ID>"
+
+agent:
+  reasoning_effort: "medium"          # none | minimal | low | medium | high | xhigh | max | ultra
+
+timezone: "<Area/City>"               # IANA zone; cron expressions use it
+
+terminal:
+  backend: local                      # see hermes-security before choosing docker/ssh/...
+  cwd: "<ABSOLUTE_WORKSPACE_PATH>"    # absolute; "." = launch directory, not the profile
+  timeout: 180
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+
+# Toolsets PER PLATFORM - what this profile may call on each surface (written by the setup wizard,
+# checked by validate_platform_toolsets, hermes_cli/config.py, 0.23.0). Kanban workers run as `cli`.
+# Every profile (chief, managers, workers) also sets the root list below: kanban_* tools outside a
+# worker run (e.g. a manager chatting on a platform) read it (tools/kanban_tools.py, 0.23.0).
+toolsets: [hermes-cli, kanban]
+platform_toolsets:
+  cli: [clarify, file, kanban, memory, session_search, skills, terminal, todo, web]   # + delegation on managers with employees
+  <platform>: [kanban, memory, session_search, skills, web]   # e.g. discord; read-only roles: no terminal/file
+  # a2a: [a2a, ...]                   # only with the a2a platform (hermes-gateways)
+
+sessions:
+  auto_prune: false                   # explicit on purpose: default changed between v0.22.0 and v0.23.0
+  retention_days: 90
+
+security:
+  redact_secrets: true
+
+updates:
+  check: true
+  pre_update_backup: quick            # quick | full | off
+
+# Subagents: see hermes-delegation templates (delegation:)
+# Scheduled jobs: see hermes-cron templates (cron:)
+# Approvals / sandbox: hermes-security. Messaging, voice: hermes-gateways.

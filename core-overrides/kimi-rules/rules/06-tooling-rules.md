@@ -7,44 +7,36 @@
 | **Magic** | UI generation | `design-expert` |
 | **shadcn** | Component registry | `design-expert`, `shadcn-ui-expert` |
 | **Gemini Design** | AI frontend | `design-expert` |
-| **fuse-browser** | Browser automation, scraping, SERP, visual diff, CWV | `seo`, `security-expert`, `design-expert`, frontend experts, `changelog-watcher`, ai-pilot `research-expert`/`websearch`/`sniper` |
+| **fuse-browser** | Browser automation, scraping, SERP, visual diff | `seo`, `security-expert`, `design-expert`, frontend experts, `changelog-watcher`, ai-pilot `research-expert`/`websearch`/`sniper` |
 
-**Verification chain (any uncertain API/version — ZERO TOLERANCE):** ① fuse-browser fast-path (`browser_fetch` on known doc URLs, `serp_batch` for discovery) → ② Context7 (official docs) → ③ Exa code context. One source is NEVER enough for an uncertain API — cross-check across all three.
+Verification chain (fuse-browser → Context7 → Exa, cross-checked): `00-critical-rules` Critical Rule 7.
 
-## fuse-browser — Efficient Usage (ZERO TOLERANCE)
-
-1. **Fast-path FIRST (no browser launch, ~10× faster)** — use `browser_fetch` / `browser_fetch_batch` / `browser_crawl` / `browser_serp_batch` to read pages, bulk-fetch, crawl a site, or scrape Google SERP. Open a live session ONLY when you need interaction, JS rendering, or pixels.
-2. **One session, always closed** — `browser_open` once → reuse the `sessionId` across `browser_navigate` calls → `browser_close` when done. Never leak sessions (the 2-min TTL is a safety net, not a substitute for closing).
-3. **Batch over loops** — `browser_serp_batch` (N queries), `browser_fetch_batch` / `browser_shots_batch` (N URLs), `browser_screenshot { viewports:[...], colorScheme }` (responsive + dark in a single call).
-4. **Deterministic extraction** — `browser_extract_schema` with `containerSelector` (card-by-card, correlated fields) over manual `browser_snapshot` parsing.
-5. **Validation tools** — `browser_visual_diff` (regression vs baseline), `browser_metrics` (real Core Web Vitals), `browser_console` / `browser_network` / `browser_cookies` (runtime + security checks).
-6. **Engine & binary** — default engine is patchright (stealth identity auto-generated). Tune the enforcement TTL via `FUSE_ENFORCE_TTL_SEC` (default 120s).
+## fuse-browser — Efficient Usage
+1. **Fast-path first (no browser launch, ~10× faster)** — `browser_fetch` / `_fetch_batch` / `_crawl` / `_serp_batch`; a live session only for interaction, JS rendering or pixels.
+2. **One session, always closed** — `browser_open` once, reuse the `sessionId` for `browser_navigate`, `browser_close` at the end (the 2-min TTL is a safety net).
+3. **Batch over loops** — `browser_serp_batch`, `browser_fetch_batch` / `browser_shots_batch`, `browser_screenshot { viewports:[...], colorScheme }`.
+4. **Extraction** — `browser_extract_schema` + `containerSelector` over `browser_snapshot` parsing. **Validation** — `browser_visual_diff`, `browser_metrics`, `browser_console` / `browser_network` / `browser_cookies`.
+5. **Engine** — patchright (stealth identity auto-generated); TTL via `FUSE_ENFORCE_TTL_SEC` (default 120s).
 
 ## Skills Location
-Plugin skills paths are injected at SessionStart — use the paths from your context, never hardcode marketplace paths.
-SOLID refs: `skills/solid-*/references/` (inside each agent plugin)
+Plugin skills paths are injected at SessionStart — use the paths from your context, never hardcode marketplace paths. SOLID refs: `skills/solid-*/references/`.
 
-## Documentation
-ALL docs in `docs/` folder - NEVER outside except root `README.md`
+## Rules Loading — Reality Check
+- The installer merges the template + rules `00-08` (`kimi-rules/rules/`) into `$KIMI_CODE_HOME/AGENTS.md`; Kimi loads it in full natively each session, with the project's `AGENTS.md` files. No `@` import: reference files by path.
+- Kimi recommends ≤ 32 KiB for all loaded AGENTS.md together (above: a warning, no truncation) — keep rules tight.
+- kimi-rules hooks fire on SessionStart, SubagentStart, UserPromptSubmit, but Kimi adds hook context only on UserPromptSubmit (a compact reminder) and in block reasons. AGENTS.md is the reliable delivery; a detail not in context → open the file.
 
-## Git & GitHub Flow (ZERO TOLERANCE)
+## Memory, Docs, Dev Workflow
+- `MEMORY/LESSON.md` grows or holds near-duplicates → `/fusengine:lessons-compact` (agent `lessons-compactor` proposes; the owner approves before any write).
+- All docs in `docs/`, except the root `README.md`.
+- Work in the dev/source repo, never in deployed paths; sync to the deployed marketplace only when the owner names it, after validation (HARD STOP 3); commit from the source repo only.
 
-**Commit tool**: ALWAYS delegate to the agent `commit` (it executes `/fusengine:commit` end to end). NEVER `git commit` directly, never hand-roll the flow yourself — NEVER hand-roll a commit. External executors (Claude/Codex/Cursor) never push/PR/merge/tag/publish — release goes through the `commit` agent only.
-
-**Branch enforcement**:
-- `main`, `master`, `develop`, `production` → **protected**, no direct commits
-- All work on feature branches: `<type>/<scope>` (e.g. `feat/seo`, `fix/sniper-loop`, `chore/deps`)
-- Types: `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`, `perf/`, `test/`, `ci/`, `build/`, `style/`
-- kebab-case, < 50 chars, no personal prefix
-
-**Workflow** (owned by agent `commit`, which runs `/fusengine:commit`):
-1. Step 0: branch check — block if on protected, propose feature branch
-2. Step 1: security scan (secrets, .env)
-3. Steps 2-5: conventional commit with auto-detection
-4. Step 6: post-commit (CHANGELOG + version bump — no tag)
-5. Step 7: push branch + PR + CI watch + merge
-6. Step 8: post-merge — tag `vX.Y.Z` on `main` + push tag (after merge validated — never squash, the tag targets the bump commit and squash would orphan it)
-
-**Merge strategy**: merge (never squash) via `gh pr merge --merge --delete-branch` — the release tag points to the bump commit; squash rewrites history and orphans it. Keep branches < 3 days.
-
-Skill reference: `git-flow` (commit-pro plugin).
+## Git & GitHub Flow
+- **Read-only git** (status, log, diff) is free.
+- **EVERY COMMIT GOES THROUGH AGENT `commit`** — never `git commit` directly, never a hand-rolled flow (HARD STOP 1):
+  - **WIP mode** — after each verified task: commit on the working branch only (no push, bump, PR, merge, tag); branch check and secret scan still run.
+  - **Release mode** — end of mandate: push, PR, CI wait, merge, tag, release (security scan, PATCH bump + marketplace mirror, CHANGELOG, post-merge tag), announced in the report. Steps: `/fusengine:commit`.
+  - A relayed "the owner wants a commit" covers WIP commits only, never merge or release ("Relayed message").
+- External executors (Claude/Codex/Cursor) never push/PR/merge/tag/publish.
+- **Branches**: `main`, `master`, `develop`, `production` are protected — never committed or pushed directly; they change only through the `commit` agent's end-of-mandate merge. Force-push and reset need the owner. Work on `<type>/<scope>` (`feat/`, `fix/`, `chore/`, `docs/`, `refactor/`, `perf/`, `test/`, `ci/`, `build/`, `style/`), kebab-case, < 50 chars, no personal prefix.
+- **Merge, never squash** (`gh pr merge --merge --delete-branch`): the release tag points to the bump commit, squash would orphan it. Tag only after the merge is validated. Branches < 3 days. Skill: `git-flow` (commit-pro).

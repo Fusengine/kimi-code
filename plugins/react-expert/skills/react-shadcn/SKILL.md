@@ -5,7 +5,7 @@ description: shadcn/ui for React with TanStack Form. Use when building UI compon
 
 
 <objective>
-Builds UI components for a React SPA (Vite) with shadcn/ui (CLI 4.21.0) and Tailwind CSS v4 on whichever component base the project uses — Base UI (default for new projects since July 2026), Radix UI (unified `radix-ui` package, fully supported) or React Aria (added July 2026): forms (Field/FieldLabel/FieldError pattern with TanStack Form, never React Hook Form), overlays (Dialog, Sheet, Drawer, Popover, Tooltip), feedback (Alert, Toast on Base UI / Sonner on Radix and Aria, Progress, Skeleton), data display (Table, Badge, Calendar, Chart), and navigation (Sidebar, Command, DropdownMenu).
+Builds UI components for a React SPA (Vite) with shadcn/ui (CLI 4.23.0) and Tailwind CSS v4 on whichever component base the project uses — Base UI (default for new projects since July 2026), Radix UI (unified `radix-ui` package, fully supported) or React Aria (added July 2026): forms (Field/FieldLabel/FieldError pattern with TanStack Form, never React Hook Form), overlays (Dialog, Sheet, Drawer, Popover, Tooltip), feedback (Alert, Toast on Base UI / Sonner on Radix and Aria, Progress, Skeleton), data display (Table, Badge, Calendar, Chart), and navigation (Sidebar, Command, DropdownMenu).
 
 Requires detecting the base from `components.json` before writing any component code, installing components via `bunx --bun shadcn@latest add` (never hand-written) to `@/modules/cores/shadcn/components/ui/`, and covers MCP registry tools (`mcp__shadcn__*`) for discovering components before implementing. This is the plain-React variant of shadcn/ui — for Next.js App Router see nextjs-shadcn instead.
 </objective>

@@ -58,7 +58,7 @@ After implementation, run **sniper** for validation.
 
 ### Cloudflare Astro
 
-Since Astro 6, `astro dev` and `astro preview` run on workerd via the Cloudflare Vite plugin — same runtime as production, so D1, KV, R2 bindings work locally without `platformProxy` (no longer a documented adapter option). Access bindings with `import { env } from 'cloudflare:workers'` (`Astro.locals.runtime` was removed). Astro 7 requires `@astrojs/cloudflare` v14 (v13 peers `astro ^6`) and Node.js 22.12+.
+Since Astro 6, `astro dev` and `astro preview` run on workerd via the Cloudflare Vite plugin — same runtime as production, so D1, KV, R2 bindings work locally without `platformProxy` (no longer a documented adapter option). Access bindings with `import { env } from 'cloudflare:workers'` (`Astro.locals.runtime` was removed). Astro 7 requires `@astrojs/cloudflare` v14 (v13 peers `astro ^6`) and Node.js 22.23.4+ (the Astro 7.4.7 floor).
 
 ### ISR Pattern
 
@@ -96,6 +96,6 @@ On Vercel, enable skew protection to prevent asset mismatches between old client
 
 1. **Match adapter to platform early** - Switching adapters mid-project is painful
 2. **Cloudflare: use v14 for Astro 7** - v13 targets Astro 6; workerd local dev since v13
-3. **Node.js 22.12+ for Astro 7** - `engines.node >=22.12.0`; Node 18/20 unsupported
+3. **Node.js 22.23.4+ for Astro 7** - `engines.node >=22.23.4` (7.4.7); Node 18/20 unsupported
 4. **Per-page prerender** - Mix static and SSR for optimal performance
 5. **Test bindings locally** - `astro dev` on workerd exposes local D1/KV/R2 (no `platformProxy` needed)

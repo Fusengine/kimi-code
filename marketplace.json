@@ -42,6 +42,11 @@
       "source": "./plugins/go-expert"
     },
     {
+      "id": "fuse-hermes",
+      "displayName": "Hermes",
+      "source": "./plugins/hermes-expert"
+    },
+    {
       "id": "fuse-laravel",
       "displayName": "Laravel",
       "source": "./plugins/laravel-expert"

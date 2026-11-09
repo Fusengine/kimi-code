@@ -140,17 +140,9 @@ Required files:
 
 ---
 
-## Update Task Phase
+## Task Phase
 
-At the **start** of this phase, record it (and the resolved task subject) in `.kimi/apex/task.json`:
-
-```bash
-jq --arg p "init-branch" --arg s "$TASK_SUBJECT" \
-  '.tasks[.current_task].phase = $p | .tasks[.current_task].subject = $s' \
-  .kimi/apex/task.json > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-```
-
-Replace `$TASK_SUBJECT` with the real task description, quoted for the shell.
+Phase: `init-branch`. `.kimi-code/apex/` is harness state, read-only for agents and the lead: never create or write anything there. Kimi has no task-board sync: the lead tracks the phase in its `TodoList`; state the phase in your REPORT and keep tracking in the agents' REPORTs and `docs/decisions.md`.
 
 ---
 

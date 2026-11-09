@@ -7,7 +7,7 @@ description: "Use when starting ANY development task -- feature, bug fix, refact
 <objective>
 APEX Methodology drives the full Analyze -> Plan -> Execute -> eLicit -> eXamine workflow for any development task -- new features, bug fixes, refactors, hotfixes. It auto-detects the project type (Laravel, Next.js, React, Swift) and loads the matching framework-specific reference set, then walks through branch creation, brainstorming, codebase analysis, planning, TDD execution, expert self-review (eLicit), functional verification, and sniper validation (eXamine) through to PR creation.
 
-It enforces the project's hard constraints throughout: every file within `FUSE_SOLID_MAX_LINES` (the hook ceiling), interfaces kept out of component files, SOLID principles, and a mandatory sniper pass after every Edit/Write (blocked by PostToolUse hooks until it runs). Three modes control how much is automatic: `--auto` (default, no prompts), `--manual` (step-by-step confirmation), and `--skip-elicit` (bypasses the self-review phase).
+It enforces the project's hard constraints throughout: every file within `FUSE_SOLID_MAX_LINES` (the hook ceiling), interfaces kept out of component files, SOLID principles, and a mandatory sniper pass after every Edit/Write (blocked by PostToolUse hooks until it runs). Two elicitation modes control how much is automatic: `--auto` (default, no prompts) and `--manual` (only when the owner asks: 5 techniques proposed, the owner chooses). eLicit itself is never skipped. The Verify proof lives in the agent REPORT, with an optional record at `docs/verify/<branch-slug>.md` (never under `.kimi-code/`) — see the `verification` skill.
 </objective>
 
 **Current Task:** $ARGUMENTS
@@ -20,11 +20,9 @@ Complete development workflow for features, fixes, and refactoring.
 
 ---
 
-## Step 0: Initialize Tracking (MANDATORY FIRST ACTION)
+## Step 0: Task Tracking (MANDATORY FIRST ACTION)
 
-**BEFORE anything else**, initialize APEX tracking — see `references/init-tracking.md` for the exact command.
-
-This creates `.kimi/apex/task.json` (documentation consultation status) and `.kimi/apex/docs/` (consulted documentation summaries). **The PreToolUse hooks will BLOCK Write/Edit until documentation is consulted.**
+**BEFORE anything else**, set up tracking — see `references/init-tracking.md`. `.kimi-code/apex/` is harness state and read-only: agents and the lead never create or write anything there. Kimi has no task-board sync: the lead tracks phases in its `TodoList`, and tracking lives in the agents' REPORTs and `docs/decisions.md`. **The PreToolUse hooks will BLOCK Write/Edit until documentation is consulted.**
 
 ---
 
@@ -122,7 +120,7 @@ This creates `.kimi/apex/task.json` (documentation consultation status) and `.ki
 
 ## Detailed References (Load on Demand)
 
-- `references/init-tracking.md` — Load when running Step 0 (the exact tracking-init command)
+- `references/init-tracking.md` — Load when running Step 0 (harness state is read-only; the lead's `TodoList`, the agents' REPORTs)
 - `references/phases-explained.md` — Load when you need the full explanation of each APEX phase (A/P/E/V/X)
 - `references/branching-strategy.md` — Load when creating or naming branches
 - `references/commit-conventions.md` — Load when writing commit messages

@@ -93,7 +93,7 @@ Then in components.json: `"aliases": { "components": "#components", "ui": "#comp
 
 Style suffixes: Vega (classic), Nova (compact padding), Maia (soft, rounded), Lyra (boxy, sharp), Mira (dense) — Dec 2025; Luma (rounded, soft elevation) — Mar 2026; Sera (editorial, serif headings, underline controls) — Apr 2026; Rhea (compact Luma) — May 2026.
 
-`init --defaults` precisely: CLI 4.21.0 sets `template=next`, `base=base` (unless `-b` is given) and applies the built-in `nova` preset on that base, so the result is `base-nova`; `-d -b radix` gives `radix-nova`. The docs wording `--preset=nova` and the `--help` wording `--preset=base-nova` describe the same behavior (verified in the 4.21.0 source).
+`init --defaults` precisely: CLI 4.23.0 sets `template=next`, `base=base` (unless `-b` is given) and applies the built-in `nova` preset on that base, so the result is `base-nova`; `-d -b radix` gives `radix-nova`. The docs wording `--preset=nova` and the `--help` wording `--preset=base-nova` describe the same behavior (source verified on 4.21.0, `--help` wording re-checked on 4.23.0).
 
 ## Registry URLs
 

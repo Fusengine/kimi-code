@@ -300,7 +300,7 @@ $url = $user->billingPortalUrl(route('dashboard'));
 
 ## Laravel 13 Notes
 
-Cashier Stripe 16.x (current 16.8) and Cashier Paddle 2.x (current 2.8) are **Laravel 13 compatible**. Points to watch:
+Cashier Stripe 16.x (current 16.9) and Cashier Paddle 2.x (current 2.8) are **Laravel 13 compatible**. Points to watch:
 
 - Webhooks: the new [[laravel-auth]] `PreventRequestForgery` CSRF protection must exclude webhook routes (`stripe/webhook`, `paddle/webhook`) via `preventRequestForgery(except: [...])`
 - `cache.serializable_classes` (default `false` in L13): list the classes explicitly if you cache Cashier objects

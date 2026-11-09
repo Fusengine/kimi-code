@@ -30,5 +30,5 @@ Canonical doctrine for every `mcp__fuse-browser__*` call. Read this skill FIRST,
 | Screenshots, responsive + dark, visual regression | Visual / design | `references/visual-design.md` |
 
 - **No live session for reading** — if you only need text/HTML/data, the answer is always fast-path (profile 1). Never `browser_open` to read.
-- **Validation tools** (any profile): `browser_visual_diff` (regression vs baseline), `browser_metrics` (real Core Web Vitals), `browser_console` / `browser_network` / `browser_cookies` (runtime + security checks).
+- **Validation tools** (any profile): `browser_visual_diff` (regression vs baseline), `browser_metrics` (fuse-browser server counters — probes, durations, queue, RSS; not Core Web Vitals — lab CWV come from Lighthouse via the seo plugin's `scripts/check-cwv.ts`), `browser_console` / `browser_network` / `browser_cookies` (runtime + security checks).
 - **Full design pipeline** is NOT here — for identity → generate → audit, use `design-web` then the `design-review` gate. This skill only covers the raw browser tooling.

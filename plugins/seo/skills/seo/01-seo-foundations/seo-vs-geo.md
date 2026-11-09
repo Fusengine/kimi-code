@@ -99,7 +99,7 @@ Source: Princeton University GEO Research 2025
 
 ### For Both (20% effort)
 - E-E-A-T signals (author, expertise, transparency)
-- Schema markup (Article, FAQ, HowTo)
+- Schema markup (Article, Organization, Product, BreadcrumbList; FAQ and HowTo no longer yield Google rich results)
 - Content quality (accuracy, depth, updates)
 
 ## Decision Framework

@@ -33,7 +33,7 @@ Parallelizable expert for Generative Engine Optimization.
 4. Verify direct H2 questions ("What is X?")
 5. Check structured data (tables, lists) for comparison content
 6. Verify citations with dates + sources
-7. Check `llms.txt` at site root
+7. Check `llms.txt` at site root (optional: no effect on Google Search per Google, 2026-06-15; informational for other LLM tools)
 8. Test JS-free rendering (SSR critical)
 
 ## LLM-Readiness Signals (geo-score.ts)

@@ -229,7 +229,7 @@ $config = config('app.name');
 - **Symfony 7.4 and 8.0** supported side by side (HttpFoundation, Console, Mailer)
 - **PHP 8.3 minimum** (8.2 dropped)
 - **pda/pheanstalk 7.x / 8.x** required for the Beanstalk driver (5.x dropped)
-- Current stable version: **13.33** (September 2026)
+- Current stable version: **13.40** (November 2026)
 
 ### Cache::touch() API
 New method to refresh the TTL without recomputing the value.
@@ -245,11 +245,13 @@ See [[laravel-queues]] for declarative routing per job class (`Queue::route(Proc
 ### Nested model boot → LogicException
 Laravel 13 throws a `LogicException` when a model is instantiated during its own boot (`new static()` inside the model's `boot()` or a trait's `boot*()`). Move that logic out of the boot cycle.
 
-### What's new in 13.x (13.1 → 13.33)
+### What's new in 13.x (13.1 → 13.40)
 - **`php artisan dev`** (13.16+): runs the server, `queue:listen`, Pail and Vite in a single terminal; customizable via `Illuminate\Foundation\DevCommands::artisan('horizon', 'horizon')` in `AppServiceProvider::boot()`, listed via `php artisan dev:list` (requires Node 22.13+)
 - **`#[BindWhen(Impl::class, static fn () => ...)]`** (13.22+): conditional binding declared on the interface — requires **PHP 8.5**
 - Enum (`UnitEnum`) support in most managers (`Cache::store()`, `Queue`, `Log`, `Mail`, `Auth::guard()`…) (13.3 → 13.7)
 - Guzzle 8 supported (13.26+)
+- Queue worker: `queue:work --memory` accepts percentages (13.35+); workers can flush sticky connections between jobs (13.36+); `JobProcessed` (13.34+) and `JobAttempted` (13.39+) events carry the job duration
+- `#[Table(key: false)]` (13.39+) disables the primary key on a model (see [[laravel-eloquent]])
 
 ## Migration Laravel 12 → 13
 

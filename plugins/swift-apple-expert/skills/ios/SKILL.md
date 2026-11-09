@@ -21,7 +21,7 @@ iOS-specific development with XcodeBuildMCP automation tools.
 Before ANY implementation, spawn 3 agents in parallel, one `Agent` call each (single message):
 
 1. **explore-codebase** - Analyze existing iOS patterns
-2. **research-expert** - Verify latest iOS 27 docs via Context7/Exa
+2. **research-expert** - Verify latest iOS 27.2 docs via Context7/Exa
 3. **mcp__XcodeBuildMCP__discover_projs** - Find Xcode projects
 
 After implementation, run **sniper** for validation.
@@ -89,4 +89,5 @@ After implementation, run **sniper** for validation.
 3. **Device testing** - Required before release
 4. **Accessibility IDs** - Enable UI automation
 5. **Screenshots** - Document UI states
-6. **Test on oldest supported** - iOS version compatibility
+6. **Test on oldest supported** - iOS version compatibility (minimum deployment target, independent of the 27.2 SDK you build with)
+7. **27 SDK launch rules** - UIKit apps must use the scene-based life cycle or they fail to launch; Info.plist needs a launch screen key; On Demand Resources is deprecated (Background Assets). Details: `swift-core/references/sdk-27-changes.md`

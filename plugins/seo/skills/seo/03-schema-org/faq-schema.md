@@ -5,14 +5,17 @@ description: FAQ schema markup
 
 # FAQ Schema
 
-**JSON-LD structured data for Frequently Asked Questions (critical for GEO 2026).**
+**JSON-LD structured data for Frequently Asked Questions.**
 
-## Why FAQ Schema Matters
+> **Google status (2026):** the FAQ rich result stopped appearing in Google Search on May 7, 2026 (all sites, not only gov/health). Google removed the FAQ documentation on 2026-06-15. `FAQPage` remains valid schema.org vocabulary, but it no longer produces a Google rich result and must not be promised as one. Sources: https://developers.google.com/search/updates (entries of May 8 and June 15, 2026).
 
-- **Rich Snippets**: Dropdown FAQ in Google SERP
-- **AI Citations**: LLMs extract Q&A pairs
-- **Voice Search**: Optimized for voice assistants
-- **Zero-Click**: Answers displayed directly in SERP
+## When FAQ Schema Still Helps
+
+- **Machine readability**: Q&A pairs are unambiguous for non-Google parsers and LLM tools (no Google-confirmed ranking or citation effect)
+- **Voice / other engines**: some engines may still read the markup
+- **Page quality**: the real value is a visible, well-written Q&A section; markup must mirror it
+
+Do not add it for a Google rich result. Optional, low priority.
 
 ---
 
@@ -86,6 +89,6 @@ description: FAQ schema markup
 ## Testing
 
 ```bash
-https://search.google.com/test/rich-results
-# Check FAQ rich results eligibility
+https://validator.schema.org/
+# Syntax check only: there is no Google FAQ rich result left to test
 ```

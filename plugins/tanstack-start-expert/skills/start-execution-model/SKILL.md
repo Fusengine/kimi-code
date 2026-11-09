@@ -5,7 +5,7 @@ description: Use when deciding where TanStack Start code runs, fixing secret lea
 
 
 <objective>
-Covers TanStack Start's execution model — where code actually runs, described as the single most important concept in Start and the #1 source of AI-generated bugs. Targets @tanstack/react-start v1.168.58.
+Covers TanStack Start's execution model — where code actually runs, described as the single most important concept in Start and the #1 source of AI-generated bugs. Targets @tanstack/react-start v1.169.5.
 
 Every module is isomorphic by default: it runs in BOTH server and client bundles, and route loaders run on both server (SSR) and client (navigation) — so DB access, filesystem, and secrets must live inside createServerFn or createServerOnlyFn, never a bare loader or module scope. process.env must be read per request, not at module scope, because module-level reads can leak into the client bundle and are undefined on edge runtimes that inject env at request time. VITE_/PUBLIC_-prefixed vars are exposed to the client, so server secrets must never carry that prefix.
 
@@ -17,7 +17,7 @@ Do NOT use this skill for initial project setup (use start-core) or for file/dir
 # TanStack Start Execution Model
 
 Understanding **where code runs** is the single most important concept in Start,
-and the #1 source of AI-generated bugs. Targets `@tanstack/react-start` v1.168.58.
+and the #1 source of AI-generated bugs. Targets `@tanstack/react-start` v1.169.5.
 
 > **CRITICAL — everything is isomorphic by default.** Every module runs in BOTH
 > the server and client bundles. Route **loaders run on both** — during SSR AND

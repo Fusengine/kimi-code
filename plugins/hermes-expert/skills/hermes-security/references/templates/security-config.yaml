@@ -1,0 +1,61 @@
+# security-config.yaml - merge into an agent profile's config.yaml (hermes -p <profile> config edit).
+# Hermes Agent 0.23.0. Placeholders in <angle brackets>. Keys verified in user-guide/security.md,
+# user-guide/configuration.md, reference/mcp-config-reference.md, cli-config.yaml.example.
+
+approvals:
+  mode: manual                     # smart (default) | manual | off - never off on an owner-facing profile
+  timeout: 300                     # unanswered = denied
+  cron_mode: deny                  # code default; managers/workers keep it. `approve` = chief (root profile) only, approval-model.md
+  single_query_mode: deny          # Kanban workers run `hermes -p <profile> chat -q` under THEIR profile: keep deny
+  unattended_mode: deny
+  denial_breaker_threshold: 3
+  destructive_slash_confirm: true
+  mcp_reload_confirm: true
+  deny:                            # checked before YOLO / mode off, on every backend; always quote
+    - "git push --force*"
+    - "*curl*|*sh*"
+    - "*msmtp*"
+    - "*sendmail*"
+    - "*swaks*"
+    - "*himalaya*send*"
+    - "*himalaya*move*"
+    - "*himalaya*delete*"
+    - "*hermes send*"
+    - "*chat.postMessage*"
+    # - "<other sending or destructive cli> *"
+
+command_allowlist: []              # every "Always" lands here - review after each session
+
+delegation:
+  subagent_auto_approve: false     # children auto-deny dangerous commands
+
+skills:
+  write_approval: true             # stage agent skill writes
+memory:
+  write_approval: true             # stage agent memory writes
+
+terminal:
+  backend: <local|docker|ssh>      # docker = container boundary (approvals skipped inside)
+  cwd: "<absolute workspace root of this profile>"
+  env_passthrough: []              # NEVER a send credential: cron scripts and the terminal share it
+  # docker_forward_env: []
+  # docker_volumes: ["<host dir>:<container dir>"]
+
+security:
+  redact_secrets: true
+  website_blocklist:
+    enabled: false
+    domains: []
+
+mcp_servers:
+  <external-server>:
+    url: "<https endpoint>"
+    trust: untrusted               # write-capable calls ask every time
+    tools:
+      include: [<read_tool>]
+    # spend_limit: <per-chat budget>
+
+secrets:
+  command:
+    enabled: false
+    command: "<vault cli printing KEY=VALUE lines>"

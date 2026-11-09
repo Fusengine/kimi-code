@@ -118,4 +118,4 @@ let user = sqlx::query_as!(User, "SELECT id, name FROM users WHERE id = $1", id)
 ## Sources (verified)
 
 - tokio.rs/blog/2025-01-01-announcing-axum-0-8-0 — path syntax, Option extractor, `#[async_trait]` removal (fetched 2026-07-05)
-- crates.io — axum 0.8.9, sqlx 0.9.0, tokio 1.53.1, tracing 0.1.44, tower-http 0.7.1 (current at fetch 2026-09-27)
+- crates.io — axum 0.8.9, sqlx 0.9.0, tokio 1.54.1, tracing 0.1.44, tower-http 0.7.1 (current at fetch 2026-11-08)

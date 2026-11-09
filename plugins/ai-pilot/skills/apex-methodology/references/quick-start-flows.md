@@ -17,7 +17,7 @@ description: Full step-by-step APEX flows for Standard Feature, Bug Fix, and Hot
 7. 03.7-verification  → Verify functional resolution against original request
 8. 04-validation      → sniper agent (code quality)
 9. 05-review          → Self-review
-10. 09-create-pr      → gh pr create
+10. 09-create-pr      → pre-PR checks, then hand-off to agent `commit` (full mode: push, PR, CI, `--merge`, tag)
 ```
 
 ## Bug Fix Flow
@@ -30,7 +30,7 @@ description: Full step-by-step APEX flows for Standard Feature, Bug Fix, and Hot
 5. 08-check-test      → Verify test passes + no regressions
 6. 03.7-verification  → Verify original bug is functionally resolved
 7. 04-validation      → sniper agent
-8. 09-create-pr       → gh pr create
+8. 09-create-pr       → pre-PR checks, then hand-off to agent `commit` (full mode)
 ```
 
 ## Hotfix Flow
@@ -41,5 +41,5 @@ description: Full step-by-step APEX flows for Standard Feature, Bug Fix, and Hot
 3. 03.7-verification  → Verify fix resolves the issue
 4. 04-validation      → sniper agent
 5. 08-check-test      → Run tests
-6. 09-create-pr       → Urgent merge
+6. 09-create-pr       → Hand-off to agent `commit` (full mode), flagged urgent in the lead's report
 ```

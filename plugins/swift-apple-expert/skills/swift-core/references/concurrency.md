@@ -1,6 +1,6 @@
 ---
 name: concurrency
-description: Swift 6.4 concurrency with async/await, actors, Sendable, nonisolated(nonsending), async defer, cancellation shields, InlineArray, Span
+description: Swift 6.4.x (6.4.2 ships with Xcode 27.2) concurrency with async/await, actors, Sendable, nonisolated(nonsending), async defer, cancellation shields, InlineArray, Span
 when-to-use: implementing async operations, managing shared state, fixing data races, using Swift 6.2-6.4 features
 keywords: async, await, actor, Sendable, Task, MainActor, nonisolated, TaskGroup, InlineArray, Span
 priority: high
@@ -9,7 +9,9 @@ related: architecture.md, testing.md, performance.md
 
 # Swift 6.4 Concurrency
 
-## Swift 6.4 New Features (Xcode 27)
+## Swift 6.4 New Features (Xcode 27, current 6.4.2)
+
+Language, tooling and library additions beyond concurrency (Swift Build default in SwiftPM, Subprocess 1.0, SE-0521/0522/0491, SE-0508 source break): see [swift-6-4.md](swift-6-4.md).
 
 ### Async calls in `defer` - SE-0493
 `await` is allowed inside `defer`; the call runs to completion before the scope exits.

@@ -43,7 +43,7 @@ Laravel 13 promotes **PHP 8.3 Attributes** as the primary metadata mechanism on 
 | Appends | `#[Appends([...])]` | `protected $appends` |
 | Touches | `#[Touches([...])]` | `protected $touches` |
 | Connection | `#[Connection('mysql')]` | `protected $connection` |
-| Primary key | `#[Table(key: 'uuid', keyType: 'string', incrementing: false)]` | `$primaryKey` / `$keyType` / `$incrementing` |
+| Primary key | `#[Table(key: 'uuid', keyType: 'string', incrementing: false)]` (`#[Table(key: false)]` = no primary key, 13.39+) | `$primaryKey` / `$keyType` / `$incrementing` |
 | Timestamps off | `#[WithoutTimestamps]` | `public $timestamps = false` |
 | Refresh after write (13.33+) | `#[Refreshes(['slug'])]` | — |
 

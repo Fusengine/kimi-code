@@ -1,73 +1,51 @@
 ---
 name: 09-create-pr
-description: Create Pull Request for review and merge
+description: Prepare the PR (pre-PR checks, title, body) and hand the release to the commit agent
 prev_step: references/08-check-test.md
 next_step: null
 ---
 
 # 09 - Create PR
 
-**Create Pull Request for review and merge.**
+**Run the pre-PR checks, prepare the PR title and body, then hand the push / PR / CI / merge / tag to agent `commit` (full mode).** This phase never pushes, opens, merges or tags anything itself.
 
 ## When to Use
 
-- After all validation passes
+- After all validation passes (eLicit, Verify, sniper)
 - After tests pass
-- When ready for code review
+- At the end of the mandate, when the work is ready to leave the working branch
 
 ---
 
-## Pre-PR Checklist
-
-### Required
+## Pre-PR Checklist (run by the APEX agent)
 
 ```text
-□ Branch up-to-date with main
-□ All commits follow conventional format
-□ sniper validation passes
-□ All tests pass
-□ Build succeeds
+□ All commits are WIP commits made by the commit agent (conventional `type(scope):` messages)
+□ sniper validation passes (zero errors)
+□ All tests pass — run the project's test script, not a subset
+□ Build succeeds — run the project's build script
 □ Self-review completed
 □ No console.logs/debug code
 □ No TODO comments unaddressed
 ```
 
+Run each check for real and paste the command + result in your REPORT; a check not run is reported "not verified".
+
 ---
 
-## Sync with Main
+## Hand-off to the Commit Agent (end of mandate)
 
-### Before PR
+This phase never runs `git push`, `gh pr create`, `gh pr merge`, a rebase onto main, a force-push or a tag. Once the checks above are green and the Verify + sniper proofs are in the REPORT, the release goes to agent `commit` in **full mode** (template HARD STOP 1; rules `06-tooling-rules`, Git & GitHub Flow):
 
-```bash
-# Fetch latest
-git fetch origin main
-
-# Rebase (preferred for clean history)
-git rebase origin/main
-
-# OR merge (if team prefers)
-git merge origin/main
-
-# Push updates
-git push origin feature/branch-name
-```
-
-### Resolve Conflicts
-
-```text
-1. Identify conflicting files
-2. Open each file
-3. Resolve conflicts (keep correct code)
-4. Stage resolved files
-5. Continue rebase/merge
-6. Run tests to verify
-```
+- It pushes the working branch, opens the PR, waits for CI, merges with a real `--merge` commit — never squash, which would orphan the release tag's bump commit — then tags post-merge and watches the release run.
+- The lead launches it at the end of the mandate and announces the merge/release in the report to the owner; an APEX sub-agent never launches it and never runs those commands itself.
+- Brief it with: `mode: full`, the PR title and body below, and the files of the mandate.
+- Blocked (merge conflict, secret in the diff) → it stops with `status: blocked`; CI red → `status: left-open`, `ci: failed:<check>`. Either way: fix through the APEX loop (`06-fix-issue.md`), re-run the checks, hand off again.
+- Branch out of date with main → the commit agent's flow handles it; never rebase and force-push a shared branch yourself (force-push needs the owner).
 
 ---
 
 ## PR Title Format
-
-### Conventional Format
 
 ```text
 <type>(<scope>): <description>
@@ -96,7 +74,7 @@ Types:
 
 ---
 
-## PR Description Template
+## PR Body Template (handed to the commit agent)
 
 ```markdown
 ## Summary
@@ -106,7 +84,6 @@ Types:
 - Add protected route wrapper
 
 ## Changes
-<!-- What was added/modified/removed -->
 ### Added
 - `src/hooks/useAuth.ts` - Authentication hook
 - `src/components/LoginForm.tsx` - Login form component
@@ -118,12 +95,10 @@ Types:
 - None
 
 ## Related Issues
-<!-- Link to issues this PR addresses -->
 Closes #123
 Related to #456
 
 ## Test Plan
-<!-- How to test these changes -->
 - [ ] Login with valid credentials → redirects to dashboard
 - [ ] Login with invalid credentials → shows error
 - [ ] Logout → redirects to login page
@@ -144,48 +119,6 @@ Related to #456
 
 ---
 
-## Create PR with gh CLI
-
-### Basic PR
-
-```bash
-gh pr create \
-  --title "feat(auth): add user authentication" \
-  --body "$(cat <<'EOF'
-## Summary
-- Add JWT-based authentication
-- Implement login/logout flows
-
-## Test Plan
-- [ ] Login works with valid credentials
-- [ ] Logout clears session
-
-Closes #123
-EOF
-)"
-```
-
-### With Labels and Reviewers
-
-```bash
-gh pr create \
-  --title "feat(auth): add user authentication" \
-  --body-file .github/PR_TEMPLATE.md \
-  --label "feature,auth" \
-  --reviewer "teammate1,teammate2" \
-  --assignee "@me"
-```
-
-### Draft PR
-
-```bash
-gh pr create --draft \
-  --title "WIP: feat(auth): add user authentication" \
-  --body "Work in progress - do not review yet"
-```
-
----
-
 ## PR Best Practices
 
 ### Size Guidelines
@@ -202,7 +135,6 @@ gh pr create --draft \
 
 ❌ Large PRs (>800 lines)
    - Split into smaller PRs
-   - Or use stacked PRs
 ```
 
 ### Review-Friendly PRs
@@ -219,129 +151,19 @@ gh pr create --draft \
 
 ---
 
-## After PR Created
-
-### Monitor CI
-
-```bash
-# Check PR status
-gh pr view --web
-
-# Check CI runs
-gh pr checks
-
-# View CI logs
-gh run view [run-id]
-```
-
-### Address Review Comments
+## After the Hand-off
 
 ```text
-1. Read all comments first
-2. Respond to each:
-   - "Done" if fixed
-   - "Will address" if need time
-   - Discuss if disagree
-3. Push fixes
-4. Re-request review
-```
-
-### Merge Strategies
-
-```text
-Merge commit (recommended):
-- Preserves all commits
-- Release tag stays attached to the bump commit
-
-Squash and merge:
-- Single commit in main
-- Never use on release branches — squash creates a new SHA and orphans any tag already pointing at the pre-squash bump commit
-
-Rebase and merge:
-- Linear history
-- No merge commit
+□ Commit agent report read: PR URL, CI result, merge commit, tag (`git merge-base --is-ancestor vX.Y.Z main`)
+□ Close related issues / update project board if the mandate asks
+□ Report to the owner: merge/release announced, with the PR URL and tag
 ```
 
 ---
 
-## Merge
+## Task Phase
 
-### Pre-merge Checklist
-
-```text
-□ All CI checks pass
-□ Required reviews approved
-□ No unresolved comments
-□ Branch up-to-date
-□ Ready to merge
-```
-
-### Merge Command
-
-```bash
-# Merge commit (recommended — preserves the release tag's bump commit)
-gh pr merge --merge
-
-# With delete branch
-gh pr merge --merge --delete-branch
-
-gh pr merge --squash   # never on release branches — orphans the tagged bump commit
-```
-
----
-
-## Post-Merge
-
-### Cleanup
-
-```bash
-# Delete local branch
-git checkout main
-git pull origin main
-git branch -d feature/branch-name
-
-# Verify merge
-git log --oneline -5
-```
-
-### Update Related
-
-```text
-□ Close related issues
-□ Update project board
-□ Notify stakeholders
-□ Update documentation if needed
-□ Monitor production (if deployed)
-```
-
----
-
-## PR Checklist
-
-```text
-□ Branch synced with main
-□ Conventional PR title
-□ Description complete
-□ Issues linked
-□ Tests documented
-□ CI passing
-□ Review requested
-□ Ready to merge
-```
-
----
-
-## Update Task Phase
-
-At the **start** of this phase, record it (and mark the task `completed` once the PR is opened) in `.kimi/apex/task.json`:
-
-```bash
-jq --arg p "create-pr" '.tasks[.current_task].phase = $p' .kimi/apex/task.json \
-  > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-# after the PR is created:
-jq '.tasks[.current_task].status = "completed"' .kimi/apex/task.json \
-  > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-```
+Phase: `create-pr`. `.kimi-code/apex/` is harness state, read-only for agents and the lead: never create or write anything there. Kimi has no task-board sync: the lead tracks the phase in its `TodoList` (`done` once the commit agent reports the merge); state the phase in your REPORT and keep tracking in the agents' REPORTs and `docs/decisions.md`.
 
 ---
 
@@ -358,5 +180,5 @@ APEX Workflow Summary:
 06-fix-issue      → Fixed any issues
 07-add-test       → Added tests
 08-check-test     → Verified tests pass
-09-create-pr      → Created and merged PR ✅
+09-create-pr      → Checks green, handed off to the commit agent (PR, CI, merge, tag) ✅
 ```

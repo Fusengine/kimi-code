@@ -1,33 +1,22 @@
-## APEX Auto-Trigger
+## APEX — backbone of every code request
 
-**FULL APEX MANDATORY** — Analyze → Plan → Execute → **eLicit** (adversarial review) → **Verify** (functional check) → **eXamine** (sniper). Gate: **eLicit + Verify BEFORE sniper — NEVER skip**; the `challenger` runs at every eLicit and Verify gate (see 00-critical-rules, Critical Rule 5).
-Task = create/build/feature/refactor/debug/multi-file → **consult APEX skills first**: `apex` / `apex-methodology` (+ `apex-quick` for trivial). The full methodology lives there, not inline here.
+APEX is the COORDINATOR PATH applied to code: Brainstorm (only optional phase) → Analyze → Plan → Execute → **eLicit** (expert self-review) → **Verify** (functional check) → **eXamine** (sniper, then challenger). eLicit + Verify run before sniper; no phase but Brainstorm is ever skipped (`00-critical-rules`). Consult the `/fusengine:apex` command and skill `apex-methodology` first — the methodology lives there.
 
-**USE APEX:** create, implement, add, build, refactor, migrate, new component, multi-file, architecture changes
-**SKIP APEX:** questions, trivial fix (1-3 lines) — the edit is still made by one delegated agent, never by the lead, read-only, simple git
-**Debug/Investigation:** "why", "not working", "bug", "crash", "doesn't load" → ALWAYS use Analyze (explore-codebase + research-expert + domain-expert) — always go through Analyze, never straight to a fix
+**When APEX applies:** any request touching code (create, implement, refactor, migrate, multi-file, architecture, fix). Analyze = `explore-codebase` + `research-expert` + the domain expert in one message (PATH 3).
+**Trivial 1-3 line change:** `/fusengine:apex-quick` — one delegated domain expert; skips Brainstorm, the Analyze trio and the split, but still runs eLicit, a real functional check (executed build/test/run, not linter-only) and sniper.
+**No APEX:** questions, read-only lookups (`explore-codebase` alone), read-only git.
+**Debug** ("why", "not working", "bug", "crash", "doesn't load") always goes through Analyze first, never straight to a fix.
 
-**Shortcuts:** `/fusengine:apex-quick` command (single-expert fast path — skips Brainstorm+Analyze+swarm, linter-only verify) | `--skip-elicit` (skip eLicit, straight to eXamine) — eXamine/sniper itself is NEVER skippable (00-critical-rules)
+| Phase | Skill / owner | When |
+|-------|---------------|------|
+| **Brainstorm** | `brainstorming` agent | New features, major changes; not for trivial fixes or bugs with a clear repro |
+| **Analyze** | explore-codebase + research-expert + domain expert, parallel | Every code request except `apex-quick` |
+| **Plan** | Decompose, distribute, brief (PATH 4-6; `03-agent-teams`) | Always. File size: the hook's `FUSE_SOLID_MAX_LINES` only |
+| **Execute** | Domain expert + `tdd` | Test first (RED), code (GREEN), refactor |
+| **eLicit** | Elicitation techniques, by the executing agent | Always |
+| **Verify** | `verification`, checked by the lead with proof by type (PATH 9) | Always — an unexecuted Verify is a guess |
+| **eXamine** | sniper, then challenger | sniper once all agents finished (single agent: after its change), zero errors; challenger before any "done" |
 
-## Full APEX Flow
+**sniper 7 phases** (`ai-pilot/agents/sniper.md`): explore-codebase ∥ research-expert → grep usages → jscpd DRY scan → [react-effects-audit if `.tsx`/`.jsx`] → linters → fixes → re-run all checks = zero errors.
 
-```
-Brainstorm → Analyze → Plan → Execute (TDD) → eLicit → Verify → eXamine
-```
-
-| Phase | Tool / Agent | When |
-|-------|-------|------|
-| **Brainstorm** | `brainstorming` agent | New features, major changes. Skip for trivial fixes, bug fixes with clear repro |
-| **Analyze** | explore-codebase + research-expert | Always (parallel agents, one message) |
-| **Plan** | TodoList + a written mandate per task — one agent per task (the task, the files it owns, expected output, criteria) | Always. Two tasks that must edit the same file are merged into one task or sequenced; file size is governed by the hook's `FUSE_SOLID_MAX_LINES`, never by a self-set cap |
-| **Execute** | Domain expert + `tdd` | Write test FIRST (RED), then code (GREEN), then refactor |
-| **eLicit** | `challenger` (adversarial review) | Expert self-review, independent verdict |
-| **Verify** | `verification` | Run the actual build/tests — a Verify without execution is a guess |
-| **eXamine** | sniper | Code quality validation (ZERO errors) |
-
-## sniper 7 Phases (aligned with `ai-pilot/agents/sniper.md`)
-explore-codebase ∥ research-expert (parallel) -> grep usages -> jscpd DRY scan -> [react-effects-audit if `.tsx`/`.jsx`] -> run linters -> apply fixes -> re-run ALL checks = **ZERO errors**
-
-## eLicit Modes
-- `--auto`: Auto-detect code type -> challenger verdict CONFIRMED/REFUTED/UNCERTAIN
-- `--manual`: Expert proposes 5 techniques, user chooses
+**eLicit modes:** `--auto` (default) auto-detects the code type and picks techniques; `--manual` only when the owner asks — the expert proposes 5 techniques, the owner chooses.

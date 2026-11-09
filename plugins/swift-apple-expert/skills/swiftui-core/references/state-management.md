@@ -27,7 +27,8 @@ Local view state. Source of truth for simple values.
 - Marked `private` by convention
 - Value types, or an `@Observable` class instance the view owns
 - Creates binding with `$property`
-- Xcode 27+: `@State` is the `State()` macro — a class value is initialized and stored only once
+- Xcode 27+: `@State` is the `State()` macro (back-deploys to iOS 17-aligned OSes) — the initial-value expression is evaluated once, so `@State private var model = Model()` no longer calls `Model.init()` on every view re-instantiation
+- Macro caveats: do not give an initial value at the declaration AND assign it in `init` (assign only in `init`); a struct whose stored members are all private no longer gets the synthesized private `init`; generic arguments may need an explicit type; composing `@State` with other property wrappers or macros is unsupported (Xcode 27 release notes, https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27-release-notes)
 
 ### @Binding
 Two-way connection to state owned elsewhere.

@@ -21,7 +21,7 @@ watchOS-specific development for Apple Watch experiences.
 Before ANY implementation, spawn 3 agents in parallel, one `Agent` call each (single message):
 
 1. **explore-codebase** - Analyze existing watchOS patterns
-2. **research-expert** - Verify latest watchOS 27 docs via Context7/Exa
+2. **research-expert** - Verify latest watchOS 27.2 docs via Context7/Exa
 3. **mcp__apple-docs__search_apple_docs** - Check watchOS patterns
 
 After implementation, run **sniper** for validation.
@@ -88,3 +88,4 @@ Source: https://developer.apple.com/design/human-interface-guidelines/accessibil
 4. **Complications** - Update watch face data
 5. **Background refresh** - Efficient updates
 6. **Test on device** - Simulator differs from hardware
+7. **No new WKExtension code** - `WKExtension` / `WKExtensionDelegate` are deprecated for apps with a minimum deployment target of watchOS 9.2 or later (watchOS 27 release notes, https://developer.apple.com/documentation/watchos-release-notes/watchos-27-release-notes)

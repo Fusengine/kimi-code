@@ -113,11 +113,14 @@ Shared `data-open:` / `data-closed:` / `data-checked:` Tailwind variants (from `
 | Menubar, Navigation Menu | yes | yes | no (`r/styles/aria-nova/{menubar,navigation-menu}.json` → 404) |
 | Questionnaire (styled over `@shadcn/react/questionnaire`) | yes | yes | yes |
 | MessageScroller, Message, Bubble, Attachment, Marker (chat, June 2026) | yes | yes | yes (docs pages exist) |
+| Trace (`add trace`: `Trace`, `TraceLine` with `status="running\|error\|pending"`, `TraceIcon`, `TraceTitle`; agent steps) and Code Block (`add code-block`: `CodeBlock`, `CodeBlockHeader`, `CodeBlockTitle`, `CodeBlockActions`, `CodeBlockCopyButton`, `CodeBlockContent`, `CodeBlockLine`, `CodeBlockFooter`; installs `useHighlightedCode`) (Oct 2026, all 8 styles) | yes | yes (Trace uses `Collapsible`) | yes (`r/styles/aria-nova/{trace,code-block}.json`) |
 | Blocks (`login-01`, sidebar, dashboard...) | yes | yes | yes (e.g. `r/styles/aria-nova/login-01.json`); `add` picks the project base |
 
 Forms (/docs/forms): every guide builds on `Field`, `FieldLabel`, `FieldDescription`, `FieldError`, `FieldGroup` with `data-invalid` on `Field` and `aria-invalid` on the control — React Hook Form (`Controller` + Zod `zodResolver`), TanStack Form (`form.Field` render prop + Zod), Formisch (`Form` + `Field`, Valibot schema), Next.js (Server Action + `useActionState`, server-side Zod).
 
 `@shadcn/react` = unstyled headless primitives (`@shadcn/react/questionnaire`, `@shadcn/react/message-scroller`); `@shadcn/helpers` (`/ai-sdk`, `/tanstack-ai`) = scripted `useChat` conversations for demos/tests, not UI. Typography for rendered markdown: shadcn/typeset (one `typeset.css`, `className="typeset"`).
+
+AI Elements (Oct 2026, `/docs/ai-elements`, 21 patterns: Chat, Prompt Input, Reasoning, Tool, Plan, Subagent, Chain of Thought, Sources, Terminal...) = copy-in compositions of shadcn components, NOT a package and NOT a registry component to `add` by name: read the pattern page (`/docs/ai-elements/<base>/<name>`, also as `.md`) and build it from Trace, Code Block, Message, Message Scroller. Replaces AI SDK Elements (to be deprecated; already-installed copies keep working, each pattern page has a migration prompt).
 
 ---
 

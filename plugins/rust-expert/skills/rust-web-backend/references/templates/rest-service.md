@@ -20,7 +20,7 @@ edition = "2024"
 
 [dependencies]
 axum = "0.8.9"
-tokio = { version = "1.53", features = ["full"] }
+tokio = { version = "1.54", features = ["full"] }
 sqlx = { version = "0.9", features = ["runtime-tokio", "tls-rustls-ring-webpki", "postgres", "macros"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
