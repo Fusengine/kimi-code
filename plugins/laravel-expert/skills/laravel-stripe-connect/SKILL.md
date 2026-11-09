@@ -232,7 +232,7 @@ $needsInfo = !empty($account->requirements->currently_due);
 
 ## Laravel 13 Notes
 
-Stripe Connect (`stripe/stripe-php` 21.x, current 21.3) is **Laravel 13 compatible**; the static methods used here (`\Stripe\Account::create()`, `AccountLink::create()`) still exist. Adjustments:
+Stripe Connect (`stripe/stripe-php` 22.x, current 22.1) is **Laravel 13 compatible**; the static methods used here (`\Stripe\Account::create()`, `AccountLink::create()`) still exist. Adjustments:
 
 - Connect webhook: exclude `connect/webhook` from `PreventRequestForgery` (see [[laravel-auth]])
 - `account.updated` handler: use `Context::add('stripe_account', $accountId)` to propagate into the queue

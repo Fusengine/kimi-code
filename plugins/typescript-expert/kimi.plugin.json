@@ -1,7 +1,7 @@
 {
   "name": "fuse-typescript",
-  "version": "1.0.7",
-  "description": "Expert TypeScript 6.0 for pure TS projects — CLI tools, libraries, scripts, and backends on Node 24 LTS or Bun 1.3, with SOLID principles",
+  "version": "1.0.8",
+  "description": "Expert TypeScript 7.0 for pure TS projects — CLI tools, libraries, scripts, and backends on Node 26 LTS (24 in Maintenance LTS) or Bun 1.4, with SOLID principles",
   "author": {
     "name": "Fusengine",
     "email": "hello@fusengine.ch",
@@ -12,9 +12,9 @@
   "license": "MIT",
   "keywords": [
     "typescript",
-    "typescript-6",
+    "typescript-7",
     "node",
-    "node-24-lts",
+    "node-26-lts",
     "bun",
     "cli",
     "library",
@@ -25,7 +25,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Typescript",
-    "shortDescription": "Expert TypeScript 6.0 for pure TS projects — CLI tools, libraries, scripts, and backends on Node 24 LTS or Bun 1.3, w...",
+    "shortDescription": "Expert TypeScript 7.0 for pure TS projects — CLI tools, libraries, scripts, and backends on Node 26 LTS (24 in Mainte...",
     "developerName": "Fusengine"
   },
   "hooks": [

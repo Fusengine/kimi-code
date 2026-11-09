@@ -27,13 +27,35 @@ related: rendering.md
 | Variants | Private vs public cache |
 
 ## Enable Cache Components
+
+Recommended for every app since 16.4; `create-next-app` enables it by default and it becomes the default in Next.js 17.
 ```typescript
 // next.config.ts
 const nextConfig = {
   cacheComponents: true,
-  partialPrefetching: true,  // 16.3+, optional: Instant Navigations (prefetch one App Shell per route)
+  partialPrefetching: true,  // set explicitly (unset logs a warning); false only while migrating an app that adopted Cache Components before Partial Prefetching
 }
 ```
+Requires the Node.js runtime: remove any `runtime` segment config export (including `'edge'`).
+
+## Keep Routes Static (16.4)
+```typescript
+// app/blog/layout.tsx — build fails if dynamic content enters the stage
+export const ensureStatic = 'navigation'  // 'auto' | 'shell' | 'prefetch' | 'navigation' | false
+```
+Works only with `cacheComponents`; not allowed in Client Components.
+
+## Defer Work to Later Navigation Stages (16.4)
+```typescript
+import { navigation, prefetch } from 'next/cache'
+
+async function Thread({ id }: { id: string }) {
+  await navigation()  // runs on navigation only (excluded from App Shell and per-link prefetch)
+  // await prefetch() // excluded from the App Shell, may run during per-link prefetch
+  return <ThreadView thread={await getThread(id)} />
+}
+```
+Both require `cacheComponents`; wrap the consumer in `<Suspense>` so a fallback renders in the prefetched output.
 
 ## use cache Directive
 ```typescript

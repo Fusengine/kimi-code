@@ -1,5 +1,5 @@
 ---
-description: Auto-generate Pull Request with comprehensive description, test plan, and changelog. Uses gh CLI for creation.
+description: Auto-generate Pull Request with comprehensive description, test plan, and changelog. Hands push and PR creation to agent commit.
 disable-model-invocation: false
 ---
 
@@ -42,15 +42,13 @@ Generate and create a comprehensive Pull Request:
 
    ```
 
-4. **Create PR**:
-   ```bash
-   gh pr create --title "[TITLE]" --body "$(cat <<'EOF'
-   [GENERATED DESCRIPTION]
-   EOF
-   )"
-   ```
+4. **Create PR** (hand-off to the commit agent):
+   This command never pushes, opens a PR, merges, rebases, force-pushes or tags itself. Launch agent `commit` in **full mode** (rules `06-tooling-rules`, Git & GitHub Flow):
+   - Brief it with: `mode: full`, `--no-merge`, the PR title, the generated description as the PR body, and the files of the branch.
+   - It runs its branch check and security scan, commits anything not yet committed, bumps, pushes the branch, opens the PR and waits for CI; no merge here — the merge, tag and release happen at the end of the mandate, announced (D4) (merge is always a real `--merge`, never squash).
+   - Blocked (secret in the diff, protected branch, push rejected) → it stops with `status: blocked`; report it, fix, hand off again. CI red → `status: left-open`, `ci: failed:<check>`: report it, fix, hand off again.
 
-5. **Output PR URL**
+5. **Output PR URL**: the `pr:` line of the commit agent's report.
 
 **Arguments**:
 - $ARGUMENTS will be used as PR title or additional context

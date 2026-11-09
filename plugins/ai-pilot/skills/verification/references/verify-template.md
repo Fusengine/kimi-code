@@ -1,22 +1,20 @@
 # Verification Artifact Template
 
-Write this file to `.kimi/apex/docs/verify-{task-slug}.md` in Step 6. It is the
-disk-persisted proof a gate (hook, sniper, next elicitation pass) can check --
-a context-only "it works" declaration does not survive a session boundary.
+The proof always goes in the agent's REPORT to the lead. When it must also
+survive the session (long mandate, several agents, owner asked for a record),
+write this file to `docs/verify/<branch-slug>.md` in Step 6.
 
-`{task-slug}`: derive per `apex-methodology/references/init-tracking.md`'s
-"Task Slug" section (canonical: `TaskCreate` id, else git branch stripped of
-its `type/` prefix and slugified, else `task-<unix-timestamp>`). Do not
-improvise another derivation: a branch like `feat/use-harness` slugifies to
-`use-harness`, not `feat-use-harness` -- a mismatched slug means gates never
-find the artifact.
+`<branch-slug>`: from the git branch only -- `git branch --show-current`, drop
+the `<type>/` prefix, lowercase, every character outside `a-z0-9` becomes `-`.
+A branch like `feat/use-harness` slugifies to `use-harness`, not
+`feat-use-harness`. Detached HEAD: `detached-<short sha from git rev-parse --short HEAD>`.
 
 ---
 
 ## Template
 
 ```markdown
-# Verification: {task-slug}
+# Verification: <branch-slug>
 
 **Date**: {ISO-8601 UTC}
 **Original request**: {one-line summary}
@@ -54,5 +52,5 @@ or
   actual command output or excerpt.
 - If a criterion cannot be verified (no test harness, no way to reproduce),
   say so explicitly under Verdict instead of marking it ✅.
-- This file is the artifact eXamine (sniper) and any later elicitation pass
-  read to avoid re-deriving verification state from scratch.
+- When written, this file lets eXamine (sniper) and any later elicitation pass
+  avoid re-deriving verification state from scratch.

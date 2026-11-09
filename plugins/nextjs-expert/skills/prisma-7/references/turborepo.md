@@ -89,12 +89,12 @@ my-monorepo/
     "studio": "prisma studio"
   },
   "devDependencies": {
-    "prisma": "^7.10.0",
-    "typescript": "^6.0.3"
+    "prisma": "^7.10.1",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
-    "@prisma/client": "^7.10.0",
-    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.1",
+    "@prisma/adapter-pg": "^7.10.1",
     "pg": "^8.23.0",
     "dotenv": "^18.0.4"
   }

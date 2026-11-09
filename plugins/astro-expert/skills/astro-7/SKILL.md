@@ -5,9 +5,9 @@ description: Use when building Astro 7 sites, choosing an output mode (static/se
 
 
 <objective>
-Configures and explains Astro 7 (stable, 7.3.5) core framework mechanics: file-based routing, the two output modes (`static`/`server`) plus hybrid rendering via per-route `prerender`, middleware for auth/redirects/headers, the Vite Environment API, the single Rust compiler (Go compiler removed, strict HTML parsing), stable Content Security Policy, Live Content Collections, and the built-in Fonts API.
+Configures and explains Astro 7 (stable, 7.4.7) core framework mechanics: file-based routing, the two output modes (`static`/`server`) plus hybrid rendering via per-route `prerender`, middleware for auth/redirects/headers, the Vite Environment API, the single Rust compiler (Go compiler removed, strict HTML parsing), stable Content Security Policy, Live Content Collections, and the built-in Fonts API.
 
-Covers initial project setup and migration from Astro 5/6, including breaking changes and Node 22.12+ requirements. Does not cover Content Layer API details (astro-content), Server Actions (astro-actions), Islands hydration directives (astro-islands), UI framework integrations (astro-integrations), or deployment adapters (astro-deployment) — those live in their own skills.
+Covers initial project setup and migration from Astro 5/6, including breaking changes and Node 22.23.4+ requirements (the floor rose within Astro 7: 22.12 at 7.0, 22.22 at 7.4.0, 22.23.4 at 7.4.7). Does not cover Content Layer API details (astro-content), Server Actions (astro-actions), Islands hydration directives (astro-islands), UI framework integrations (astro-integrations), or deployment adapters (astro-deployment) — those live in their own skills.
 </objective>
 
 # Astro 7 Expert
@@ -94,4 +94,4 @@ After implementation, run **sniper** for validation.
 3. **Middleware for cross-cutting concerns** — Auth, redirects, headers
 4. **No compiler flag needed** — the Rust compiler is the only compiler now (Go removed); watch for strict HTML parsing errors on unclosed tags
 5. **CSP hashes** — Use built-in stable `security.csp` (hash-based, plus the `Astro.csp` runtime API) instead of custom headers
-6. **Node 22.12+ required** — odd-numbered Node versions are unsupported; stay on stable TypeScript tooling, the native `tsgo` compiler can make `astro check`/typecheck fail opaquely (see installation.md)
+6. **Node 22.23.4+ required** (current floor per the install docs; Node 24/26 LTS are fine, odd-numbered versions are unsupported) — and keep `typescript` on 5.x/6.x: `@astrojs/check` 0.9.x peers `^5 || ^6`, so TypeScript 7 (`tsgo`, npm `latest`) is not supported by `astro check` (see installation.md)

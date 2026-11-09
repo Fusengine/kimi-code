@@ -13,11 +13,11 @@ Local `git tag` creation is harmless on its own (it doesn't publish anything); t
 
 ## FULL mode (remote + `gh` OK)
 
-Tag is created **and** pushed by `commit` command Step 8, only after Step 7 confirms the PR actually merged. Verified with `git merge-base --is-ancestor vX.Y.Z main`.
+Tag is created **and** pushed by `commit` command Step 8, only after Step 7 confirms the PR actually merged. The tag goes on the bump commit captured in Step 7.0, only once `git merge-base --is-ancestor <bump_sha> <base_branch>` succeeds (`base_branch` from Step 7.0: `main`, `master` or `develop`).
 
 ## LOCAL mode (no remote) / DEGRADED mode (no `gh` or not authenticated)
 
-There's no PR/merge to wait for, so `commit` command Step 8 tags **locally** right after this skill's bump commit — but never runs `git push origin vX.Y.Z` automatically. The manual push command is printed for the user to run once a remote/`gh` is available and the change has actually landed on `main`.
+There's no PR/merge to wait for, so `commit` command Step 8 tags **locally** right after this skill's bump commit — but never runs `git push origin vX.Y.Z` automatically. The manual push command is printed for the user to run once a remote/`gh` is available and the change has actually landed on the base branch.
 
 ## Standalone Use
 

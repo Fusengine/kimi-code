@@ -1,0 +1,17 @@
+# Hermes Agent 0.23.0 - profile_routes backend (official advanced-delegation plugin required).
+# Each child runs AS a listed profile: that profile's model, credentials, skills,
+# SOUL.md and terminal policy. Only list profiles whose keys you accept to lend.
+# Profiles must exist first: hermes profile create <name> --description "..."
+# Switch: /delegation profile_routes [--now]   Back: /delegation default
+
+delegation:
+  backend: profile_routes
+  max_spawn_depth: 1          # raise to 2 only if a routed profile must spawn its own workers
+  max_concurrent_children: 10
+  backends:
+    profile_routes:
+      profiles:
+        - name: "<PROFILE_1>"
+          description: "<What this profile handles, written as a routing hint for the model>"
+        - name: "<PROFILE_2>"
+          description: "<What this profile handles>"

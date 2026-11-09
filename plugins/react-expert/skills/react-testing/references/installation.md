@@ -25,12 +25,12 @@ related: vitest-config.md, msw-setup.md, templates/basic-setup.md
 
 | Package | Version |
 |---------|---------|
-| `vitest` | 5.0.2+ |
+| `vitest` | 5.1.0+ |
 | `@testing-library/react` | 16.3.3+ |
-| `@testing-library/user-event` | 14.6.7+ |
-| `msw` | 2.15.0+ |
+| `@testing-library/user-event` | 14.6.8+ |
+| `msw` | 2.15.x (pin `msw@^2.15` — templates target 2.x; MSW 3.0 is a breaking migration: handlers import from `msw/http`, `onUnhandledRequest` → `onUnhandledFrame`) |
 
-**Vitest 5** requires Vite ≥ 6.4.0 and Node.js ≥ 22.12.0 (`vite` is now a peer dependency — Yarn users add it explicitly). `clearMocks` defaults to `true`, and `vi.mock` / `vi.hoisted` outside the module top level now throw.
+**Vitest 5** requires Vite ^6.4.0 \|\| ^7.0.0 \|\| ^8.0.0 and Node.js ^22.12.0 \|\| ^24.0.0 \|\| ≥26.0.0 (`vite` is now a peer dependency — Yarn users add it explicitly). `clearMocks` defaults to `true`, and `vi.mock` / `vi.hoisted` outside the module top level now throw.
 
 ---
 

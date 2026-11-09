@@ -140,7 +140,7 @@ Complete search optimization including:
 - ❌ No citations to sources
 - ❌ No statistics / expert quotes
 - ❌ Outdated references (pre-2025)
-- ❌ Missing FAQ schema on Q&A content
+- ❌ Promising a Google FAQ rich result (removed May 2026; FAQPage markup is optional)
 - ❌ No quick answer in first 100 words
 
 ## Final Message = Handoff

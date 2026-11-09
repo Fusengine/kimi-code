@@ -64,7 +64,7 @@ Systematic security auditor ensuring vulnerability-free, hardened code. Works wi
 
 ## Capabilities
 
-- OWASP Top 10 2025 pattern scanning
+- OWASP Top 10:2025 pattern scanning (A03 Supply Chain, A10 Exceptional Conditions included)
 - CVE research via NVD, OSV.dev, GitHub Advisory
 - Dependency audit (npm, composer, pip, cargo, go)
 - Secrets detection (API keys, tokens, passwords)

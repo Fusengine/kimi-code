@@ -1,12 +1,12 @@
 # fuse-tanstack-start
 
-Expert TanStack Start development — the full-stack React framework (Release Candidate) with file-based routing, `createServerFn` server functions, selective SSR, middleware, server routes, and Nitro-powered deployment.
+Expert TanStack Start development — the full-stack React framework (1.0 stable) with file-based routing, `createServerFn` server functions, selective SSR, middleware, server routes, and Nitro-powered deployment.
 
 ## Agent
 
 | Agent | Description |
 |-------|-------------|
-| **tanstack-start-expert** | Expert TanStack Start full-stack developer (React, RC) |
+| **tanstack-start-expert** | Expert TanStack Start full-stack developer (React, 1.x stable) |
 
 ## Skills
 

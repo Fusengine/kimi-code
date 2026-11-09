@@ -5,7 +5,7 @@ Load when: doing Step M3.5 and you need the detection command and the full per-p
 For any plugin **added** in this commit, create its docs page and link it. Doc filenames are abbreviated (e.g. dir `nextjs-expert` → `docs/plugins/nextjs.md`), so match the existing naming in `docs/plugins/`, not the raw dir.
 
 ```bash
-git diff --name-only HEAD~1 HEAD | grep -oE '^plugins/[^/]+' | sort -u   # plugins touched this commit
+git diff --name-only "${base:-$(git hash-object -t tree /dev/null)}" HEAD | grep -oE '^plugins/[^/]+' | sort -u   # plugins touched on this branch ($base from SKILL.md Step 0)
 ```
 
 For each NEW plugin lacking a page:

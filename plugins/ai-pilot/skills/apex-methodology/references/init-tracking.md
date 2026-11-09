@@ -1,47 +1,30 @@
 ---
 name: init-tracking
-description: APEX task-tracking initialization command (Step 0, mandatory first action)
+description: APEX task tracking at Step 0 — harness state, nothing for agents to write
 ---
 
-# Step 0: Initialize Tracking
+# Step 0: Task Tracking
 
-**BEFORE anything else**, run this command to initialize APEX tracking.
+**`.kimi-code/apex/` is harness state and read-only for agents and the lead.** No APEX step creates, initializes or writes anything there — no `mkdir`, no `jq > task.json`.
 
-## Task Slug
+## What to do at Step 0
 
-Every artefact in `.kimi/apex/` (task id, docs, verify/elicit proofs) is keyed on one `{task-slug}`, derived — in order of preference — from:
+1. **Lead** → open the task in its `TodoList` (the real task description) and move it at each phase (`pending` → `in_progress` → `done`). Kimi has no task-board sync: nothing writes `.kimi-code/apex/task.json` for you.
+2. **Agents** → tracking lives in the agents' REPORTs (current phase, files touched, proof) and in `docs/decisions.md` for decisions that must outlive the session.
 
-1. An explicit TaskCreate id, if this task is already tracked on the board (`APEX_TASK_SLUG` below).
-2. The current git branch name, stripped of its `type/` prefix and slugified.
-3. A `task-<unix-timestamp>` fallback when neither is available (detached HEAD, no branch).
+Reading `.kimi-code/apex/task.json` to know the current phase is fine; writing it is not.
 
-```bash
-TASK_SLUG="${APEX_TASK_SLUG:-}"
-[ -z "$TASK_SLUG" ] && TASK_SLUG=$(git branch --show-current 2>/dev/null \
-  | sed -E 's#.*/##; s/[^a-zA-Z0-9]+/-/g; s/^-+|-+$//g' | tr '[:upper:]' '[:lower:]')
-[ -z "$TASK_SLUG" ] && TASK_SLUG="task-$(date +%s)"
-```
+## Proof artefacts (not under `.kimi-code/`)
 
-`{task-slug}` is the same value used everywhere else in APEX: `docs/task-{task-slug}.md` (working notes), `docs/verify-{task-slug}.md` (Verify proof), `docs/elicit-{task-slug}.json` (eLicit proof).
-
-## Command
+The eLicit and Verify proofs live in the agent REPORT; their optional records go to `docs/verify/elicit-<branch-slug>.json` and `docs/verify/<branch-slug>.md` at the repo root. `<branch-slug>` follows the `verification` skill's derivation (`references/verify-template.md`): `git branch --show-current`, drop the `<type>/` prefix, lowercase, every character outside `a-z0-9` becomes `-`; detached HEAD → `detached-<short sha>`.
 
 ```bash
-TASK_SUBJECT="<the real task description>"   # e.g. "$ARGUMENTS" from the invoking command
-NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-mkdir -p .kimi/apex/docs
-jq -n --arg slug "$TASK_SLUG" --arg subject "$TASK_SUBJECT" --arg now "$NOW" \
-  '{current_task: $slug, created_at: $now, tasks: {($slug): {
-      subject: $subject, status: "in_progress", phase: "init-branch",
-      started_at: $now, doc_consulted: {}
-    }}}' > .kimi/apex/task.json
-echo "✅ APEX tracking initialized in $(pwd)/.kimi/apex/ (task: $TASK_SLUG)"
+BRANCH=$(git branch --show-current)
+if [ -n "$BRANCH" ]; then
+  BRANCH_SLUG=$(printf '%s' "${BRANCH#*/}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+else
+  BRANCH_SLUG="detached-$(git rev-parse --short HEAD)"
+fi
 ```
 
-Build the JSON with `jq -n`, not a heredoc: `TASK_SUBJECT` is the user's raw request and commonly contains `"` or `` ` `` — string-interpolating it into a heredoc produces invalid JSON (verified: a heredoc with quotes in the subject breaks `jq .` with a parse error). `jq --arg` escapes it correctly regardless of content.
-
-This creates:
-- `.kimi/apex/task.json` — tracks documentation consultation status, current phase, and subject (see `phase` field, updated by each phase reference — `references/00-init-branch.md` through `references/09-create-pr.md`)
-- `.kimi/apex/docs/` — stores consulted documentation summaries
-
-**The PreToolUse hooks will BLOCK Write/Edit until documentation is consulted.**
+**The PreToolUse hooks will BLOCK Write/Edit until documentation is consulted** — consult it (Analyze phase); the harness records the consultation itself.

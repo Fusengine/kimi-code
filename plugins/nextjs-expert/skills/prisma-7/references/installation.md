@@ -139,7 +139,7 @@ prisma7.config.ts               # Prisma configuration (7.0–7.9: prisma.config
 
 | Dependency | Version |
 |------------|---------|
-| prisma | 7.x (latest stable 7.10.0) |
-| @prisma/client | 7.x (latest stable 7.10.0) |
+| prisma | 7.x (latest stable 7.10.1) |
+| @prisma/client | 7.x (latest stable 7.10.1) |
 | Node.js | ^20.19.0, ^22.12.0 or >= 24.0.0 |
 | TypeScript | >= 5.4.0 (peer range; skill pins 6.x — no Prisma doc/release note confirms TypeScript 7 support yet) |

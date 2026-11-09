@@ -17,8 +17,8 @@ priority: high
 ## Requirements
 
 - `@astrojs/cloudflare` v14 for Astro 7 (v13 targets Astro 6)
-- Astro 7.2+ (peer range of v14)
-- Node.js 22.12+
+- Astro 7.4+ (peer range of v14.4.x; earlier v14 releases accepted Astro 7.2+)
+- Node.js 22.23.4+
 - Wrangler 4.x (peer `^4.125.0`)
 
 ## Install

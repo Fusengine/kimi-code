@@ -37,7 +37,7 @@ description: Pre-publication SEO checklist
 
 - [ ] Schema.org JSON-LD added
 - [ ] Article schema (author, publisher, dates)
-- [ ] FAQ schema (if applicable)
+- [ ] FAQ schema (optional; no Google rich result since May 2026)
 - [ ] Breadcrumb schema
 - [ ] Validated with Rich Results Test
 

@@ -5,7 +5,7 @@ description: Use as the master reference for a full Next.js 16+ stack — Prisma
 
 
 <objective>
-Serves as the master reference tying together the complete recommended Next.js 16+ technology stack: App Router (nextjs-16), Prisma 7 (prisma-7), Better Auth 1.7 (better-auth), shadcn/ui CLI 4.21 (nextjs-shadcn), TanStack Form (nextjs-tanstack-form), Zustand (nextjs-zustand), Tailwind CSS 4, and next-intl 4.14 (nextjs-i18n) — pointing to the right sub-skill for each layer rather than duplicating their content.
+Serves as the master reference tying together the complete recommended Next.js 16+ technology stack: App Router (nextjs-16), Prisma 7 (prisma-7), Better Auth 1.7 (better-auth), shadcn/ui CLI 4.23 (nextjs-shadcn), TanStack Form (nextjs-tanstack-form), Zustand (nextjs-zustand), Tailwind CSS 4, and next-intl 4.14 (nextjs-i18n) — pointing to the right sub-skill for each layer rather than duplicating their content.
 
 Documents forbidden substitutions (NextAuth.js instead of Better Auth, Pages Router instead of App Router, React Hook Form instead of TanStack Form, Client-Components-by-default instead of Server-first) and provides reference material for stack-decision justification, SOLID module structure, cross-part integration points, and project bootstrapping. Does not cover core framework API details like routing internals, caching, or proxy.ts — those live in nextjs-16.
 </objective>
@@ -40,10 +40,10 @@ After implementation, run **sniper** for validation.
 
 | Layer | Technology | Skill Reference |
 |-------|------------|-----------------|
-| Framework | Next.js 16 (App Router, stable 16.3) | `nextjs-16` |
+| Framework | Next.js 16 (App Router, stable 16.4; Cache Components recommended, default in Next.js 17) | `nextjs-16` |
 | Database ORM | Prisma 7 (stable 7.10; 8.0 is RC only) | `prisma-7` |
 | Authentication | Better Auth 1.7 | `better-auth` |
-| UI Components | shadcn/ui CLI 4.21.0 | `nextjs-shadcn` |
+| UI Components | shadcn/ui CLI 4.23.0 | `nextjs-shadcn` |
 | Forms | TanStack Form | `nextjs-tanstack-form` |
 | State | Zustand | `nextjs-zustand` |
 | Styling | Tailwind CSS 4 | `tailwindcss` |

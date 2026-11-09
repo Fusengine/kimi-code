@@ -1,6 +1,6 @@
 ---
 name: node-track
-description: Pure Node.js tsconfig track with native type stripping (Node 24 LTS / Node 26)
+description: Pure Node.js tsconfig track with native type stripping (Node 26 LTS / Node 24 LTS)
 keywords: nodenext, type stripping, erasableSyntaxOnly, rewriteRelativeImportExtensions, node
 ---
 

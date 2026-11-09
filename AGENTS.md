@@ -1,6 +1,6 @@
 # AGENTS.md — Fusengine Kimi Code plugin suite (source repo)
 
-Source repository of the 24 Kimi Code plugins deployed to
+Source repository of the 25 Kimi Code plugins deployed to
 `~/.kimi-code/plugins/managed/fusengine/`. The GLOBAL Fusengine rules
 (identity, non-negotiables, APEX, swarms, SOLID/DRY, tooling) are NOT restated
 here: they are installed into `~/.kimi-code/AGENTS.md` from
@@ -10,7 +10,7 @@ fences, and loaded natively every session. Keep this file project-only.
 
 ## Layout
 
-- `plugins/` — the 24 plugins (source of truth for manifests, skills, agents)
+- `plugins/` — the 25 plugins (source of truth for manifests, skills, agents)
 - `core-overrides/kimi-rules/` — canonical kimi-rules plugin, copied over
   `plugins/kimi-rules/` by `scripts/apply-core-overrides.ts`
 - `core-overrides/ai-pilot-agents/` — hand-optimized ai-pilot agents
@@ -22,7 +22,7 @@ fences, and loaded natively every session. Keep this file project-only.
 
 ## Commands
 
-- `bun run validate` — manifest/shim/MCP checks, must end `24/24 plugins valid.`
+- `bun run validate` — manifest/shim/MCP checks, must end `25/25 plugins valid.`
 - `bun test scripts/tests/` — installer e2e tests
 - `bun run install` — install/update into `$KIMI_CODE_HOME` (dry-run by default)
 - `bun run scripts/apply-core-overrides.ts` — re-sync core-overrides → plugins

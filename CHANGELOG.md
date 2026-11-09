@@ -3,6 +3,14 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.25] - 2026-11-09
+
+### Changed
+- workflow: port of the claude-plugins coordinator workflow — lead-orchestration (the lead orchestrates, at most 6 concurrent agents) across kimi-rules, KIMI template, AGENTS.md, commit agent and APEX skills/commands; expert agents and skills updated; new ai-pilot skill `web-performance` wired into the 5 web experts; `browser_metrics` docs fixed incl. core-overrides (server counters, not Core Web Vitals) (ai-pilot 1.2.44, astro-expert 1.0.15, commit-pro 1.2.28, kimi-rules 1.39.23, laravel-expert 1.2.9, nextjs-expert 1.1.25, php-expert 1.0.8, react-expert 1.0.22, rust-expert 1.0.8, security-expert 1.0.19, seo 1.0.13, shadcn-expert 1.0.19, solid 1.0.20, swift-apple-expert 1.1.21, tailwindcss 1.1.12, tanstack-start-expert 1.0.7, typescript-expert 1.0.8).
+
+### Added
+- plugin: new `hermes-expert` (fuse-hermes 1.0.0, 13 skills) registered in marketplace.json, root manifest and hook routes — suite now 25 plugins, 211 skills, 71 hook rules.
+
 ## [1.0.24] - 2026-10-12
 
 ### Changed

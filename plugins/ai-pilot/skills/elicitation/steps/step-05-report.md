@@ -53,15 +53,16 @@ Sniper needs to know:
 
 ### 3. Persist the Artifact
 
-Write `.kimi/apex/docs/elicit-{task-slug}.json` -- see `SKILL.md`'s
-"Artifact Contract" section for `{task-slug}` derivation. This is what a
-later elicitation pass diffs against instead of restarting technique
-selection from scratch; the markdown report below is for the human handoff,
-this file is for the machine one.
+The verdict always goes in the agent REPORT (section 4 below). When it must
+survive the session, also write `docs/verify/elicit-<branch-slug>.json` --
+see `references/artifact-contract.md` for the `<branch-slug>` derivation.
+This file is what a later elicitation pass diffs against instead of
+restarting technique selection from scratch; the markdown report is for the
+human handoff, this file is for the machine one.
 
 ```json
 {
-  "task_slug": "{task-slug}",
+  "branch_slug": "<branch-slug>",
   "generated_at": "{ISO-8601 UTC}",
   "mode": "manual|auto",
   "expert_agent": "{expert_name}",
@@ -82,7 +83,7 @@ Rules:
 - `verdict: "pass"` only if Step 3 found no finding, or Step 4 fixed every
   finding for that technique. `"deferred"` for Low-severity items left for
   sniper. `"fail"` if a Critical/High finding could not be corrected.
-- On a later pass for the same `{task-slug}`, load this file in Step 0: skip
+- On a later pass on the same branch, load this file in Step 0: skip
   re-applying any technique already `"pass"`, re-apply `"fail"`/`"deferred"`
   ones first.
 
@@ -176,7 +177,7 @@ Before marking elicitation complete:
 - [ ] Medium issues fixed or justified deferral
 - [ ] Low issues documented for sniper
 - [ ] Report generated
-- [ ] `elicit-{task-slug}.json` written to `.kimi/apex/docs/`
+- [ ] Verdict in the agent REPORT (and `docs/verify/elicit-<branch-slug>.json` when persisted)
 - [ ] Handoff context provided
 
 ---

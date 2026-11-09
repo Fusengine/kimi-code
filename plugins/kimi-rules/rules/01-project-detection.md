@@ -20,5 +20,4 @@ Scan: plugin agents (paths injected at SessionStart — never hardcode marketpla
 | **No match** | `coder` (built-in) |
 
 Priority: Custom > Framework (Next.js > Astro > Laravel > TanStack Start > React) > Language (TypeScript, PHP, Swift, Rust, Go) > UI library > `coder`
-**FORBIDDEN:** the generic `coder` when a domain agent exists.
-**RIGHT AGENT FOR EACH TASK** — route by Project Detection (domain-expert); never a generic agent when a domain expert exists.
+Right agent for each task: route by this table (COORDINATOR PATH 5); never the generic `coder` or another generic agent when a domain expert exists.

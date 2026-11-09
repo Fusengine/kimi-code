@@ -1,6 +1,6 @@
 ---
 description: APEX Methodology - The systematic Analyze-Plan-Execute-eLicit-eXamine approach for intelligent development. Reduces hallucination and defect risk through mandatory parallel research, self-review, and validation gates.
-argument-hint: "[--auto] [--skip-elicit] <task description>"
+argument-hint: "[--auto | --manual] <task description>"
 ---
 
 # APEX: Analyze-Plan-Execute-eLicit-eXamine
@@ -79,8 +79,9 @@ Implement the solution:
 
 **Modes**:
 - `--auto`: Auto-select techniques based on code type (default)
-- `--manual`: Present 5 techniques, user chooses
-- `--skip-elicit`: Skip directly to eXamine
+- `--manual`: Only when the owner asks for it — present 5 techniques, owner chooses
+
+eLicit is never skipped: it always runs before Verify and eXamine.
 
 **Workflow**:
 ```

@@ -11,21 +11,32 @@ next_step: references/nextjs/05-review.md
 
 ## Gate — Required Proof Artefacts
 
-**Validation does NOT start** unless both proof files exist on disk for the current task. A claim made in context is not proof — only the file on disk is:
+**Validation does NOT start** without both proofs for the current task, each carried by the agent REPORT or by its optional record under `docs/verify/` (slug from the git branch, per the `verification` skill — never under `.kimi-code/`, which is harness state):
+- **eLicit** — the Step 5 report (techniques, verdicts, evidence, challenge verdict), or `docs/verify/elicit-<branch-slug>.json`.
+- **Verify** — one evidence item per criterion + the challenge verdict, or `docs/verify/<branch-slug>.md`.
+
+A claim made in context is not proof — only the reported evidence or the record is:
 
 ```bash
-TASK_SLUG=$(jq -r '.current_task' .kimi/apex/task.json)
-if [ ! -f ".kimi/apex/docs/elicit-${TASK_SLUG}.json" ]; then
-  echo "❌ Missing .kimi/apex/docs/elicit-${TASK_SLUG}.json — go back to references/nextjs/03.5-elicit.md first."
-  exit 1
+BRANCH=$(git branch --show-current)
+if [ -n "$BRANCH" ]; then
+  BRANCH_SLUG=$(printf '%s' "${BRANCH#*/}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+else
+  BRANCH_SLUG="detached-$(git rev-parse --short HEAD)"
 fi
-if [ ! -f ".kimi/apex/docs/verify-${TASK_SLUG}.md" ]; then
-  echo "❌ Missing .kimi/apex/docs/verify-${TASK_SLUG}.md — go back to the verification skill (runs between eLicit and eXamine) first."
-  exit 1
+if [ -f "docs/verify/elicit-${BRANCH_SLUG}.json" ]; then
+  echo "✅ eLicit record: docs/verify/elicit-${BRANCH_SLUG}.json"
+else
+  echo "ℹ️ No docs/verify/elicit-${BRANCH_SLUG}.json — the eLicit verdict must be in the agent REPORT. No such report → go back to references/nextjs/03.5-elicit.md first."
+fi
+if [ -f "docs/verify/${BRANCH_SLUG}.md" ]; then
+  echo "✅ Verify record: docs/verify/${BRANCH_SLUG}.md"
+else
+  echo "ℹ️ No docs/verify/${BRANCH_SLUG}.md — the Verify proof must be in the agent REPORT (evidence per criterion + challenge verdict). No such report → go back to the verification skill first."
 fi
 ```
 
-Only once both checks pass does this phase proceed.
+Only once both proofs are present does this phase proceed.
 
 ---
 
@@ -289,14 +300,9 @@ Red flags:
 
 ---
 
-## Update Task Phase
+## Task Phase
 
-At the **start** of this phase, record it in `.kimi/apex/task.json`:
-
-```bash
-jq --arg p "validation" '.tasks[.current_task].phase = $p' .kimi/apex/task.json \
-  > .kimi/apex/task.json.tmp && mv .kimi/apex/task.json.tmp .kimi/apex/task.json
-```
+Phase: `validation`. `.kimi-code/apex/` is harness state, read-only for agents and the lead: never create or write anything there. Kimi has no task-board sync: the lead tracks the phase in its `TodoList`; state the phase in your REPORT and keep tracking in the agents' REPORTs and `docs/decisions.md`.
 
 ---
 

@@ -13,15 +13,17 @@ npm install -D tailwindcss @tailwindcss/postcss
 npm install -D tailwindcss @tailwindcss/vite
 # or for CLI
 npm install -D tailwindcss @tailwindcss/cli
-# or for webpack / Turbopack loaders (since v4.2)
+# or for webpack (since v4.2)
 npm install -D tailwindcss @tailwindcss/webpack
+# or for Next.js Turbopack (since v4.3.4)
+npm install -D tailwindcss @tailwindcss/turbopack
 ```
 
-Current stable: `tailwindcss` 4.3.3 (all `@tailwindcss/*` packages share the version).
+Current stable: `tailwindcss` 4.3.5 (all `@tailwindcss/*` packages share the version).
 
 ### webpack loader (since v4.2)
 
-`@tailwindcss/webpack` compiles Tailwind directly as a webpack loader instead of going through `postcss-loader` + `@tailwindcss/postcss` (reported >2x faster on large projects; also usable from Turbopack via its webpack-loader compatibility layer).
+`@tailwindcss/webpack` compiles Tailwind directly as a webpack loader instead of going through `postcss-loader` + `@tailwindcss/postcss` (reported >2x faster on large projects).
 
 ```js
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -38,6 +40,22 @@ module.exports = {
   },
 };
 ```
+
+### Turbopack loader (since v4.3.4)
+
+`@tailwindcss/turbopack` is a dedicated Turbopack loader for Next.js (alternative to `@tailwindcss/postcss`, which remains the setup in the official Next.js guide). Register it in `next.config.js`:
+
+```js
+module.exports = {
+  turbopack: {
+    rules: {
+      "*.css": { loaders: ["@tailwindcss/turbopack"] },
+    },
+  },
+};
+```
+
+Do not add `as: '*.css'` (removed from the package README in 4.3.5: it breaks CSS modules). Options: `base` (directory scanned for candidates, default `process.cwd()`) and `optimize` (default `true` in production; `true` or `{ minify: true }`). Import Tailwind in the CSS as usual: `@import "tailwindcss";`.
 
 ## Browser Support
 

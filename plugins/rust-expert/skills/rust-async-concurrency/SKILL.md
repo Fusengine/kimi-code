@@ -119,4 +119,4 @@ do_async_work().await;
 
 - tokio.rs/tokio/tutorial — shared-state, spawning, channels (fetched 2026-07-05)
 - rust-lang.github.io/async-fundamentals-initiative/roadmap.html — AFIT status
-- crates.io — tokio 1.53.1 (current at fetch 2026-09-27)
+- crates.io — tokio 1.54.1 (current at fetch 2026-11-08)

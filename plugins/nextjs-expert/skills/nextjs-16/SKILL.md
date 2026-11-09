@@ -5,7 +5,7 @@ description: Use when building Next.js 16 apps — Turbopack, App Router, Cache 
 
 
 <objective>
-Covers Next.js 16 core framework mechanics (current stable: 16.3): Turbopack (default bundler; Webpack remains available via the `--webpack` opt-out flag), the App Router (nested layouts, parallel/intercepting routes, file conventions like page.tsx/layout.tsx/loading.tsx/error.tsx/not-found.tsx), Cache Components (`use cache`, `cacheTag()`, `cacheLife()`, `revalidateTag()`), `proxy.ts` (full Node.js runtime, replaces Edge middleware), and React 19 integration (View Transitions, new hooks).
+Covers Next.js 16 core framework mechanics (current stable: 16.4): Turbopack (default bundler; Webpack remains available via the `--webpack` opt-out flag), the App Router (nested layouts, parallel/intercepting routes, file conventions like page.tsx/layout.tsx/loading.tsx/error.tsx/not-found.tsx), Cache Components (`use cache`, `cacheTag()`, `cacheLife()`, `revalidateTag()`), `proxy.ts` (full Node.js runtime, replaces Edge middleware), and React 19 integration (View Transitions, new hooks).
 
 Documents the critical v15→v16 breaking changes: proxy.ts replacing middleware.ts, Turbopack as the default for `next dev`/`next build`, `cacheComponents` replacing the removed `experimental.ppr` flag, required React 19, and async `params`/`searchParams`. This skill covers core framework APIs only — for assembling a full production stack (Prisma, Better Auth, shadcn/ui, Zustand together) use nextjs-stack instead; for a pure React SPA without `next.config.*` use the react-expert skills instead.
 </objective>
@@ -60,11 +60,16 @@ After implementation, run **sniper** for validation.
 4. **React 19 required** - New hooks and View Transitions API
 5. **Async params/searchParams** - Must await dynamic route params
 
-### New in 16.1 – 16.3 (see [upgrade.md](references/upgrade.md))
+### Cache Components: the recommended model (16.4+)
+
+Since 16.4 Cache Components is recommended for **every** Next.js app, `create-next-app` enables it by default, and it becomes the default in Next.js 17. Data fetching is dynamic by default; opt in to caching per component/function with `'use cache'`. Use the two-flag setup (`cacheComponents: true` + `partialPrefetching: true`, set `partialPrefetching` explicitly) for new code and when touching caching/data fetching; see [cache-components.md](references/cache-components.md). Existing apps: `npx next@canary upgrade --agent=latest` (see [upgrade.md](references/upgrade.md)).
+
+### New in 16.1 – 16.4 (see [upgrade.md](references/upgrade.md))
 
 - **16.1** - Turbopack filesystem cache on by default for `next dev`; `next dev --inspect`
 - **16.2** - `transitionTypes` prop on `<Link>`, `next start --inspect`, Adapters API stable
 - **16.3** - `catchError` + `retry()` error recovery (stable), `next/root-params`, `import.meta.glob`, Turbopack build cache on by default, opt-in Instant Navigations (`partialPrefetching` with `cacheComponents`)
+- **16.4** - Cache Components recommended for all apps (on by default in `create-next-app`, default in Next.js 17); `ensureStatic` route segment config; `navigation()` / `prefetch()` from `next/cache`; `next upgrade --agent` + `experimental.agentUpgrade`; React 19.3 (stable View Transitions, Fragment Refs, `browser()`); lazy server HMR, smaller Turbopack disk cache and production bundles
 
 ---
 
@@ -96,6 +101,7 @@ All components are Server Components by default. Use `'use client'` directive on
 
 ### Caching Strategy
 
+- **Default** - With `cacheComponents` on (recommended, 16.4+) data fetching is dynamic; wrap uncached runtime access in `<Suspense>` and cache explicitly
 - **`use cache`** - Mark async functions for caching
 - **`cacheTag()`** - Tag cached data for targeted revalidation
 - **`cacheLife()`** - Control cache duration (stale, revalidate, expire)

@@ -77,6 +77,8 @@ Profile with Instruments. Use lazy loading, avoid heavy work in view body.
 | XCTest, async tests, mocking | [testing.md](references/testing.md) |
 | String Catalogs, localization | [i18n.md](references/i18n.md) |
 | Instruments, optimization | [performance.md](references/performance.md) |
+| Swift 6.4.x: Swift Build/SwiftPM, Subprocess 1.0, language additions | [swift-6-4.md](references/swift-6-4.md) |
+| Xcode/OS 27.0-27.2: breaking changes, deprecations, 27.1/27.2 notes | [sdk-27-changes.md](references/sdk-27-changes.md) |
 
 ---
 

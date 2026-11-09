@@ -43,7 +43,7 @@ After: Run **sniper** for validation.
 | Base color swap | `{runner} shadcn@latest migrate base-color --to zinc` | /docs/cli#migrate-base-color |
 | Keep Radix in non-interactive CI init | `{runner} shadcn@latest init -b radix` (default base is now `base`) | changelog 2026-07-base-ui-default |
 
-`{runner} shadcn@latest migrate --list` prints the available migrations (CLI 4.21.0: cn, icons, base-color, radix, rtl).
+`{runner} shadcn@latest migrate --list` prints the available migrations (CLI 4.23.0: cn, icons, base-color, radix, rtl).
 
 ## Critical Rules
 

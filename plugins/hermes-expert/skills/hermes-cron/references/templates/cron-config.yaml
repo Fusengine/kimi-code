@@ -1,0 +1,14 @@
+# Hermes Agent 0.23.0 - cron block + timezone for config.yaml. Replace <PLACEHOLDERS>.
+# Verify: hermes config get cron.<key> ; hermes doctor ; hermes cron status
+
+timezone: "<Area/City>"              # IANA; every cron expression without --timezone uses it
+
+cron:
+  model: "<CRON_MODEL_ID>"           # fleet default for unpinned jobs; chat /model no longer moves them
+  model_provider: "<PROVIDER>"
+  preflight: true                    # validate keys/skills/delivery/MCP before any LLM call
+  catch_up_missed: true              # false = skip past-grace misses after planned downtime
+  max_parallel_jobs: <N>             # optional cap on concurrent cron runs; remove the line to leave unset
+  failure_repeat_alert_hours: 6      # reminder for a still-broken job; 0 = alert on every failing run
+
+# Approval behavior for unattended cron runs lives under approvals.* (see hermes-security).

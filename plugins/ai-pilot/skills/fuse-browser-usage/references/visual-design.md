@@ -46,7 +46,7 @@ browser_visual_diff { baseline: "home-v1.png", current: "http://localhost:4321/"
 ## Rules
 
 - One `browser_screenshot` with a `viewports` array + `colorScheme` beats N single shots. Same for `shots_batch` over looping.
-- `browser_metrics` gives real Core Web Vitals (LCP/INP/CLS) when the visual check also needs performance evidence.
+- `browser_metrics` returns fuse-browser server counters, not Core Web Vitals; when the visual check also needs performance evidence, run Lighthouse (the seo plugin's `scripts/check-cwv.ts`).
 
 ## Full design pipeline — do NOT reimplement here
 

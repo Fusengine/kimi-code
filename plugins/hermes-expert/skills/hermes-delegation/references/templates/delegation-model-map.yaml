@@ -1,0 +1,23 @@
+# Hermes Agent 0.23.0 - model_map backend (official advanced-delegation plugin required).
+# The model picks an option per task from names + descriptions only.
+# delegation.model / delegation.provider are ignored while this backend is active.
+# Switch: /delegation model_map [--now]   Back: /delegation default
+
+delegation:
+  backend: model_map
+  max_spawn_depth: 1
+  max_concurrent_children: 10
+  backends:
+    model_map:
+      options:
+        - name: fast
+          description: "Cheap and quick: lookups, summaries, extraction, simple edits."
+          provider: "<PROVIDER_A>"
+          model: "<CHEAP_MODEL_ID>"
+          reasoning_effort: low
+        - name: deep
+          description: "Slow and careful: multi-step analysis, decisions, hard debugging."
+          provider: "<PROVIDER_B>"
+          model: "<STRONG_MODEL_ID>"
+          reasoning_effort: high
+      default: fast

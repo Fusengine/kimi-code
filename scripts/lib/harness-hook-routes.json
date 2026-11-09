@@ -21,6 +21,8 @@
 
 	{ "plugin": "go-expert", "event": "PreToolUse", "matcher": "Write|Edit", "scope": "core" },
 	{ "plugin": "go-expert", "event": "PostToolUse", "matcher": "", "scope": "core" },
+	{ "plugin": "hermes-expert", "event": "PreToolUse", "matcher": "Write|Edit", "scope": "core" },
+	{ "plugin": "hermes-expert", "event": "PostToolUse", "matcher": "", "scope": "core" },
 	{ "plugin": "laravel-expert", "event": "PreToolUse", "matcher": "Write|Edit", "scope": "core" },
 	{ "plugin": "laravel-expert", "event": "PostToolUse", "matcher": "", "scope": "core" },
 	{ "plugin": "nextjs-expert", "event": "PreToolUse", "matcher": "Write|Edit", "scope": "core" },

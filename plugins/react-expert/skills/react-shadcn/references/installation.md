@@ -11,7 +11,7 @@ related: configuration.md
 # shadcn/ui Installation (Vite)
 
 Sources: https://ui.shadcn.com/docs/installation/vite, https://ui.shadcn.com/docs/cli,
-https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default (CLI checked: `shadcn@4.21.0 init --help`).
+https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default (CLI checked: `shadcn@4.23.0 init --help`).
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ bunx --bun shadcn@latest init -t vite -b aria
 bunx --bun shadcn@latest init -t vite --preset <CODE>
 ```
 
-Useful init flags (4.21.0): `-t, --template` (`next`, `start`, `vite`, `react-router`,
+Useful init flags (4.23.0): `-t, --template` (`next`, `start`, `vite`, `react-router`,
 `laravel`, `astro`), `-b, --base`, `-p, --preset`, `-n, --name`, `--monorepo`, `--rtl`,
 `--pointer`, `--no-css-variables`, `-d, --defaults` (= `--template=next --preset=base-nova`).
 `create` is an alias of `init`. There is no `--base-color` flag in v4 — base colors come from
@@ -129,7 +129,7 @@ Radix and React Aria projects use `add sonner`. See [toast.md](toast.md).
 The old `form` component (React Hook Form wrapper) is not used — forms use `field`
 with TanStack Form ([field-patterns.md](field-patterns.md)).
 
-`add` flags (4.21.0): `-y`, `-o, --overwrite`, `-c, --cwd`, `-a, --all`, `-p, --path`,
+`add` flags (4.23.0): `-y`, `-o, --overwrite`, `-c, --cwd`, `-a, --all`, `-p, --path`,
 `-s, --silent`, `--dry-run`, `--diff [path]`, `--view [path]`.
 
 ## Verify

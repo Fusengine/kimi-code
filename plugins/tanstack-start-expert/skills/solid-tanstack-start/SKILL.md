@@ -5,7 +5,7 @@ description: Use when organizing TanStack Start code, splitting oversized routes
 
 
 <objective>
-Applies SOLID principles and clean architecture to TanStack Start v1.168.58 projects: source files within `FUSE_SOLID_MAX_LINES` and split by responsibility when cohesion drops, types declared only in src/interfaces/ (never inline in a route or component file), JSDoc on every export, and a modular directory structure built around the Start route tree.
+Applies SOLID principles and clean architecture to TanStack Start v1.169.5 projects: source files within `FUSE_SOLID_MAX_LINES` and split by responsibility when cohesion drops, types declared only in src/interfaces/ (never inline in a route or component file), JSDoc on every export, and a modular directory structure built around the Start route tree.
 
 Establishes the isomorphic/server-only boundary as an architectural concern: DB access, secrets, and filesystem work must sit behind createServerFn or createServerOnlyFn, never inside a bare loader.
 
@@ -16,7 +16,7 @@ Do NOT use this skill for initial framework setup (use start-core), for the serv
 
 # SOLID TanStack Start
 
-SOLID and clean architecture for **TanStack Start v1.168.58** projects (Vite plugin
+SOLID and clean architecture for **TanStack Start v1.169.5** projects (Vite plugin
 `tanstackStart()`, file-based routes in `src/routes/`, server functions via
 `createServerFn`). Start code is isomorphic by default — architecture must make
 the server/client boundary explicit.

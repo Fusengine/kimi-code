@@ -5,9 +5,9 @@ description: Use when an expert agent self-reviews and self-corrects code after 
 
 
 <objective>
-Elicitation lets an expert agent self-review and self-correct its own code before external validation, drawing on 75 elicitation techniques across 12 categories (code quality, security, performance, architecture, testing, docs, UX, data, concurrency, integration, observability, maintainability) inspired by BMAD-METHOD. Three modes control how techniques are chosen: MANUAL (default, user picks from 5 presented options), AUTO (auto-detected and applied silently), and SKIP (bypass straight to sniper).
+Elicitation lets an expert agent self-review and self-correct its own code before external validation, drawing on 75 elicitation techniques across 12 categories (code quality, security, performance, architecture, testing, docs, UX, data, concurrency, integration, observability, maintainability) inspired by BMAD-METHOD. Two modes control how techniques are chosen: AUTO (default, auto-detected and applied silently) and MANUAL (only when the owner asks: the owner picks from 5 presented options). eLicit is never skipped.
 
-It sits between Execute and eXamine in the APEX flow, scores itself against an exit threshold (>=90% proceed, 70-89% document gaps, <70% iterate), and persists its findings to `.kimi/apex/docs/elicit-{task-slug}.json` so a later pass can diff against prior verdicts instead of restarting.
+It sits between Execute and Verify/eXamine in the APEX flow, scores itself against an exit threshold (>=90% proceed, 70-89% document gaps, <70% iterate), reports its verdict in the agent REPORT, and — when it must persist — writes `docs/verify/elicit-<branch-slug>.json` so a later pass can diff against prior verdicts instead of restarting.
 </objective>
 
 # Elicitation Skill
@@ -18,22 +18,19 @@ Enable expert agents to **self-review and self-correct** their code before exter
 
 ---
 
-## 3 Execution Modes
+## 2 Execution Modes
 
-### Mode 1: MANUAL (default)
-```
-Expert presents 5 relevant techniques → User chooses → Expert applies
-```
-
-### Mode 2: AUTO (--auto)
+### Mode 1: AUTO (default, --auto)
 ```
 Expert auto-detects code type → Auto-selects techniques → Applies silently
 ```
 
-### Mode 3: SKIP (--skip)
+### Mode 2: MANUAL (--manual, only when the owner asks)
 ```
-Skip elicitation → Go directly to sniper validation
+Expert presents 5 relevant techniques → Owner chooses → Expert applies
 ```
+
+There is no skip mode: eLicit runs on every APEX task, before Verify and eXamine.
 
 ---
 
@@ -41,14 +38,11 @@ Skip elicitation → Go directly to sniper validation
 
 **After Execute phase, expert runs:**
 ```bash
-# Manual mode (default)
+# Auto mode (default, no prompts)
 > Apply elicitation skill
 
-# Auto mode (no prompts)
-> Apply elicitation skill --auto
-
-# Skip self-review
-> Apply elicitation skill --skip
+# Manual mode (owner asked to choose)
+> Apply elicitation skill --manual
 ```
 
 ---
@@ -149,9 +143,10 @@ A-nalyze → P-lan → E-xecute → [ELICIT] → X-amine
 
 ## Artifact Contract
 
-Step 5 persists `.kimi/apex/docs/elicit-{task-slug}.json` so a later pass
-diffs against prior verdicts instead of restarting from scratch. Full
-contract, `{task-slug}` derivation, and JSON schema: `references/artifact-contract.md`.
+Step 5 puts the verdict in the agent REPORT and, when it must persist, writes
+`docs/verify/elicit-<branch-slug>.json` so a later pass diffs against prior
+verdicts instead of restarting from scratch. Full contract, `<branch-slug>` derivation, and JSON
+schema: `references/artifact-contract.md`.
 
 ---
 
@@ -164,4 +159,4 @@ contract, `{task-slug}` derivation, and JSON schema: `references/artifact-contra
 | 2 | `steps/step-02-select-techniques.md` | Select techniques |
 | 3 | `steps/step-03-apply-review.md` | Apply review |
 | 4 | `steps/step-04-self-correct.md` | Self-correct |
-| 5 | `steps/step-05-report.md` | Generate report, persist `elicit-{task-slug}.json` |
+| 5 | `steps/step-05-report.md` | Generate report, optionally persist `docs/verify/elicit-<branch-slug>.json` |

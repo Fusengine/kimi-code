@@ -25,7 +25,7 @@ next_step: steps/step-01-analyze-code.md
 - Expert agent that coded
 
 **Output for next steps:**
-- `{elicit_mode}`: manual | auto | skip
+- `{elicit_mode}`: auto | manual
 - `{code_files}`: list of modified files
 - `{code_type}`: detected code category
 - `{expert_agent}`: which expert coded
@@ -39,10 +39,11 @@ next_step: steps/step-01-analyze-code.md
 ```
 Check arguments:
 - --auto   → {elicit_mode} = "auto"
-- --manual → {elicit_mode} = "manual"
-- --skip   → {elicit_mode} = "skip"
-- (none)   → {elicit_mode} = "manual" (default)
+- --manual → {elicit_mode} = "manual" (only when the owner asked for it)
+- (none)   → {elicit_mode} = "auto" (default)
 ```
+
+There is no skip mode: eLicit is never skipped.
 
 ### 2. Load Execute Context
 
@@ -57,8 +58,8 @@ Gather from previous phase:
 ### 3. Load Prior Artifact (if present)
 
 ```
-Derive {task-slug} (see SKILL.md's Artifact Contract).
-IF .kimi/apex/docs/elicit-{task-slug}.json exists:
+Derive <branch-slug> (see references/artifact-contract.md).
+IF docs/verify/elicit-<branch-slug>.json exists:
   → Load it as {prior_artifact}
   → In Step 2, techniques already "pass" in {prior_artifact} are
     deselected by default; "fail"/"deferred" ones are re-selected first
@@ -73,14 +74,6 @@ Required for next steps:
 ✓ At least 1 file modified
 ✓ Code type identifiable
 ✓ Expert agent known
-```
-
-### 5. Handle Skip Mode
-
-```
-IF {elicit_mode} == "skip":
-  → Output: "Elicitation skipped. Proceeding to sniper validation."
-  → END (do not continue to step 1)
 ```
 
 ---

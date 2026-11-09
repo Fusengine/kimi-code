@@ -1,22 +1,24 @@
 ---
 name: node24-features
-description: Node 24 LTS / Node 26 runtime features relevant to TypeScript projects — watch, node:test, ESM
+description: Node 26 LTS / Node 24 LTS runtime features relevant to TypeScript projects — watch, node:test, ESM
 when-to-use: Load when configuring watch mode, native test runner, or ESM resolution on Node 24 or 26
 keywords: node24, node26, watch, node-test, esm, eval, stdin, input-type, temporal
 related: type-stripping.md
 ---
 
-# Node 24 LTS / Node 26 Features for TypeScript
+# Node 26 LTS / Node 24 LTS Features for TypeScript
 
 ## Overview
 
-Node 24 LTS ("Krypton") ships native TypeScript stripping as a stable (since v24.12.0),
-default-on feature and pairs it with runtime tooling that removes most reasons to add extra
-dependencies for scripts, CLIs, and internal tools.
+Node 26 LTS ("Lithium") and Node 24 LTS ("Krypton") ship native TypeScript stripping as a
+stable (since v24.12.0), default-on feature and pair it with runtime tooling that removes most
+reasons to add extra dependencies for scripts, CLIs, and internal tools.
 
-Release lines (as of 2026-09): **Node 24** is Active LTS until 2026-10-20, then Maintenance
-until 2028-04-30. **Node 26** is Current (latest v26.10.0) and enters LTS on 2026-10-28.
-Starting with Node 27, every major becomes LTS (annual cycle).
+Release lines (as of 2026-11): **Node 26 "Lithium"** is Active LTS since 2026-10-28 (latest
+v26.13.0), Maintenance from 2027-10-20, end of life 2029-04-30 — the default target for new
+projects. **Node 24 "Krypton"** is Maintenance LTS since 2026-10-20, end of life 2028-04-30.
+Node 25 is end-of-life. Node 27 is in alpha (LTS 2027-10-20); starting with Node 27, every
+major becomes LTS (annual cycle).
 
 Source: https://nodejs.org/api/typescript.html + https://nodejs.org/api/cli.html +
 https://nodejs.org/en/about/previous-releases + https://github.com/nodejs/Release (schedule.json)

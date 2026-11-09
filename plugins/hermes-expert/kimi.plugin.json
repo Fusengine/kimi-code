@@ -1,0 +1,43 @@
+{
+  "name": "fuse-hermes",
+  "version": "1.0.0",
+  "description": "Expert Nous Research Hermes Agent 0.23+ — config.yaml, SOUL.md / .hermes.md, profiles, delegation, cron, gateways, security, plus chief-of-staff operating patterns driven by a universal profile.yaml",
+  "author": {
+    "name": "Fusengine",
+    "email": "hello@fusengine.ch",
+    "url": "https://github.com/fusengine"
+  },
+  "repository": "https://github.com/fusengine/agents",
+  "homepage": "https://github.com/fusengine/agents",
+  "license": "MIT",
+  "keywords": [
+    "hermes",
+    "hermes-agent",
+    "nous-research",
+    "ai-agent",
+    "delegation",
+    "cron",
+    "gateway",
+    "chief-of-staff",
+    "assistant",
+    "automation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Hermes",
+    "shortDescription": "Expert Nous Research Hermes Agent 0.23+ — config.yaml, SOUL.md / .hermes.md, profiles, delegation, cron, gateways, se...",
+    "developerName": "Fusengine"
+  },
+  "hooks": [
+    {
+      "event": "PreToolUse",
+      "matcher": "Write|Edit",
+      "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" core"
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "",
+      "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" core"
+    }
+  ]
+}

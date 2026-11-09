@@ -23,7 +23,7 @@ Laravel follows semantic versioning with annual major releases. Choose versions 
 | **Minor** (13.1) | Weekly | No |
 | **Patch** (13.0.1) | As needed | No |
 
-**Constraint**: Always use `^13.0` in `composer.json` (not `13.*`). Current stable: **13.33** (Sept 2026).
+**Constraint**: Always use `^13.0` in `composer.json` (not `13.*`). Current stable: **13.40** (Nov 2026).
 
 ---
 

@@ -239,7 +239,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
 ## Laravel 13 Notes
 
 ### Stack FuseCore L13
-- **Laravel 13** (stable 13.33) + **PHP 8.3** minimum
+- **Laravel 13** (stable 13.40) + **PHP 8.3** minimum
 - **React 19** + **TypeScript 7** (module frontend side) — TS 7.0 has no compiler API: typescript-eslint (peer `typescript <6.1.0`) requires the alias `"typescript": "npm:@typescript/typescript6@^6.0.2"` + `"@typescript/native": "npm:typescript@^7.0.2"` (`npx tsc` = 7.0)
 - **Inertia 3** (`inertiajs/inertia-laravel` ^3.0) for the React ↔ modules bridge
 

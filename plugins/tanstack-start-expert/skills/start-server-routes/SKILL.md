@@ -5,7 +5,7 @@ description: Use when building raw HTTP endpoints in TanStack Start with the ser
 
 
 <objective>
-Covers server routes — raw HTTP endpoints defined alongside app routes in src/routes/ using the server property on createFileRoute (from @tanstack/react-router), returning standard Response objects. Targets @tanstack/react-start v1.168.58.
+Covers server routes — raw HTTP endpoints defined alongside app routes in src/routes/ using the server property on createFileRoute (from @tanstack/react-router), returning standard Response objects. Targets @tanstack/react-start v1.169.5.
 
 Documents the handler context ({ request, params, context, pathname, next }), dynamic ($id) and splat ($) params from the file name, per-handler middleware via createHandlers versus route-wide server.middleware, and how the same file can serve as both a UI route (component) and an API route (server) at once.
 
@@ -21,7 +21,7 @@ Do NOT use this skill for internal type-safe RPC callable only from your own app
 Server routes are raw HTTP endpoints defined alongside app routes in
 `src/routes/`. They use the `server` property on `createFileRoute` (imported
 from `@tanstack/react-router`) and return standard `Response` objects. This skill
-targets `@tanstack/react-start` **v1.168.58**.
+targets `@tanstack/react-start` **v1.169.5**.
 
 ## Agent Workflow (MANDATORY)
 

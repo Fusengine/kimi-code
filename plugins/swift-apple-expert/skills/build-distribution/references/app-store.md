@@ -26,9 +26,10 @@ related: app-icons.md
 - Valid code signature
 - Privacy manifest (PrivacyInfo.xcprivacy)
 - App icons (all variants)
-- Launch screen
-- Correct deployment target
-- Built with Xcode 26+ and the iOS/iPadOS/tvOS/visionOS/watchOS 26 SDK or later (current upload minimum; Xcode 27 ships the 27 SDKs)
+- Launch screen (mandatory in `Info.plist` for iOS/iPadOS apps built with the 27 SDK: `UILaunchStoryboardName`, `UILaunchStoryboards`, `UILaunchScreen` or `UILaunchScreens`)
+- Correct deployment target (never 27.1 for macOS/watchOS/tvOS/visionOS with Xcode 27.2: the SDK lists it by mistake)
+- Built with Xcode 26+ and the iOS/iPadOS/tvOS/visionOS/watchOS 26 SDK or later (current upload minimum per https://developer.apple.com/news/upcoming-requirements/, checked 2026-11-08; Xcode 27.2 ships the 27.2 SDKs)
+- 27 SDK builds: scene-based life cycle required (UIKit apps), `ARCHS_STANDARD` excludes `x86_64` at macOS 27.0+ deployment, On Demand Resources deprecated (Background Assets). See swift-core `references/sdk-27-changes.md`
 
 **Metadata:**
 - App name and subtitle

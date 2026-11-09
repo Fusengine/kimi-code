@@ -31,6 +31,13 @@ related: middleware-migration.md
 bunx @next/codemod@canary upgrade latest
 ```
 
+## Agent-Guided Upgrade (16.4, experimental)
+```bash
+npx next@canary upgrade --agent=latest          # policies: security (default) | latest | experimental-future
+npx next@canary upgrade apps/web --agent=latest # from a workspace root, pass the app dir
+```
+Picks the target release and prepares migration guides, codemods and verification steps for the coding agent. `next@canary` runs the newest upgrade tooling even on older apps. Cannot be combined with `--revision`; without `--agent`, `next upgrade` runs the interactive codemod flow. Reminders during `next dev`/`next build`: `experimental: { agentUpgrade: 'security' | 'latest' | false }` (default `'security'`). Cache Components / Partial Prefetching adoption Skills: https://nextjs.org/docs/app/guides/ai-agents
+
 ## Manual Upgrade
 ```bash
 bun add next@latest react@latest react-dom@latest
@@ -106,17 +113,19 @@ const nextConfig = {
 ```typescript
 // next.config.ts
 const nextConfig = {
-  cacheComponents: true,  // Enable use cache directive
+  cacheComponents: true,      // Enable use cache directive (recommended since 16.4; default in Next.js 17)
+  partialPrefetching: true,   // set explicitly alongside cacheComponents
 }
 ```
 
-## Minor Releases 16.1 – 16.3
+## Minor Releases 16.1 – 16.4
 
 | Version | Change |
 |---------|--------|
 | 16.1 | Turbopack filesystem cache stable and on by default for `next dev`; `next dev --inspect`; experimental bundle analyzer |
 | 16.2 | `<Link transitionTypes={['slide']}>` (App Router, View Transitions); `next start --inspect`; Adapters API (`adapterPath`) stable; Server Function logging + hydration diff in dev overlay; experimental `unstable_catchError` / `unstable_retry` |
 | 16.3 | `catchError` (from `next/error`) and the `retry()` prop in `error.tsx` stable; `next/root-params`; `import.meta.glob` in Turbopack; Turbopack filesystem cache on by default for `next build`; `next build` can type-check with TypeScript 7; opt-in Instant Navigations (`partialPrefetching`, requires `cacheComponents`); experimental `turbopackRustReactCompiler` and `useOffline` |
+| 16.4 | Cache Components recommended for every app (`create-next-app` default, Next.js 17 default); `ensureStatic` segment config; `navigation()` / `prefetch()` (`next/cache`); `next upgrade --agent` and `experimental.agentUpgrade`; React 19.3; lazy server HMR, 20–25% smaller Turbopack disk cache, shorter production CSS Module class names and export mangling; experimental agent feedback, lazy dynamic imports, worker threads, disk cache GC |
 
 ### Root params (16.3)
 ```typescript

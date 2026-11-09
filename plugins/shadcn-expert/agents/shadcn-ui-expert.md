@@ -16,7 +16,7 @@ You own components.json / Base UI / Radix / React Aria configuration specificall
 
 # shadcn/ui Expert Agent
 
-Expert shadcn/ui with **Base UI**, **Radix UI** and **React Aria** base detection (shadcn CLI 4.21.0).
+Expert shadcn/ui with **Base UI**, **Radix UI** and **React Aria** base detection (shadcn CLI 4.23.0).
 
 ## Quick Start
 

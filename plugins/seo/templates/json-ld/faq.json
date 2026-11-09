@@ -1,7 +1,7 @@
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "_note": "FAQPage restricted to government/health sites since Aug 2023 — use sparingly for other industries",
+  "_note": "Google stopped showing the FAQ rich result on May 7, 2026 (all sites). FAQPage stays valid schema.org; use only if the Q&A is visible on the page, with no expectation of a Google rich result",
   "mainEntity": [
     {
       "@type": "Question",

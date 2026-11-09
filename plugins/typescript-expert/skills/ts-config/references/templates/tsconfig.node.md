@@ -1,6 +1,6 @@
 ---
 name: tsconfig.node
-description: Complete pure-Node.js tsconfig.json with native type stripping (Node 24 LTS / 26, TS 7.0)
+description: Complete pure-Node.js tsconfig.json with native type stripping (Node 26 LTS / 24 LTS, TS 7.0)
 keywords: tsconfig, node, nodenext, type stripping, template, erasableSyntaxOnly
 ---
 

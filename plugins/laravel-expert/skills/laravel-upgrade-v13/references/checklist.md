@@ -62,11 +62,12 @@ Use this as a copy-paste TODO in your branch description or PR.
 
 ## Phase 6: Deploy
 
-- [ ] Open PR with `gh pr create`
+- [ ] Hand off to agent `commit` in **full mode** (`mode: full`), launched by the lead at the end of the mandate and announced — never run `gh pr create`, `gh pr merge` or `git tag` yourself
+- [ ] Commit agent pushes the branch and opens the PR
 - [ ] CI green (all checks)
 - [ ] Code review approved
-- [ ] Merge with `gh pr merge --merge --delete-branch`
-- [ ] Tag release: `git tag v<your-version>`
+- [ ] Commit agent merges with a real `--merge` commit (never squash — it would orphan the release tag's bump commit)
+- [ ] Commit agent tags the release `v<your-version>` post-merge only
 - [ ] Deploy to staging — observe 24h
 - [ ] Deploy to production
 - [ ] Monitor error rates for 48h post-deploy
@@ -74,7 +75,7 @@ Use this as a copy-paste TODO in your branch description or PR.
 ## Rollback Plan
 
 If issues post-deploy:
-1. Revert merge commit on main
+1. Revert the merge commit on main — protected branch: needs the owner's go, then a revert PR handed to agent `commit` (full mode, real `--merge`); never force-push or reset main
 2. Re-deploy previous version
 3. Restore database backup if migrations applied
 4. Document incident, file follow-up ticket

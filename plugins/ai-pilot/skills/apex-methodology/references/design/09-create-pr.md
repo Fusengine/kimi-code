@@ -1,23 +1,34 @@
 ---
 name: 09-create-pr
-description: Create Pull Request with design documentation
+description: Prepare a PR with design documentation and hand the release to the commit agent
 prev_step: references/design/08-sniper-check.md
 next_step: null
 ---
 
 # 09 - Create PR (Design)
 
-**Create PR with visual documentation.**
+**Prepare the PR with visual documentation, then hand the push / PR / CI / merge / tag to agent `commit` (full mode).** This phase never pushes, opens, merges or tags anything itself.
 
 ## When to Use
 
 - After sniper validation (08-sniper-check)
 - When design work is complete
-- Ready for review
+- At the end of the mandate, when the work is ready to leave the working branch
 
 ---
 
-## PR Template
+## Hand-off to the Commit Agent (end of mandate)
+
+This phase never runs `git push`, `gh pr create`, `gh pr merge`, a rebase onto main, a force-push or a tag. Once the validation checklist below is green and the Verify + sniper proofs (screenshots included) are in the REPORT, the release goes to agent `commit` in **full mode** (template HARD STOP 1; rules `06-tooling-rules`, Git & GitHub Flow):
+
+- It pushes the working branch, opens the PR (against the repo's base branch, e.g. `develop`), waits for CI, merges with a real `--merge` commit — never squash, which would orphan the release tag's bump commit — then tags post-merge and watches the release run.
+- The lead launches it at the end of the mandate and announces the merge/release in the report to the owner; an APEX sub-agent never launches it and never runs those commands itself.
+- Brief it with: `mode: full`, the PR title and body below, screenshot paths, the base branch, and the files of the mandate.
+- Blocked (merge conflict, secret in the diff) → it stops with `status: blocked`; CI red → `status: left-open`, `ci: failed:<check>`. Either way: fix, re-validate, hand off again.
+
+---
+
+## PR Body Template (handed to the commit agent)
 
 ```markdown
 ## Summary
@@ -60,34 +71,6 @@ Brief description of design changes (1-2 sentences).
 
 ---
 
-## Creating PR
-
-```bash
-# Push branch
-git push -u origin design/UI-001-hero-section
-
-# Create PR
-gh pr create \
-  --title "design(hero): add hero section with animations" \
-  --base develop \
-  --assignee @me \
-  --body "$(cat <<'EOF'
-## Summary
-Added new HeroSection component with glassmorphism and staggered animations.
-
-## Design Coherence
-- Uses existing color tokens
-- Matches typography scale
-- Follows animation patterns
-
-## Screenshots
-[Add screenshots here]
-EOF
-)"
-```
-
----
-
 ## Title Convention
 
 ```text
@@ -116,20 +99,16 @@ Examples:
 
 ### Tools
 
-```bash
-# macOS screenshot
-Cmd + Shift + 4
-
-# Browser DevTools
-- Responsive mode for mobile
-- Emulate color scheme for dark mode
+```text
+- macOS screenshot: Cmd + Shift + 4
+- Browser DevTools: responsive mode for mobile, emulate color scheme for dark mode
 ```
 
 ---
 
 ## Review Request
 
-### Tag Reviewers
+### Reviewers to Name in the Brief
 
 ```text
 - Design lead (for visual approval)
@@ -139,27 +118,23 @@ Cmd + Shift + 4
 
 ---
 
-## Validation Checklist
+## Validation Checklist (before the hand-off)
 
 ```text
-[ ] Branch pushed
-[ ] PR created with template
-[ ] Screenshots attached
+[ ] PR title and body ready (template above)
+[ ] Screenshots captured and paths in the REPORT
 [ ] Design coherence documented
 [ ] A11y checklist completed
-[ ] Reviewers assigned
+[ ] Reviewers named for the commit agent's brief
 ```
 
 ---
 
-## Post-Merge
+## After the Hand-off
 
-```bash
-# Switch back to develop
-git checkout develop && git pull
-
-# Delete local branch
-git branch -d design/UI-001-hero-section
+```text
+[ ] Commit agent report read: PR URL, CI result, merge commit, tag
+[ ] Report to the owner: merge/release announced, with the PR URL and tag
 ```
 
 ---

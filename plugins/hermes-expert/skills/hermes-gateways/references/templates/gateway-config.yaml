@@ -1,0 +1,67 @@
+# gateway-config.yaml - merge into ONE profile's config.yaml (hermes -p <profile> config edit).
+# Hermes Agent 0.23.0. Placeholders in <angle brackets>. Secrets NEVER here: see profile.env.example.
+# Keys verified in: user-guide/messaging/*.md, multi-profile-gateways.md, features/tts.md, voice-mode.md,
+# user-guide/security.md (unauthorized_dm_behavior). Exception, marked inline: gateway.delivery_ledger
+# is present in code (gateway/delivery_ledger.py), undocumented - verify on your version.
+
+# --- Default profile only: the host gateway serves every profile --------------
+gateway:
+  multiplex_profiles: true          # explicit; unset = on when the boot preflight is safe
+  delivery_ledger: true             # present in code (gateway/delivery_ledger.py), undocumented - verify on your version; default on, at-least-once redelivery of final replies
+  # standalone: true                # ONLY in a secondary profile that must keep its own process (temporary)
+
+# --- Platforms (bundled platform plugins, auto-loaded) ------------------------
+platforms:
+  slack:
+    enabled: true
+    reply_to_mode: "first"
+    extra:
+      reply_in_thread: true
+    channel_overrides:
+      "<decisions-channel-id>":
+        allow_silence: false
+  telegram:
+    enabled: <true|false>
+  discord:
+    enabled: <true|false>
+  email:
+    enabled: false                  # true only on a DEDICATED agent mailbox: the adapter auto-replies via SMTP
+    skip_attachments: true
+    # authserv_id: "<authserv-id>"  # or EMAIL_AUTHSERV_ID in .env
+
+slack:
+  require_mention: true
+  unauthorized_dm_behavior: "ignore"   # pair | ignore | decline (decline: one polite refusal, then silence for 24 h)
+  allowed_channels:
+    - "<decisions-channel-id>"
+    - "<ops-channel-id>"
+  channel_prompts:
+    "<decisions-channel-id>": |
+      This channel holds decision requests only. One decision per message:
+      context in two lines, options, your recommendation, and exactly what
+      will happen if the owner answers "go". Never act before that go.
+
+# --- Proactive output noise ---------------------------------------------------
+display:
+  tool_progress: off                # off | new | all | verbose | log
+  background_process_notifications: result
+  suppress_warning_notifications: false
+  platforms:
+    telegram:
+      cleanup_progress: true
+
+# --- Voice ---------------------------------------------------------------------
+tts:
+  provider: "<primary: edge|elevenlabs|openai|minimax|mistral|gemini|xai|deepinfra|neutts|kittentts|piper>"
+  speed: 1.0
+  edge:
+    voice: "<edge-voice, e.g. en-US-AriaNeural>"
+  piper:                            # local secondary for the backup-voice pattern
+    voice: "<piper-voice-name-or-absolute-onnx-path>"
+
+stt:
+  enabled: true
+  provider: "local"                 # explicit = strict, no silent engine switch
+  language: "<iso-639-1, or empty for auto-detect>"
+  local:
+    model: "base"

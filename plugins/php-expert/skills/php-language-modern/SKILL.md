@@ -50,6 +50,7 @@ After writing, run **sniper** for validation.
 3. **Prefer enums over class constants** for closed value sets — they carry type safety and methods.
 4. **Prefer `readonly` + property hooks over hand-written getters/setters** — less boilerplate, enforced immutability.
 5. **`declare(strict_types=1);`** at the top of every file.
+6. **PHP 8.5 is the stable target** (8.5.12, 2026-10-21; https://www.php.net/releases/active.php). PHP 8.6.0 is only at release-candidate stage (RC5, 2026-11-05): do not emit 8.6-only syntax until it is GA.
 
 ---
 

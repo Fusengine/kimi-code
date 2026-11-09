@@ -69,7 +69,7 @@ Provider must be `prisma-client` with explicit output path. No more generation t
 
 PostgreSQL requires `@prisma/adapter-pg`, MySQL requires `@prisma/adapter-mariadb`, SQLite requires `@prisma/adapter-better-sqlite3`.
 
-### Notable 7.x Minor Releases (current stable: 7.10.0)
+### Notable 7.x Minor Releases (current stable: 7.10.1)
 
 | Version | Change |
 |---------|--------|

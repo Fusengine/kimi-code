@@ -82,7 +82,7 @@ AI Overviews capture ~30-60% of the informational CTR. Optimize for **verbatim L
 
 ## Schema
 - Article + BreadcrumbList (always)
-- FAQPage (if FAQ section)
+- FAQPage (optional, if FAQ section: no Google rich result since May 2026)
 - VideoObject (if video embed)
 
 ## GEO Requirements

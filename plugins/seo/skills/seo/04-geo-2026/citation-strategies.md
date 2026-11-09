@@ -95,7 +95,9 @@ description: Citation strategies for GEO optimization
 
 ---
 
-### 6. FAQ Schema Implementation (30% boost)
+### 6. FAQ Schema Implementation (optional)
+
+> Google removed the FAQ rich result (May 7, 2026) and does not document any citation benefit from `FAQPage`. The earlier "30% boost" figure is unverified; treat this markup as optional, and make sure the Q&A is visible on the page.
 
 ```json
 {

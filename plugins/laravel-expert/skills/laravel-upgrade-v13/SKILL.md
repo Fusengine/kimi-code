@@ -18,7 +18,7 @@ validation).
 
 # Laravel 12 → 13 Upgrade Guide
 
-Centralized upgrade path from Laravel 12.x (latest 12.69) to Laravel 13 (13.0 released March 17, 2026; current stable 13.33).
+Centralized upgrade path from Laravel 12.x (latest 12.71) to Laravel 13 (13.0 released March 17, 2026; current stable 13.40).
 
 ## Agent Workflow (MANDATORY)
 
@@ -117,7 +117,7 @@ REDIS_PREFIX=laravel_database_
 SESSION_COOKIE=laravel_session
 ```
 
-→ See [breaking-changes.md](references/breaking-changes.md#cache-prefixes).
+→ See [breaking-changes.md](references/breaking-changes.md#3-cache-prefixes-hyphenated).
 
 ---
 

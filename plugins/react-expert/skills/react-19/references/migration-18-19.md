@@ -102,7 +102,7 @@ npm install -D eslint-plugin-react-hooks@latest
 
 ## Upgrading 19.2 → 19.3
 
-No breaking change, deprecation or codemod announced (react/react-dom 19.3.0, 2026-09-09). Watch for:
+No breaking change, deprecation or codemod announced (react/react-dom 19.3.0, 2026-09-09; current patch 19.3.1, 2026-10-14). Watch for:
 
 - `react-dom@19.3.0` peers `react@^19.3.0`; `@types/react@19.3` / `@types/react-dom@19.3` need **TypeScript ≥ 5.6**
 - **StrictMode** now double-invokes effects during hydration (like client-rendered roots) and after Fast Refresh — may surface effect bugs

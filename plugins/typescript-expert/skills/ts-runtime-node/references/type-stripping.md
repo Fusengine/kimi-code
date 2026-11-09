@@ -11,7 +11,7 @@ related: tsx-when-needed.md, node24-features.md
 ## Overview
 
 Enabled by default since Node 23.6 / 22.18 and marked **stable** since v24.12.0 / v25.2.0
-(so on current **Node 24 LTS** and **Node 26**), Node runs TypeScript by
+(so on current **Node 26 LTS** and **Node 24 LTS**), Node runs TypeScript by
 **erasing** inline types — replacing them with whitespace — and executing the
 result. No type checking, no code generation, no source maps needed (line numbers
 stay intact). The experimental `--experimental-transform-types` flag still exists on

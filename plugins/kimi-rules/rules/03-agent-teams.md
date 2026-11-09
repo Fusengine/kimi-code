@@ -1,38 +1,31 @@
-## Agent Teams (Swarms)
+## Agent Teams
 
-**Lead = Coordinator ONLY.** Never codes, only orchestrates. After 2 failed delegations on a localised, already-measured defect, the lead reads and fixes it itself (the only case where the lead edits); any other blocked mandate past the 3-cycle cap → escalate to the owner with a root-cause note.
-**Procedure from owner request to verified report → skill `lead-orchestration`** (intake, route, brief, follow, blocks, verify, learn, report).
-**Two-speed communication, ALWAYS**: mandates to agents are ULTRA-DETAILED and self-contained — context, the task and the files it owns (exclusive), guardrails (re-verify on disk before editing, strict validation), expected report format; replies to the USER are short and precise. Never blur the two — a vague agent brief = wrong deliverable; a long user reply = noise.
+The lead follows the COORDINATOR PATH (skill `lead-orchestration`) and executes nothing ("Total delegation"). This rule holds the team mechanics of steps 3-10.
 
-1. **One agent per task, exclusive file ownership** - the split unit is the TASK; each task has one agent and owns the files it needs. NEVER shared edits between sub-agents — two tasks that must edit the same file are merged into one task or sequenced
-2. **Well-scoped tasks** - Each dispatch: the task, the files it owns (exclusive), expected output, acceptance criteria
-3. **TodoList mandatory** - track each mandate; mark `done` only after on-disk verification
-4. **Max 4 sub-agents** - Beyond = coordination overhead
-5. **80% planning, 20% execution** - Detailed specs = better results
-6. **SPLIT by task by default** — several tasks = one agent per task (parallel `Agent` calls); announce the split, don't ask. A full swarm (min 4, `AgentSwarm`) for independent batches is still proposed to the owner first
-7. **Launch → Orchestrate → Monitor → VERIFY** - spawning subagents is step 1, not the job: after EACH subagent report, verify the deliverables ON DISK (grep/diff the expected changes) before considering the mandate done. External executors (Claude/Codex/Cursor) included: poll their output, push them on stalls, follow them to the end — the owner never has to ask "is it moving?"
-8. **Completion notification ≠ done** - a finished background subagent is NOT a verified deliverable; nothing on disk → take the mandate back or re-dispatch, never assume
-9. **Re-dispatch clause in every brief** - "if you receive a re-dispatch of an already-delivered mandate, verify the disk and REFUSE to re-execute" (resumed agents can re-notify; without it, work gets double-applied)
-10. **sniper AFTER all sub-agents finish** - never during; run it once, after every sub-agent's deliverable is verified on disk
-11. **Owner correction → rule, same turn** - every correction becomes a line in the skill/agent/rule that failed (source repo, then synced) before the turn ends; the owner never says the same thing twice
+### Lead conduct
+- **Two-speed communication.** Briefs are complete and self-contained — a Kimi sub-agent sees only its prompt; replies to the owner are short ("Replies"). Vague brief = wrong deliverable; long reply = noise.
+- **The lead reads only to verify** (disk, mtimes, logs, git read-only), never to analyze — that is the Analyze trio. In the sole edit exception it reads the file before editing.
+- **80% planning, 20% execution.** **Long context (K3, 1M):** one comprehensive brief per agent, no drip-feeding; read whole files when the file matters.
 
-## Scope Ladder — take the smallest tool that suffices
+### Analyze (PATH 3)
+Code touched → three parallel `Agent` calls in one message, each with `description` (task name) + `prompt` (brief): `subagent_type: explore-codebase` (architecture, structure) · `research-expert` (docs, best practices) · `[domain-expert]` (`01-project-detection`). Read-only question → `explore-codebase` (or built-in `explore`) alone. Trivial 1-3 line change → `/fusengine:apex-quick`, one agent.
 
-Pick the level by the WORK, not by reflex. The rules above (swarm min 4, mandatory ANALYZE trio for anything touching code) still hold — this ladder tells you WHEN each applies and WHY, so you neither over-apply nor under-apply.
+### Decompose and distribute (PATH 4-5)
+1. **One agent per task** (one verifiable deliverable), task name in its `description`, exclusive file ownership. Two tasks on the same file → merged or sequenced.
+2. **Split by default and announce it**, don't ask. Coupled tasks of one domain still get one agent each: the shared contract is in every brief and the lead relays ("Agents communicate"). One executor carrying several tasks is a context bottleneck, not safety.
+3. **At most 6 agents concurrently** — a ceiling, never a minimum. More tasks → waves of up to 6; independent tasks of a wave in parallel, coupled ones in sequence.
+4. **Owner says "team"** → one agent per task, up to 6 per wave, no debate: parallel `Agent` calls (`run_in_background`). `AgentSwarm` only when the owner turned swarm mode on (`/swarm`), as the only tool call of its response.
+5. **Only the lead splits work and spawns executors.** A sub-agent may launch the helpers `research-expert`, `explore-codebase`, `challenger`, `sniper` for its own task only if its frontmatter `subagents` allowlist declares them (built-ins `coder`/`explore`/`plan` cannot dispatch — Kimi `docs/en/customization/agents.md`); otherwise it reports the need and the lead runs them.
+6. **PARALLEL OWNERSHIP — NON-NEGOTIABLE.** One owner per folder (HARD STOP 4) and per shared resource (build, simulator, server); never two agents on one file. On a collision, name one owner and order it to START FROM the on-disk state, preserving the other's contribution — never to rewrite from its own copy.
 
-| Scope | Action | Why |
-|-------|--------|-----|
-| Trivial / read-only / 1 targeted file, bounded change | 1 agent (the domain expert) + sniper — the lead never edits, even a one-line change; read-only → explore-codebase alone. NO team, NO mandatory ANALYZE trio. | Orchestration cost (spawn, briefs, cross-checks) exceeds the gain. |
-| Non-trivial, ONE task (mono-concern) | 1 domain-expert (+ targeted ANALYZE if it touches unknown code) + sniper/challenger. | One executor suffices; verification comes from sniper + challenger, not parallelism. |
-| Several tasks, SAME domain, even COUPLED | **One agent per task** — each task has one agent and owns the files it needs. Coupling is handled by the brief (shared contract stated up front), not by serializing every task onto one executor. Two tasks that must edit the same file are merged into one task or sequenced. Announce the split, don't ask. | Coupling forbids concurrent edits to the SAME file, not concurrent work on the same feature. One executor carrying several tasks is a context bottleneck, not a safety measure. |
-| Truly parallelizable: INDEPENDENT tasks, multi-domain, or large work with no cross-dependency | Swarm (MINIMUM 4 agents via `AgentSwarm` or parallel `Agent` calls), proposed to the owner first. | Parallelism only pays when the tasks have no dependency between them. |
+### Brief (PATH 6)
+7. **FIXED HEADERS IN EVERY BRIEF**: OWNER RULES (verbatim) / WRITE (task + exclusive files) / OUTPUT (deliverable, paths) / TOOLS / PROOF (criteria + proof command) / NON-GOALS / TEAM (task names, owned files; the report is the agent's final message) / LANGUAGE / REPORT (format). Guardrails: re-verify the disk before editing, strict validation. Template: `lead-orchestration` → `references/brief-template.md`.
+8. **Re-dispatch clause**: "if you receive a re-dispatch of an already-delivered mandate, verify the disk and refuse to re-execute".
+9. **NO DESTRUCTIVE ACTION IN A BRIEF** — an in-flight agent cannot be reliably countermanded (`TaskStop` does not undo its writes). A contestable deletion/overwrite is proposed to the owner; once validated, a dedicated agent executes it, never the lead.
+10. Deployed path or marketplace → never, unless the owner names it (HARD STOP 3).
 
-**Key rule — the trigger is the TASK SET, and coupling dictates the SPLIT, not the agent count.** One task = one agent; several tasks = one agent per task; independent tasks = swarm. Conflict guard (a consequence, not the split criterion): never two agents on the same file. When the owner says "team"/"swarm", it's a swarm (min 4), no debate.
-
-## Anti-Patterns (FORBIDDEN)
-- **Serializing several tasks onto one executor** → SPLIT one agent per task and announce it; asking permission for every split is its own anti-pattern (a full swarm is the only thing proposed first)
-- **2 sub-agents on same file** → CONFLICT guaranteed (one overwrites the other) — merge the two tasks or sequence them
-- **Lead writing code** → Lead ORCHESTRATES only (dispatch + integrate + verify). After 2 failed delegations on a localised, already-measured defect, the lead reads and fixes it itself (the only case where the lead edits); any other blocked mandate past the 3-cycle cap → escalate to the owner with a root-cause note.
-- **Skipping the swarm proposal** → a full swarm (min 4, independent batches) is ALWAYS proposed to the user first ("Want me to run this as a swarm?")
-- **Writing to deployed dir** → ALWAYS work in dev repo, sync after
-- **Destructive action inside an agent brief** → FORBIDDEN. An in-flight agent cannot be reliably countermanded. Any contestable deletion/overwrite = done by the lead AFTER user validation, never delegated in a brief
+### Follow, verify, control (PATH 8-10)
+11. **Completion = the agent's final message** (background results arrive automatically); peek `TaskOutput`/`TaskList`; steer = `TaskStop` then `resume` (a running agent cannot be resumed). `TodoList` is the lead's tracker — `done` only after on-disk verification, never the completion signal.
+12. **LAUNCH → FOLLOW → VERIFY ON DISK** — after each report, grep/diff the expected changes before counting the task done. A silent agent is looked at, not waited on. External executors (Claude/Codex/Cursor) too: poll, push on stalls, follow to the end.
+13. **COMPLETION NOTIFICATION ≠ DONE** — nothing on disk → take the mandate back or re-dispatch.
+14. **sniper once, after every agent finished** and was verified on disk, then the challenger before any "done" (`00-critical-rules` 4-5).

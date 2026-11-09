@@ -12,13 +12,61 @@ Runs universal post-commit actions after any non-wip/amend/undo code commit. Det
 
 Universal post-commit actions after a successful code commit.
 
-## Step 1: Read Last Commit
+## Step 0: Bump Range + Guard (run first, every time)
+
+This block is the single source for the bump range: the `commit` command and agent point here, never restate it. `--no-bump` passed by the caller → skip this whole skill, unconditionally. Otherwise run:
 
 ```bash
-git log --format='%s' -1
+# 1. Base branch: the PR's base (caller's PR_BASE, else the open PR's) > remote default > first local main/master/develop
+[ -n "$PR_BASE" ] || PR_BASE="$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null)"
+base_ref="${PR_BASE:+origin/$PR_BASE}"
+[ -n "$base_ref" ] || base_ref="$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)"
+if [ -n "$base_ref" ]; then
+  git fetch --quiet origin "${base_ref#origin/}" 2>/dev/null
+  git rev-parse --verify --quiet "$base_ref" >/dev/null || base_ref="${base_ref#origin/}"
+else
+  for b in main master develop; do
+    git rev-parse --verify --quiet "refs/heads/$b" >/dev/null && { base_ref="$b"; break; }
+  done
+fi
+# 2. Fork point. None, or HEAD is on the base branch itself → old behaviour: last commit only
+base="$(git merge-base HEAD "$base_ref" 2>/dev/null)"
+if [ -z "$base" ] || [ "$base" = "$(git rev-parse HEAD)" ]; then
+  base="$(git rev-parse --verify --quiet HEAD~1)"   # single-commit repo: empty → range = whole history (HEAD)
+  if [ -n "$base" ]; then fb="HEAD~1 (last commit only)"; else fb="whole history (single-commit repo)"; fi
+  echo "post-commit: no fork point from '${base_ref:-none}' -> fallback $fb" >&2
+fi
+# 3. Range to bump: since the branch's last bump commit, else since the fork point
+bump_re='^chore: (bump marketplace and CHANGELOG|update CHANGELOG) to [0-9]+\.[0-9]+\.[0-9]+$'
+last_bump="$(git log -1 --format='%H' -E --grep="$bump_re" ${base:+"$base.."}HEAD)"
+since="${last_bump:-$base}"
+# range = ${since:+"$since.."}HEAD ${base:+"^$base"} — written out at each use (bash and zsh alike; no word-splitting needed)
+changed_plugins="$(git log --no-merges --format= --name-only ${since:+"$since.."}HEAD ${base:+"^$base"} -- plugins/ | cut -d/ -f2 | sort -u)"
+new_subjects="$(git log --no-merges --format='%s' ${since:+"$since.."}HEAD ${base:+"^$base"} | grep -vE "$bump_re")"
+if [ -n "$last_bump" ] && [ -z "$changed_plugins" ] && [ -z "$new_subjects" ]; then
+  echo "bump: skipped (nothing since $(git log -1 --format='%h %s' "$last_bump"))"
+else
+  from=root; [ -n "$since" ] && from="$(git rev-parse --short "$since")"
+  echo "bump: due since $from — plugins: $(printf '%s\n' "$changed_plugins" | tr '\n' ' ')"
+fi
 ```
 
-Save the commit message for CHANGELOG entry.
+- `bump: skipped` → STOP, report that line. A branch already bumped with nothing new since (a CI-fix or review round that only re-pushes) never stacks a second bump.
+- `bump: due` → continue. If the branch was already bumped, only what changed after that bump is bumped again (plugin B added after plugin A's bump is never merged unbumped).
+- `PR_BASE`: the commit agent sets it to the branch the PR targets (`develop` in Git Flow) — `origin/HEAD` is the default branch, too far back for a PR into `develop`: other features' bump commits would land in the range.
+- Steps 1, M1 read the range `${since:+"$since.."}HEAD ${base:+"^$base"}` (the `^"$base"` drops commits merged in from the base branch; plain `HEAD` in a single-commit repo); M3.5 diffs from `$base`. Never `HEAD~1` outside the fallback above. New shell → re-run this block.
+
+## Step 1: Read the Branch's Commits
+
+Every commit of the Step 0 range, not only the last one — a mandate lands several WIP commits. Merge commits and bump subjects are skipped; output is grouped by conventional type (oldest first within a type):
+
+```bash
+git log --no-merges --reverse --format='%s' ${since:+"$since.."}HEAD ${base:+"^$base"} \
+  | grep -vE '^chore: (bump marketplace and CHANGELOG|update CHANGELOG) to [0-9]+\.[0-9]+\.[0-9]+$' \
+  | awk '{ t = $0; sub(/[(:!].*/, "", t); print t "\t" $0 }' | sort -s -k1,1 | cut -f2-
+```
+
+Save these subjects for the CHANGELOG entry: one line per subject, each under its type's prefix (`references/changelog-type-mapping.md`).
 
 ## Step 2: Detect Repo Type
 
@@ -56,7 +104,7 @@ STOP. Output summary. **No tag here** — it is created POST-MERGE by the `commi
 ### Step M1: Detect Modified Plugins
 
 ```bash
-git diff --name-only HEAD~1 | grep '^plugins/' | cut -d/ -f2 | sort -u
+printf '%s\n' "$changed_plugins"   # computed by Step 0 over its range
 ```
 
 If no plugins modified, skip to Step M3 (still bump suite version). Skip directories without `.kimi-plugin/plugin.json`.

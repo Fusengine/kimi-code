@@ -1,0 +1,37 @@
+# extend-config.yaml - merge into one profile's config.yaml (hermes -p <profile> config edit).
+# Hermes Agent 0.23.0. Placeholders in <angle brackets>; secrets go in .env, referenced as ${VAR}.
+
+skills:
+  write_approval: true              # stage every agent skill write for /skills approve
+  guard_agent_created: true         # content scanner on agent-created skills
+  auto_load: [<skill-name>]         # skills pinned into every session
+  # external_dirs: [<absolute shared skills dir>]   # writable dirs are NOT write-protected
+  # create_dir: <absolute dir for new agent-created skills>
+  # project_discovery: false
+
+memory:
+  write_approval: false             # true = stage memory writes (/memory pending|approve)
+  # provider: <retaindb|byterover|honcho|hindsight|supermemory|mem0|openviking|holographic>
+  #           catalog providers: hermes plugins install <name> first
+
+plugins:
+  enabled: []                       # general plugins are opt-in
+  disabled: []
+  auto_apply: false                 # opt-in plugin auto-update
+
+mcp_servers:
+  <server-name>:
+    command: "<executable>"
+    args: ["<arg>"]
+    env:
+      <SERVER_TOKEN_NAME>: "${<SERVER_TOKEN_NAME>}"
+    trust: untrusted                # every write-capable call asks first
+    tools:
+      include: [<read_tool>, <write_tool>]
+    # tool_costs: {<paid_tool>: <credits>}
+    # spend_limit: <per-chat budget>
+
+security:
+  website_blocklist:
+    enabled: false
+    domains: []
