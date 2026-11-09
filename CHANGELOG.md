@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.26] - 2026-11-09
+
+### Changed
+- ai-pilot: lead-orchestration, brief-template, verification and sniper rule sentences ported word-for-word from claude-plugins 49e2ea35 (owner's verb, scope, "everywhere", migration/deploy, production data, full gate before release, after each deploy, test review rules) (ai-pilot 1.2.45).
+
 ## [1.0.25] - 2026-11-09
 
 ### Changed
