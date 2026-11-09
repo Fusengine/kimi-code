@@ -1,6 +1,6 @@
 {
   "name": "@fusengine/kimi-code",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "private": true,
   "type": "module",
   "description": "Fusengine plugin ecosystem migrated to Kimi Code CLI",
