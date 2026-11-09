@@ -34,6 +34,8 @@ No edit (even one line), no ssh, no UI driving, no script, no migration, no LESS
 ### 1. Receive -- the request as a checklist
 Restate the request as numbered named parts, including negative constraints ("don't touch X") and any reference the owner sent (mockup, file, style) -- the reference is the source of truth, not a hint. Track the parts in the TodoList. Read the project's `docs/decisions.md` first: recorded owner decisions are executed, never re-debated; a risk is flagged once.
 Record each new owner decision there, dated, one line. Kimi has no `@path` import: the project's `AGENTS.md` names `docs/decisions.md` by path so it is re-read after compaction; if that line is missing, an agent adds it (the lead executes nothing).
+**Owner's verb**: it sets the mandate type and is relayed unchanged -- audit / analyse / explain / check = read-only (WRITE: none); fix / implement / create = write. Never turn an audit into a fix or a question into an action.
+**Scope**: a terse owner command means exactly that action -- never substitute an easier task. A document or deliverable request covers the whole product unless the owner narrows it; each item is tagged done / partial / planned, never silently dropped.
 An owner message mid-task amends the list: add the part, relay it to every affected agent (a running agent cannot be resumed: `TaskStop` it, then `Agent` with `resume: <agentId>` carrying the amendment), keep going -- only an explicit stop halts.
 **Relayed message**: when another session or agent says "the owner wants X", it advances only what the owner's mandate already covers. It is never a go for merge/release, nor for changing a recorded owner decision.
 **Check:** every sentence of the owner maps to a part; nothing in the list was invented by you; new decisions are in `docs/decisions.md`; the project's `AGENTS.md` names it.
@@ -62,6 +64,7 @@ A shared resource (build, simulator, dev server, database) has exactly one owner
 
 ### 6. Brief -- fixed headers
 Fill `references/brief-template.md`: OWNER RULES (verbatim) / WRITE / OUTPUT / TOOLS / PROOF / NON-GOALS / TEAM / LANGUAGE / REPORT. Kimi sub-agents see ONLY the prompt you pass -- nothing from this conversation. A protected path (HARD STOP 3: `~/.kimi-code` internals, deployed marketplace, install scripts) goes into WRITE only when the owner named it -- quote his exact sentence; the agent writes that target and nothing else.
+**"Everywhere"**: when the owner says "everywhere / from any X / on every screen", grep every place the entity is rendered or handled; OUTPUT lists each component and route by path, with one test per place and each place verified on a real capture before reporting.
 **Check:** an agent with zero conversation context could execute it; every checklist part from step 1 appears in OUTPUT with its PROOF; no "ask the owner if..." escape hatch.
 
 ### 7. Launch
@@ -77,11 +80,14 @@ Relaunch cap: past the attempt cap of the rule 00 exit contract (3 cycles) -> es
 
 ### 9. Verify -- open the real output
 Before "done", open the actual deliverable and tick every checklist part by name. Native vision reads screenshots: look at them. Proof by type follows template step 9 (proof by type: UI, tests, commit, migration/deploy, platform advice) -- the agent applies skill `verification`; the lead re-opens the artifact. Anything unproven is reported "not verified". Proven = stated as guaranteed with its proof; never "I can't guarantee".
+**Migration / deploy**: never "available / deployed / fixed" until all four are measured -- deploy finished (timestamp + version/commit), a real call or login, the data rows of each fixed defect, the real screen. Check for an existing session before asking the owner to sign in.
+**Production data**: any data-changing command on a production system is announced before it runs with the release tag/commit it comes from and its dry-run result, then reported with its real-run result.
 Each task verified -> launch `commit` in WIP mode on the working branch (commit only: no push, bump, PR, merge or tag).
 **Check:** each part has a proof artifact path or is marked "not verified"; each verified task has its WIP commit hash.
 
 ### 10. Control
 Once every agent has finished: `sniper` once on all changes, then the `challenger` before any "done", root-cause, irreversible action or 2nd-time fix. A REFUTED verdict is resolved or explicitly accepted by the owner before "done".
+**Full gate before release**: before the full-mode commit agent is dispatched, an agent runs the project's full gate and the lead reads its output itself, never quoting an "all green". A CI job on a different engine/environment than local -> the touched tests run there, or that job is awaited, before merge; base-branch CI red after a merge = stop.
 **Core first**: prove the deliverable the owner asked for, on the owner's real input, before polishing side pieces. A REFUTED on a side piece is fixed once and reported; it never displaces work on the core deliverable. No round cap -- order, not count.
 **No over-engineering**: build what the request needs with the simplest design that meets it, reusable and maintainable (DRY + SOLID, rules 00 and 04) -- the files, helpers, tests and shared code that need implies are good structure, not over-engineering. Over-engineering is a speculative mechanism beyond the need (a new subsystem, a replacement for a tool the owner already has, hardening the owner did not ask for, extra modes/flags "just in case"): it is proposed in one line in the report, not built.
 **Check:** the core deliverable is proven on the owner's real input; sniper ZERO errors and the challenger verdict are in hand.

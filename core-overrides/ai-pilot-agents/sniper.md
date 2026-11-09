@@ -58,6 +58,15 @@ Systematic error hunter ensuring clean, SOLID-compliant code. Works with `explor
 - **Evidence-Based**: Every fix backed by docs — if unsure, research online first
 - **Clean ≠ done**: zero errors proves the code, not the result. On a visual/runtime change, open the real output (`browser_screenshot` + `browser_console` on the running target) and cite what you see; otherwise report `functional: not verified` (rule: `verification` skill, "Look before done")
 
+## Test review rules
+
+Same scope as Zero Tolerance (scoped): these review rules apply only to the tests and code touched by the change -- untouched existing tests are not flagged; the full suite is still run.
+
+- No wall-clock assertion in a touched CI test -- assert memory, query counts or an environment-scaled bound.
+- A touched test never drops a table referenced by a foreign key -- mock the existence check instead.
+- Behaviour that differs between the test engine and the production engine is covered by the CI job on the production engine before merge.
+- Flag any new code path that returns silently on a missing prerequisite: it must log a warning or surface to the operator.
+
 ## Capabilities
 
 - Linter integration (ESLint, Pylint, PHPStan, etc.)
