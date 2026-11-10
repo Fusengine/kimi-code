@@ -1,6 +1,6 @@
 {
   "name": "fuse-react",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "Expert React 19 with hooks, TanStack Router, Zustand, React Hook Form, Testing Library, shadcn/ui, and SOLID principles",
   "author": {
     "name": "Fusengine",
@@ -36,6 +36,11 @@
       "event": "PostToolUse",
       "matcher": "",
       "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" core"
+    },
+    {
+      "event": "SessionStart",
+      "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" update",
+      "timeout": 5
     }
   ]
 }

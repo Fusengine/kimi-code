@@ -1,6 +1,6 @@
 {
   "name": "fuse-rust",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Expert Rust 1.99+ (2024 edition) — ownership, error handling, async/tokio, axum backends, cargo tooling, with SOLID principles",
   "author": {
     "name": "Fusengine",
@@ -38,6 +38,11 @@
       "event": "PostToolUse",
       "matcher": "",
       "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" core"
+    },
+    {
+      "event": "SessionStart",
+      "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" update",
+      "timeout": 5
     }
   ]
 }

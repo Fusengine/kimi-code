@@ -30,7 +30,7 @@ Severity scale, confidence threshold, noise policy and report format: [`../rules
 - CVEs and advisories for the detected stack (skill `cve-research`)
 
 ### Phase 3: SCAN (candidates)
-- Run `bun "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness/dist/cli/bin.mjs" scan <dir>` — a first-pass pattern scanner whose coverage is narrower than the skill's patterns; an empty result is NOT a clean result
+- Run `bun "$(test -f "${KIMI_CODE_HOME:-$HOME/.kimi-code}/harness-current/dist/cli/bin.mjs" && echo "${KIMI_CODE_HOME:-$HOME/.kimi-code}/harness-current" || echo "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness")/dist/cli/bin.mjs" scan <dir>` — a first-pass pattern scanner whose coverage is narrower than the skill's patterns; an empty result is NOT a clean result
 - Always complete it with the manual patterns of skill `security-scan` for every language and file type in scope (secrets: `references/secrets-patterns.md`)
 - Dependency audit (skill `dependency-audit`); optional CLIs checked with `command -v`, never installed, missing = "not run"
 - Headers/cookies (skill `security-headers`), auth (skill `auth-audit`)

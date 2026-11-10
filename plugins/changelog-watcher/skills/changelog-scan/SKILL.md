@@ -27,7 +27,7 @@ Fetches and analyzes the official Kimi Code changelog to detect new versions and
 ## Workflow
 
 1. **Fetch** changelog via the harness CLI (ported from the old `fetch-changelog` into `@fusengine/harness`):
-   `bun ${KIMI_PLUGIN_ROOT}/../node_modules/@fusengine/harness/dist/cli/bin.mjs changelog`
+   `bun "$(test -f "${KIMI_CODE_HOME:-$HOME/.kimi-code}/harness-current/dist/cli/bin.mjs" && echo "${KIMI_CODE_HOME:-$HOME/.kimi-code}/harness-current" || echo "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness")/dist/cli/bin.mjs" changelog`
    It fetches `code.kimi.com/docs/en/changelog.md`, parses versions (current MDX `<Update label="X.Y.Z">` format + legacy `## vX.Y.Z` fallback), writes state to `~/.kimi-code/logs/00-changelog/<date>-state.json`, and prints JSON `{latest, new_since_last_check, recent_versions}`. WebFetch on the same URL is the manual fallback.
 2. **Parse** version numbers and release dates
 3. **Extract** changes per version (features, fixes, breaking)

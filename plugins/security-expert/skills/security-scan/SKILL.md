@@ -29,7 +29,7 @@ It reports; it never fixes. Verified findings, each with a re-test check, go bac
    `Gemfile`, `pom.xml`, `build.gradle*`, `*.csproj`) and from the file extensions actually present
    (`git ls-files | rg -o '\.[A-Za-z0-9]+$' | sort | uniq -c`).
 3. **Automated first pass:**
-   `bun "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness/dist/cli/bin.mjs" scan <dir>`
+   `bun "$(test -f "${KIMI_CODE_HOME:-$HOME/.kimi-code}/harness-current/dist/cli/bin.mjs" && echo "${KIMI_CODE_HOME:-$HOME/.kimi-code}/harness-current" || echo "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness")/dist/cli/bin.mjs" scan <dir>`
    This is a first-pass pattern scanner, not a complete audit. Read what its output says it
    scanned. If it prints a coverage summary, compare it with step 2: every language or file type
    present in the repository but not reported as scanned is covered with the manual patterns

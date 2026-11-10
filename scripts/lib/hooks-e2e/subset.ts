@@ -19,6 +19,7 @@ export function selectRepresentative(rules: HookRuleRef[]): {
 	for (const ref of rules) {
 		const cmd = parseShimCommand(ref.hook.command);
 		if (!cmd) continue; // static layer reports it; nothing to simulate here
+		if (cmd.scope === "update") continue; // shim-only scope: never reaches the harness, so no forwarding contract to assert
 		const coversScope = !scopes.has(cmd.scope);
 		const coversEvent = !events.has(ref.hook.event);
 		if (coversScope || coversEvent) {

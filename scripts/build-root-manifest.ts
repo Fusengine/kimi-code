@@ -27,6 +27,8 @@ function aggregate(): { skills: string[]; commands: string[]; hooks: HookRule[] 
 		if (existsSync(join(PLUGINS, dir, "skills"))) skills.push(`./plugins/${dir}/skills/`);
 		if (existsSync(join(PLUGINS, dir, "commands"))) commands.push(`./plugins/${dir}/commands/`);
 		for (const h of m.hooks ?? []) {
+			// `update` is the lone-plugin SessionStart (see kimi-hook-shim.mjs): the suite already has its own SessionStart hooks.
+			if (h.command.trim().endsWith(" update")) continue;
 			hooks.push({ ...h, command: `bun "\${KIMI_PLUGIN_ROOT}/${SHIM_REL}" ${h.command.split(" ").slice(2).join(" ")}`.replace(/\s+$/, "") });
 		}
 	}

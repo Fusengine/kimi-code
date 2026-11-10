@@ -20,8 +20,8 @@ const PLUGINS = resolve(import.meta.dir, "../../plugins");
 const rules = await collectHookRules(PLUGINS);
 
 describe("layer 1: static", () => {
-	test("declared corpus is 71 rules across 22 plugins", () => {
-		expect(rules).toHaveLength(71);
+	test("declared corpus is 88 rules across 22 plugins (71 suite rules + 17 lone-plugin `update` SessionStarts)", () => {
+		expect(rules).toHaveLength(88);
 		expect(new Set(rules.map((r) => r.pluginDir)).size).toBe(22);
 	});
 	test("every rule: known event, shim-pattern command, known scope, shim on disk", async () => {

@@ -5,7 +5,7 @@
  * canonical distribution. $FUSENGINE_HARNESS_SRC (local dir) exists ONLY for
  * hermetic tests. No dependency on any other CLI's installation.
  */
-import { cp, mkdir, writeFile } from "node:fs/promises";
+import { cp, mkdir, rm, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { exists, readJsonSafe } from "../fs-exists";
@@ -91,6 +91,9 @@ async function installFromLocal(ctx: InstallContext, src: string): Promise<Insta
 /** Entry point: npm by default, local dir only under the test override. */
 export async function installRuntimeDeps(ctx: InstallContext): Promise<InstallStepResult> {
 	const src = process.env.FUSENGINE_HARNESS_SRC;
-	if (src && (await exists(join(src, "package.json")))) return installFromLocal(ctx, src);
-	return installFromNpm(ctx);
+	const res = src && (await exists(join(src, "package.json"))) ? await installFromLocal(ctx, src) : await installFromNpm(ctx);
+	// A fresh setup stage owns the legacy dir again: drop the SessionStart auto-update
+	// pointer (harness-current) so it can never shadow the version just staged.
+	if (res.status !== "fail" && !ctx.dryRun) await rm(join(ctx.kimiHome, "harness-current"), { force: true });
+	return res;
 }

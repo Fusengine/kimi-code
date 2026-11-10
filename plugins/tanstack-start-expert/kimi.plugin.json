@@ -1,6 +1,6 @@
 {
   "name": "fuse-tanstack-start",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Expert TanStack Start (React, 1.x stable) full-stack framework with file-based routing, createServerFn server functions, selective SSR, and Nitro deployment",
   "author": {
     "name": "Fusengine",
@@ -37,6 +37,11 @@
       "event": "PostToolUse",
       "matcher": "",
       "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" core"
+    },
+    {
+      "event": "SessionStart",
+      "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" update",
+      "timeout": 5
     }
   ]
 }

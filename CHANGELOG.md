@@ -3,6 +3,18 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.29] - 2026-11-10
+
+### Added
+- harness: SessionStart auto-update of the shared @fusengine/harness — staged into `harness-versions/` and activated by an atomic `harness-current` symlink switch, single-flight lock, 30-min back-off on failure (`FUSE_ENSURE_DEPS_BACKOFF_MIN`), one-time note naming the old and new versions, `harness-floor.json` shipped beside each shim.
+- harness: dedicated shim scope `update` (SessionStart only, never spawns the harness) for the 17 plugins that declare hooks without SessionStart, so a lone plugin still triggers the update; the root manifest skips `update` hooks (71 hooks) and the static check accepts the scope only on SessionStart (ai-pilot 1.2.46, changelog-watcher 1.0.16, design-expert 2.2.11, go-expert 1.0.8, hermes-expert 1.0.1, laravel-expert 1.2.10, nextjs-expert 1.1.26, php-expert 1.0.9, react-expert 1.0.23, rust-expert 1.0.9, security-expert 1.0.21, seo 1.0.14, shadcn-expert 1.0.20, swift-apple-expert 1.1.22, tailwindcss 1.1.13, tanstack-start-expert 1.0.8, typescript-expert 1.0.9).
+
+### Fixed
+- security-expert and changelog-watcher (`changelog-scan`) harness commands prefer `harness-current`; the changelog-scan path was broken.
+
+### Changed
+- install: runtime-deps removes `harness-current` after a setup stage, so the freshly staged harness is the one that runs.
+
 ## [1.0.28] - 2026-11-10
 
 ### Added
