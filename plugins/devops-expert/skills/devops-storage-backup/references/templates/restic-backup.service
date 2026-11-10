@@ -1,0 +1,22 @@
+# /etc/systemd/system/restic-backup.service
+# Environment file /etc/backup/restic.env (root:root, 0600) holds, for example:
+#   RESTIC_REPOSITORY=<repository location>
+#   RESTIC_PASSWORD_FILE=/etc/backup/restic.pass
+#   RESTIC_CACHE_DIR=/var/cache/restic
+# Add S3 credentials there too when the repository is on S3. Never put values in this unit.
+[Unit]
+Description=restic backup
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/backup/restic.env
+ExecStart=/usr/local/sbin/restic-backup.sh
+Nice=19
+IOSchedulingClass=idle
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/cache/restic /var/lib/backup /run
+TimeoutStartSec=12h

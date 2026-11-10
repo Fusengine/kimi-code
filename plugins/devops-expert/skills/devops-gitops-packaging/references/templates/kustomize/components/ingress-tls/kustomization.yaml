@@ -1,0 +1,14 @@
+# Optional feature packaged as a Component (referenced from overlays under `components:`).
+# It patches the Deployment with an annotation as a minimal example; replace with the real feature
+# (for example an HTTPRoute resource, see devops-kubernetes templates/gateway-httproute.yaml).
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+patches:
+  - target:
+      kind: Deployment
+      name: web
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          example.com/tls: "terminated-at-gateway"

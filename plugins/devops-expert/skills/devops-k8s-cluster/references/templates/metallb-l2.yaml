@@ -1,0 +1,29 @@
+# MetalLB v0.16.2, Layer 2 mode. All resources live in the namespace MetalLB runs in (metallb-system).
+# Install first:  kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.16.2/config/manifests/metallb-native.yaml
+# kube-proxy in IPVS mode needs ipvs.strictARP: true in the kube-proxy ConfigMap (kubectl diff first).
+# Do not give the same range to Cilium LB IPAM.
+# Sources: https://metallb.io/installation/  https://metallb.io/configuration/  https://metallb.io/configuration/_advanced_l2_configuration/
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: lan-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - <FIRST_FREE_IP>-<LAST_FREE_IP> # or a CIDR; must be unused on the LAN
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: lan-l2
+  namespace: metallb-system
+spec:
+  # Without ipAddressPools, the advertisement applies to ALL pools.
+  ipAddressPools:
+    - lan-pool
+  # Optional hard filter on candidate announcing nodes, or interfaces:
+  # nodeSelectors:
+  #   - matchLabels:
+  #       kubernetes.io/hostname: <NODE_NAME>
+  # interfaces:
+  #   - <IF_NAME>

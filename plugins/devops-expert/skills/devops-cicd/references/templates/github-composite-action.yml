@@ -1,0 +1,30 @@
+# Composite action: save as .github/actions/setup-project/action.yml (the file
+# name MUST be action.yml or action.yaml). Use it with:
+#   - uses: ./.github/actions/setup-project
+#     with:
+#       node-version: "24"
+name: Setup project
+description: Install Node and project dependencies with a lockfile-keyed cache
+
+inputs:
+  node-version:
+    description: Node.js major version
+    required: false
+    default: "24"
+
+outputs:
+  cache-hit:
+    description: Whether the npm cache was restored
+    value: ${{ steps.node.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - id: node
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+    - name: Install dependencies
+      shell: bash # `shell` is required on every run step of a composite action
+      run: npm ci

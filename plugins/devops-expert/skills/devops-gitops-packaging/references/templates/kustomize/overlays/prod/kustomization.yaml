@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: shop
+resources:
+  - ../../base
+components:
+  - ../../components/ingress-tls
+images:
+  - name: registry.example.com/org/web
+    newTag: 1.4.2
+    # digest: sha256:<64 hex>   # pin by digest for production once known
+replicas:
+  - name: web
+    count: 3
+patches:
+  - target:
+      kind: Deployment
+      name: web
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 512Mi
+configMapGenerator:
+  - name: web-config
+    behavior: merge
+    literals:
+      - LOG_LEVEL=warn

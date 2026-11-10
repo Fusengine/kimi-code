@@ -1,0 +1,29 @@
+# kube-apiserver encryption at rest (placeholders only).
+# Pass the file with --encryption-provider-config=<path> on EVERY control-plane apiserver,
+# then restart them. Key material: generate on the control-plane host, never in Git, never in chat.
+# Order matters: the FIRST provider encrypts new writes; all providers are tried to decrypt.
+# Changing order or removing a key can make existing Secrets unreadable -> ACTION/EFFECT/PROOF/WAIT-FOR-GO
+# (see destructive-secret-ops.md). After enabling, re-write existing Secrets:
+#   kubectl get secrets --all-namespaces -o json | kubectl replace -f -
+apiVersion: apiserver.config.k8s.io/v1
+kind: EncryptionConfiguration
+resources:
+  - resources:
+      - secrets
+    providers:
+      # Preferred when a KMS plugin is available: envelope encryption, key outside the cluster.
+      # Remove this block if no KMS plugin is deployed.
+      - kms:
+          apiVersion: v2
+          name: CHANGE_ME_KMS_PLUGIN
+          endpoint: unix:///CHANGE_ME/kms.sock
+          timeout: 3s
+      # Local key fallback and decryption of data written with the previous key.
+      - aescbc:
+          keys:
+            - name: key-CHANGE_ME_NEW
+              secret: <BASE64_32_BYTE_KEY_PLACEHOLDER_NEW>
+            - name: key-CHANGE_ME_OLD
+              secret: <BASE64_32_BYTE_KEY_PLACEHOLDER_OLD>
+      # Reads data that was stored before encryption was enabled. Keep until every Secret was rewritten.
+      - identity: {}

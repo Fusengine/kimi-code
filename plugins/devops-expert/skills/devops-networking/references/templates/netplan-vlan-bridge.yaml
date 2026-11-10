@@ -1,0 +1,35 @@
+# /etc/netplan/60-bridge-vlan.yaml - bond + tagged VLAN + bridges for a hypervisor/host.
+# Structure from https://github.com/canonical/netplan/blob/main/doc/multi-nic-vm-host-with-bonds-and-vlans.md
+# (Context7 /canonical/netplan, 2026-11-10). `renderer: networkd` as in the netplan examples.
+#
+# APPLY ONLY WITH:   netplan try --timeout 120    (rolls back on its own unless you press ENTER)
+# Never `netplan apply` over SSH. Names, VLAN IDs and addresses below are placeholders: REPLACE.
+# File mode must be 600 (netplan warns on world-readable files).
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eno1: {}
+    eno2: {}
+  bonds:
+    bond0:
+      interfaces: [eno1, eno2]
+      parameters:
+        mode: 802.3ad            # requires LACP configured on the switch ports
+        mii-monitor-interval: 1000
+  vlans:
+    bond0.40:
+      id: 40
+      link: bond0
+  bridges:
+    br0:                         # untagged: management of the host
+      interfaces: [bond0]
+      addresses: [192.0.2.10/24]
+      routes:
+        - to: default
+          via: 192.0.2.1
+      nameservers:
+        addresses: [192.0.2.53, 9.9.9.9]
+    br40:                        # VLAN 40 for guests; no host address
+      interfaces: [bond0.40]

@@ -1,0 +1,52 @@
+# Needs image-reflector-controller and image-automation-controller (flux bootstrap --components-extra=...).
+# In the Deployment/HelmRelease, mark the field:  image: registry.example.com/org/web:1.4.0 # {"$imagepolicy": "flux-system:web"}
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: web
+  namespace: flux-system
+spec:
+  image: registry.example.com/org/web
+  interval: 5m
+  # secretRef:
+  #   name: regcred              # private registry; store the Secret encrypted (devops-secrets)
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: web
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: web
+  policy:
+    semver:
+      range: 1.4.x
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  interval: 30m
+  sourceRef:
+    kind: GitRepository
+    name: gitops
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: fluxcdbot@users.noreply.github.com
+        name: fluxcdbot
+      messageTemplate: |-
+        Update container images
+
+        {{ .Changed.Summary }}
+    push:
+      branch: image-updates      # production: push to a branch, review by pull request
+  update:
+    path: ./apps/web
+    strategy: Setters

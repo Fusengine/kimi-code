@@ -1,0 +1,86 @@
+# Alerting rules file for Prometheus rule_files (syntax: alerting_rules page, v3.16.0).
+# Validate:  promtool check rules rules-alerts.yml
+# Style: alert on SYMPTOMS first, causes as ticket-level; every alert carries a runbook_url.
+# Replace https://runbooks.example.com/ with your runbook base before use.
+groups:
+  - name: monitoring-meta
+    rules:
+      - alert: Watchdog
+        # Always firing: routed to a dead man's switch that pages when it STOPS arriving.
+        expr: vector(1)
+        labels:
+          severity: none
+        annotations:
+          summary: "Alerting pipeline heartbeat"
+
+      - alert: TargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "Target {{ $labels.instance }} (job {{ $labels.job }}) is down"
+          description: "Scrape of {{ $labels.instance }} has failed for 5 minutes."
+          runbook_url: "https://runbooks.example.com/TargetDown"
+
+      - alert: PrometheusRuleEvaluationSkipped
+        expr: increase(prometheus_rule_group_iterations_missed_total[10m]) > 0
+        for: 10m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "Rule group {{ $labels.rule_group }} skips evaluations on {{ $labels.instance }}"
+          runbook_url: "https://runbooks.example.com/PrometheusRuleEvaluationSkipped"
+
+      - alert: AlertmanagerNotificationsFailing
+        expr: rate(alertmanager_notifications_failed_total[10m]) > 0
+        for: 10m
+        labels:
+          severity: page
+        annotations:
+          summary: "Alertmanager {{ $labels.instance }} fails to deliver to {{ $labels.integration }}"
+          runbook_url: "https://runbooks.example.com/AlertmanagerNotificationsFailing"
+
+  - name: hosts
+    rules:
+      - alert: HostFilesystemFillingUp
+        # Cause-based but actionable: predicts exhaustion 24h ahead.
+        expr: |
+          predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"}[6h], 24 * 3600) < 0
+          and node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes < 0.4
+        for: 1h
+        labels:
+          severity: ticket
+        annotations:
+          summary: "{{ $labels.mountpoint }} on {{ $labels.instance }} fills within 24h"
+          runbook_url: "https://runbooks.example.com/HostFilesystemFillingUp"
+
+      - alert: HostMemoryExhausted
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.05
+        for: 10m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "{{ $labels.instance }} has under 5% memory available"
+          runbook_url: "https://runbooks.example.com/HostMemoryExhausted"
+
+  - name: probes
+    rules:
+      - alert: EndpointDown
+        # Symptom: the user-facing check fails from the outside.
+        expr: probe_success{job="blackbox-http"} == 0
+        for: 3m
+        labels:
+          severity: page
+        annotations:
+          summary: "{{ $labels.instance }} fails its HTTP probe"
+          runbook_url: "https://runbooks.example.com/EndpointDown"
+
+      - alert: TLSCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry{job="blackbox-http"} - time() < 14 * 24 * 3600
+        for: 1h
+        labels:
+          severity: ticket
+        annotations:
+          summary: "Certificate of {{ $labels.instance }} expires in under 14 days"
+          runbook_url: "https://runbooks.example.com/TLSCertificateExpiringSoon"

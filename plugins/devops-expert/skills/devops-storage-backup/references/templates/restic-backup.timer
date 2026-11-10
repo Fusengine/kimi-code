@@ -1,0 +1,13 @@
+# /etc/systemd/system/restic-backup.timer
+# Enable with: systemctl enable --now restic-backup.timer
+# Check with:  systemctl list-timers restic-backup.timer
+[Unit]
+Description=Nightly restic backup
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+RandomizedDelaySec=20min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

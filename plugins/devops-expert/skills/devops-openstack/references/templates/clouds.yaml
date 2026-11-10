@@ -1,0 +1,44 @@
+# clouds.yaml - place in ~/.config/openstack/ or /etc/openstack/ (first file found wins),
+# or point OS_CLIENT_CONFIG_FILE at it. Select an entry with OS_CLOUD=<name> or --os-cloud <name>.
+# Secrets: keep passwords and application credential secrets in secure.yaml (same search
+# path, same structure, takes precedence) and never commit either file with values.
+# Keys verified in https://docs.openstack.org/openstacksdk/2026.2/user/config/configuration.html
+clouds:
+  # Cloud admin (what `kolla-ansible post-deploy` generates in /etc/kolla/clouds.yaml)
+  mycloud-admin:
+    auth:
+      auth_url: https://api.cloud.example.com:5000
+      username: admin
+      password: CHANGE_ME_IN_SECURE_YAML
+      project_name: admin
+      user_domain_name: Default
+      project_domain_name: Default
+    region_name: RegionOne
+    interface: public
+    identity_api_version: 3
+    cacert: /etc/ssl/certs/cloud-ca.pem      # private CA; never use verify: False in production
+
+  # A project member using a password
+  team-a:
+    auth:
+      auth_url: https://api.cloud.example.com:5000
+      username: alice
+      project_name: team-a
+      user_domain_name: Default
+      project_domain_name: Default
+    region_name: RegionOne
+    interface: public
+    identity_api_version: 3
+    cacert: /etc/ssl/certs/cloud-ca.pem
+
+  # Automation: application credential (scoped to one project, revocable, no password)
+  team-a-ci:
+    auth_type: v3applicationcredential
+    auth:
+      auth_url: https://api.cloud.example.com:5000
+      application_credential_id: REPLACE_WITH_ID
+      application_credential_secret: CHANGE_ME_IN_SECURE_YAML
+    region_name: RegionOne
+    interface: public
+    identity_api_version: 3
+    cacert: /etc/ssl/certs/cloud-ca.pem

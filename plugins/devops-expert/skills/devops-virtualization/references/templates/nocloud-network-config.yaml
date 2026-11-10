@@ -1,0 +1,20 @@
+# NoCloud network-config, version 2 (Netplan-subset format).
+# Reference: https://docs.cloud-init.io/en/latest/reference/network-config-format-v2.html (read 2026-11-10).
+# Static address with a default route in "routes" (gateway4/gateway6 are marked deprecated in that page).
+# Matching by MAC keeps working if the NIC name differs between images; quote the MAC and use lowercase.
+# For DHCP replace addresses/routes/nameservers with:  dhcp4: true
+network:
+  version: 2
+  ethernets:
+    primary:
+      match:
+        macaddress: "52:54:00:00:15:10"
+      set-name: eth0
+      addresses:
+        - 192.168.150.10/24
+      routes:
+        - to: default
+          via: 192.168.150.1
+      nameservers:
+        search: [lab.example]
+        addresses: [192.168.150.1]

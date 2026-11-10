@@ -1,0 +1,65 @@
+# Deploy with a short-lived OIDC token instead of a stored credential.
+# The target here is OpenBao/Vault JWT auth (self-hosted); the same pattern
+# fits any OIDC-aware system. PRODUCTION DEPLOY: every run is gated by the
+# `production` environment (required reviewers + deployment branch rule set in
+# the repository settings, not in this file). See
+# references/destructive-pipeline-actions.md before editing the deploy step.
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      image-digest:
+        description: "Immutable image reference to deploy (sha256 digest)"
+        required: true
+        type: string
+
+permissions: {}
+
+# Never cancel a deploy mid-flight: queue instead.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://app.example.com
+    permissions:
+      contents: read
+      id-token: write # lets the job request the OIDC JWT; grants nothing else
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Get OIDC token and exchange it for a short-lived Vault/OpenBao token
+        env:
+          BAO_ADDR: ${{ vars.BAO_ADDR }} # https URL, a repository/environment variable
+          BAO_ROLE: ci-deploy-production # role bound to repo + environment claims
+        run: |
+          set -euo pipefail
+          jwt=$(curl -sS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${BAO_ADDR}" | jq -r .value)
+          echo "::add-mask::${jwt}"
+          token=$(curl -sS --request POST \
+            --data "$(jq -n --arg role "$BAO_ROLE" --arg jwt "$jwt" '{role:$role,jwt:$jwt}')" \
+            "${BAO_ADDR}/v1/auth/jwt/login" | jq -r .auth.client_token)
+          echo "::add-mask::${token}"
+          echo "BAO_TOKEN=${token}" >> "$GITHUB_ENV"
+
+      - name: Deploy (GitOps handoff - see devops-gitops-packaging)
+        env:
+          IMAGE_DIGEST: ${{ inputs.image-digest }}
+        run: |
+          set -euo pipefail
+          # Do NOT run kubectl/ssh against production from here when a GitOps
+          # controller owns the cluster: commit the new digest to the config
+          # repo instead. Replace with the project's real, reviewed command.
+          ./scripts/promote.sh "$IMAGE_DIGEST"
+
+      - name: Smoke test
+        run: curl -fsS --retry 5 --retry-delay 5 https://app.example.com/healthz

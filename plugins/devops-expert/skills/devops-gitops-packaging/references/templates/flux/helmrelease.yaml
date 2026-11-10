@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: web
+  namespace: shop
+spec:
+  interval: 15m
+  timeout: 5m
+  releaseName: web
+  chart:
+    kind: OCIRepository
+    spec:
+      interval: 5m
+      url: oci://registry.example.com/charts/web
+      ref:
+        semver: "1.4.x"          # production: an exact version, raised by pull request
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  test:
+    enable: true
+  driftDetection:
+    mode: enabled
+    ignore:
+      - paths: ["/spec/replicas"]   # only when an HPA owns replicas
+        target:
+          kind: Deployment
+  values:
+    replicaCount: 3
+    existingSecret: web-env

@@ -105,11 +105,11 @@ describe("install-kimi", () => {
 		expect(mcpServers(home3)["fake-http"].url).toBe("https://example.com/mcp?key=tok999");
 	});
 
-	test("real repo dry-run regenerates marketplace.json with 25 entries", () => {
+	test("real repo dry-run regenerates marketplace.json with 26 entries", () => {
 		const proc = spawnSync("bun", [INSTALLER], { encoding: "utf8" });
 		expect(proc.status).toBe(0);
-		expect(`${proc.stdout}\n${proc.stderr}`).toContain(">=0.1.108");
+		expect(`${proc.stdout}\n${proc.stderr}`).toContain(">=0.1.115");
 		const market = JSON.parse(readFileSync(join(import.meta.dir, "..", "..", "marketplace.json"), "utf8"));
-		expect(market.plugins).toHaveLength(25);
+		expect(market.plugins).toHaveLength(26);
 	});
 });

@@ -1,0 +1,30 @@
+# Incus profile with limits and cloud-init vendor-data.
+# Load:  incus profile create web-base
+#        incus profile edit web-base < incus-profile.yaml
+# Keys verified on https://linuxcontainers.org/incus/docs/main/ (profiles, cloud-init, instance options),
+# read 2026-11-10. Device syntax follows the default profile shown in the profiles doc.
+# Names (incusbr0, default) are the defaults of "incus admin init"; adapt to your host.
+# cloud-init.* keys apply to newer images; older images use user.vendor-data / user.user-data.
+# cloud-init runs only on the first start of each instance.
+config:
+  limits.cpu: "2"
+  limits.memory: 2GiB
+  boot.autostart: "true"
+  cloud-init.vendor-data: |
+    #cloud-config
+    package_update: true
+    packages:
+      - qemu-guest-agent
+      - openssh-server
+description: Base profile for web instances (limits + vendor cloud-init)
+devices:
+  eth0:
+    name: eth0
+    network: incusbr0
+    type: nic
+  root:
+    path: /
+    pool: default
+    type: disk
+    size: 20GiB
+name: web-base

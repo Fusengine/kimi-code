@@ -1,0 +1,71 @@
+# OpenTelemetry Collector (contrib distribution, release v0.165.0) gateway pipeline.
+# Validate:  otelcol-contrib validate --config=otel-collector.yaml   (also: otelcol-contrib components)
+# Component type names follow the renames in collector v0.144.0: `otlp` -> `otlp_grpc`,
+# `otlphttp` -> `otlp_http` (the old names still work as deprecated aliases).
+#
+# Backends:
+#   metrics -> Prometheus OTLP receiver (start Prometheus with --web.enable-otlp-receiver;
+#              it expects CUMULATIVE metrics unless the delta feature flags are enabled)
+#   logs    -> Loki native OTLP ingestion at /otlp
+#   traces  -> Tempo OTLP/HTTP on 4318
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317     # the Collector default is localhost: open it on purpose, behind a firewall
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:                  # first processor in every pipeline
+    check_interval: 1s
+    limit_percentage: 80
+    spike_limit_percentage: 20
+  batch:                           # after any processor that drops data (sampling)
+    timeout: 5s
+    send_batch_size: 8192
+  # Tail sampling keeps all errors and slow traces, 10% of the rest. It is STATEFUL: every span of a trace
+  # must reach the same Collector instance (use a load-balancing exporter tier when scaling out).
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 50000
+    policies:
+      - name: errors
+        type: status_code
+        status_code: { status_codes: [ERROR] }
+      - name: slow
+        type: latency
+        latency: { threshold_ms: 1000 }
+      - name: baseline
+        type: probabilistic
+        probabilistic: { sampling_percentage: 10 }
+
+exporters:
+  otlp_http/prometheus:
+    metrics_endpoint: http://prometheus:9090/api/v1/otlp/v1/metrics
+  otlp_http/loki:
+    endpoint: http://loki:3100/otlp
+  otlp_http/tempo:
+    endpoint: http://tempo:4318
+    tls:
+      insecure: true               # lab only
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp_http/prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp_http/loki]
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, tail_sampling, batch]
+      exporters: [otlp_http/tempo]

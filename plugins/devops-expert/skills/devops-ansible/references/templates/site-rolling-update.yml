@@ -1,0 +1,87 @@
+---
+# Rolling update of the web tier. Always dry-run first:
+#   ansible-playbook -i inventories/production playbooks/site-rolling-update.yml --check --diff --limit web01
+# Real run (only after the user's go, see safe-run-protocol.md):
+#   ansible-playbook -i inventories/production playbooks/site-rolling-update.yml --limit web01 -e rollout_confirmed=true
+# Canary first (--limit one host), then widen --limit; batches below keep the blast radius small.
+- name: Rolling update of the web tier
+  hosts: web
+  become: true
+  gather_facts: true
+  # 1 host, then 5, then 10 at a time. Failures are scoped to the batch.
+  serial: [1, 5, 10]
+  # Abort the whole play when MORE than 30% of a batch fail (1 failed host in the first batch = 100%).
+  max_fail_percentage: 30
+  vars:
+    example_service_version: "1.4.2"       # pinned; never "latest" in production
+    rollout_confirmed: false               # must be set explicitly for a real (non-check) run
+    # Runs on the target itself, so it probes the local listener.
+    rollout_health_url: "http://127.0.0.1:{{ example_service_port | default(8080) }}/healthz"
+    rollout_lb_drain_url: ""               # set to your load balancer API; empty = no drain step
+
+  pre_tasks:
+    - name: Refuse a real run that was not confirmed
+      ansible.builtin.assert:
+        that: ansible_check_mode or (rollout_confirmed | bool)
+        fail_msg: "Real run refused: pass -e rollout_confirmed=true after the go."
+        quiet: true
+
+    - name: Take the host out of the load balancer
+      ansible.builtin.uri:
+        url: "{{ rollout_lb_drain_url }}"
+        method: POST
+        status_code: [200, 204]
+      delegate_to: localhost
+      become: false
+      when:
+        - rollout_lb_drain_url | length > 0
+        - not ansible_check_mode
+
+  tasks:
+    - name: Upgrade with rollback path
+      block:
+        - name: Apply the service role at the pinned version
+          ansible.builtin.include_role:
+            name: example_service
+
+        - name: Run notified handlers now, before verifying
+          ansible.builtin.meta: flush_handlers
+
+        - name: Wait for the service port
+          ansible.builtin.wait_for:
+            port: "{{ example_service_port | default(8080) }}"
+            timeout: 60
+          when: not ansible_check_mode
+
+        - name: Check the health endpoint
+          ansible.builtin.uri:
+            url: "{{ rollout_health_url }}"
+            status_code: 200
+          register: rollout_health
+          until: rollout_health.status == 200
+          retries: 5
+          delay: 5
+          when: not ansible_check_mode
+
+      rescue:
+        - name: Report the failure for this host
+          ansible.builtin.debug:
+            msg: "Update failed on {{ inventory_hostname }}; restore the previous version/config before re-adding it."
+
+        # Without this the rescue would clear the failure and the batch gate (max_fail_percentage) would not trip.
+        - name: Keep the host failed so the batch gate sees it
+          ansible.builtin.fail:
+            msg: "Update failed on {{ inventory_hostname }}"
+
+  post_tasks:
+    # Hosts that failed are removed from the play, so they are NOT put back into the load balancer.
+    - name: Put the host back into the load balancer
+      ansible.builtin.uri:
+        url: "{{ rollout_lb_drain_url }}"
+        method: DELETE
+        status_code: [200, 204]
+      delegate_to: localhost
+      become: false
+      when:
+        - rollout_lb_drain_url | length > 0
+        - not ansible_check_mode

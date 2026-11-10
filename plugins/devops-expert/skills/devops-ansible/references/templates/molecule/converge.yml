@@ -1,0 +1,9 @@
+---
+# molecule/default/converge.yml - applies the role under test to the lab target.
+- name: Converge
+  hosts: lab
+  become: true
+  roles:
+    - role: example_service
+      vars:
+        example_service_port: 8080

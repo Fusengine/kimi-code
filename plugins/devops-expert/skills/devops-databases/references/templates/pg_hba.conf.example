@@ -1,0 +1,38 @@
+# pg_hba.conf.example - rules are matched top to bottom; the first matching line decides.
+# Format: TYPE  DATABASE  USER  ADDRESS  METHOD [OPTIONS]
+# Reload after editing: SELECT pg_reload_conf();   Check parsing: SELECT * FROM pg_hba_file_rules;
+# Placeholders: CHANGE_ME_* are examples, replace with your own addresses/names. No password appears in this file.
+# Under Patroni the 'pg_hba' list of the Patroni config generates this file; under CloudNativePG use spec.postgresql.pg_hba.
+
+# --- Local administration (OS user 'postgres' only, over the unix socket) -------------
+local   all             postgres                                peer
+
+# --- Local service accounts that use the socket (monitoring agent, backup agent on the same host)
+local   all             monitor_user                            scram-sha-256
+local   all             backup_user                             scram-sha-256
+
+# --- Replication: dedicated role, replica addresses only, TLS required ------------------
+hostssl replication     replicator      CHANGE_ME_replica1/32   scram-sha-256
+hostssl replication     replicator      CHANGE_ME_replica2/32   scram-sha-256
+# pg_rewind (Patroni use_pg_rewind): a normal, non-replication connection from a rejoining member
+hostssl all             rewind_user     CHANGE_ME_replica1/32   scram-sha-256
+hostssl all             rewind_user     CHANGE_ME_replica2/32   scram-sha-256
+# pgBackRest and pg_basebackup from the backup host, if it connects over TCP:
+hostssl replication     backup_user     CHANGE_ME_backup_host/32 scram-sha-256
+
+# --- Cluster-internal admin (Patroni users, same private subnet) --------------------
+hostssl all             patroni_admin   CHANGE_ME_db_subnet/24  scram-sha-256
+
+# --- Pooler (PgBouncer) connects as application roles through its own address -----------
+hostssl appdb           app_rw          CHANGE_ME_pgbouncer/32  scram-sha-256
+hostssl appdb           app_ro          CHANGE_ME_pgbouncer/32  scram-sha-256
+# PgBouncer's auth_query role, if used (non-superuser calling a SECURITY DEFINER function):
+hostssl appdb           pgbouncer_auth  CHANGE_ME_pgbouncer/32  scram-sha-256
+
+# --- Monitoring exporter on the observability host ----------------------------------------
+hostssl postgres        monitor_user    CHANGE_ME_monitoring/32 scram-sha-256
+
+# --- Explicit denials, last: no unencrypted TCP, nothing else ---------------------------
+hostnossl all           all             0.0.0.0/0               reject
+host      all           all             0.0.0.0/0               reject
+host      all           all             ::/0                    reject

@@ -1,0 +1,13 @@
+# blackbox_exporter modules (fields checked in CONFIGURATION.md of v0.29.1).
+# Try a module by hand: curl "http://blackbox:9115/probe?target=https://example.com&module=http_2xx&debug=true"
+# Probe timeout must stay below the scrape_timeout of the Prometheus job that calls it.
+modules:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      method: GET                  # valid_status_codes defaults to 2xx
+      preferred_ip_protocol: ip4   # the exporter default is ip6
+  tcp_connect:
+    prober: tcp
+    timeout: 5s

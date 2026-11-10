@@ -1,0 +1,14 @@
+---
+# inventories/production/group_vars/all/main.yml  (plaintext, reviewable)
+# Pattern: the readable variable points at a vault_-prefixed one that lives in an encrypted file.
+# Create the encrypted side with, for example:
+#   ansible-vault create --vault-id prod@prompt inventories/production/group_vars/all/vault.yml
+# and put in it (never in this file):  vault_app_db_password: <value>
+
+app_environment: production
+app_log_level: info
+app_db_host: db01.example.net
+app_db_user: app
+
+# Resolved from group_vars/all/vault.yml at run time. Tasks using it need no_log: true.
+app_db_password: "{{ vault_app_db_password }}"

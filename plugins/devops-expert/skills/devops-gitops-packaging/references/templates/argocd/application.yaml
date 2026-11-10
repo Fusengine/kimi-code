@@ -1,0 +1,34 @@
+# Production-safe default: manual sync, prune only on request, no HEAD.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: web-prod
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io   # cascade-delete resources with the app; remove to orphan instead
+spec:
+  project: shop
+  source:
+    repoURL: https://git.example.com/org/gitops.git
+    targetRevision: v1.4.2            # tag or commit SHA, never HEAD in production
+    path: apps/web/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: shop
+  syncPolicy:
+    # No `automated` block = manual sync. For staging use:
+    #   automated: { prune: false, selfHeal: true }
+    syncOptions:
+      - PruneLast=true
+      - Prune=confirm                 # app-level default: pruning needs explicit confirmation
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas              # only when an HPA owns replicas

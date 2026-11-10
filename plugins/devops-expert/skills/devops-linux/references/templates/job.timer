@@ -1,0 +1,21 @@
+# Template: timer for job.service (same base name, so Unit= is implicit).
+# Replaces a crontab line such as "30 2 * * * /usr/local/bin/job.sh".
+# Check the schedule:  systemd-analyze calendar '*-*-* 02:30:00'
+# After enabling:      systemctl list-timers job.timer
+# Sources: https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html
+#          https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html
+
+[Unit]
+Description=Run job.service nightly at 02:30
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+# Catch up a run missed while the host was off (only applies with OnCalendar=).
+Persistent=true
+# Spread a fleet over 15 minutes; FixedRandomDelay keeps each host's offset stable.
+RandomizedDelaySec=15min
+FixedRandomDelay=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

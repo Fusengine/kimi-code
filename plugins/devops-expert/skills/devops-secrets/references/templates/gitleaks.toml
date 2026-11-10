@@ -1,0 +1,25 @@
+# Save as .gitleaks.toml at the repository root (gitleaks v8.30.1 syntax).
+# Extends the built-in rules; add narrow allowlists only.
+title = "Repository gitleaks configuration"
+
+[extend]
+# useDefault and path cannot be combined.
+useDefault = true
+
+# Example custom rule: an internal token prefix (placeholder pattern, adjust to your format).
+[[rules]]
+id = "internal-service-token"
+description = "Internal service token with the CHANGE_ME prefix"
+regex = '''CHANGE_ME_PREFIX_[A-Za-z0-9]{20,}'''
+keywords = ["CHANGE_ME_PREFIX_"]
+tags = ["internal"]
+
+# Narrow allowlist: documentation fixtures that contain obviously fake values.
+# targetRules limits the allowlist to the named rules (gitleaks v8.25+).
+[[allowlists]]
+description = "Fake example values in docs and test fixtures"
+targetRules = ["internal-service-token"]
+paths = [
+  '''docs/examples/.*''',
+  '''tests/fixtures/.*''',
+]

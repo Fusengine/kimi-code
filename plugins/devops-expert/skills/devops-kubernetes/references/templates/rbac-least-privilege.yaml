@@ -1,0 +1,53 @@
+# Least-privilege identity for a workload that reads ONE ConfigMap and watches pods of its own app.
+# Most apps need no API access at all: then keep only the ServiceAccount (automount false) and drop Role/RoleBinding.
+# Prove the result: kubectl --context CTX -n shop auth can-i --list --as=system:serviceaccount:shop:web
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: web
+  namespace: shop
+automountServiceAccountToken: false # pods that need the token set automountServiceAccountToken: true in their spec
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: web
+  namespace: shop
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["web-feature-flags"] # one named object
+    verbs: ["get", "watch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"] # read-only; never "create" (implies reading every Secret)
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: web
+  namespace: shop
+subjects:
+  - kind: ServiceAccount
+    name: web
+    namespace: shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: web
+---
+# Read-only access for a human team, reusing the built-in "view" ClusterRole but scoped
+# to this namespace through a RoleBinding (a RoleBinding never grants cluster-wide).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: team-shop-view
+  namespace: shop
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: team-shop # group name as asserted by your identity provider
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view

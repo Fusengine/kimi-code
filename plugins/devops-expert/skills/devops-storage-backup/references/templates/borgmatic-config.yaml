@@ -1,0 +1,32 @@
+# /etc/borgmatic/config.yaml - borgmatic 2.x. Replace paths, labels and retention.
+# Dry run:   borgmatic --dry-run --verbosity 1   (check `borgmatic --help` for your version)
+# The passphrase is read from a systemd service credential named borgmatic.pw, so it
+# never appears in this file. Provide it in the service unit with, for example,
+#   LoadCredential=borgmatic.pw:/etc/borgmatic/passphrase   (file root:root, 0600)
+# Back up the repository key/passphrase separately; losing it loses the data.
+
+source_directories:
+    - /etc
+    - /srv
+    - /home
+
+repositories:
+    - path: ssh://backup@backup.example.net/./repos/host1.borg   # replace; use an append-only server key
+      label: offsite
+    - path: /mnt/backup/host1.borg                               # replace; local copy
+      label: local
+
+encryption_passphrase: "{credential systemd borgmatic.pw}"
+
+# Retention (borgmatic prunes and compacts as configured; run only with approval,
+# and not from a client that must stay append-only).
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 12
+
+# Consistency checks.
+checks:
+    - name: repository
+      frequency: 2 weeks
+    - name: archives
+      frequency: 4 weeks

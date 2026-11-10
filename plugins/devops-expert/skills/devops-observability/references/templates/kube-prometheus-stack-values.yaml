@@ -1,0 +1,55 @@
+# Helm values for prometheus-community/kube-prometheus-stack (chart main branch 93.1.1, appVersion v0.95.1).
+# Every key below exists in the chart's values.yaml read on 2026-11-10; re-diff against the chart version you install:
+#   helm show values prometheus-community/kube-prometheus-stack --version <X> > upstream-values.yaml
+# Dry run:  helm upgrade --install kps prometheus-community/kube-prometheus-stack -n monitoring \
+#             --version <X> -f kube-prometheus-stack-values.yaml --dry-run=server
+# The real install/upgrade is a proposal (see observability-safe-ops.md).
+crds:
+  enabled: true                       # chart installs the CRDs; Helm never upgrades CRDs by itself
+  upgradeJob:
+    enabled: false                    # preview feature in the chart: read its comments before enabling
+
+defaultRules:
+  create: true                        # the chart's built-in PrometheusRules; tune rule groups, do not delete alerts blindly
+
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    retentionSize: "40GB"             # keep it ~10% under the PVC size so the volume never fills
+    # Pick up ServiceMonitor/PodMonitor/PrometheusRule/Probe objects from ALL namespaces and with ANY labels.
+    # With the default (true) only objects labeled release=<helm release> are selected.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    scrapeConfigSelectorNilUsesHelmValues: false
+    walCompression: true
+    # The chart default is an emptyDir: metrics are LOST when the pod is rescheduled. Always set a PVC.
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: fast-ssd  # your StorageClass
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+
+alertmanager:
+  alertmanagerSpec:
+    retention: 120h                   # silences and notification log retention
+    storage:                          # default is emptyDir: silences vanish on restart without a PVC
+      volumeClaimTemplate:
+        spec:
+          storageClassName: fast-ssd
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+  # Provide the real routing tree via a Secret or the alertmanager.config key
+  # (start from alertmanager.yml in this folder); never put receiver secrets in this file.
+
+grafana:
+  enabled: true
+  sidecar:
+    dashboards:
+      enabled: true                   # ConfigMaps labeled grafana_dashboard: "1" become dashboards (dashboards as code)

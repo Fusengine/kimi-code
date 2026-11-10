@@ -1,0 +1,15 @@
+---
+# roles/example_service/meta/main.yml
+# galaxy_info is needed only to publish a standalone role; dependencies run before this role.
+galaxy_info:
+  author: example
+  description: Installs and configures the example service
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions: [all]
+    - name: EL
+      versions: [all]
+  galaxy_tags: []
+dependencies: []

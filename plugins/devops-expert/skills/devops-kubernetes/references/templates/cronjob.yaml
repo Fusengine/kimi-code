@@ -1,0 +1,65 @@
+# Scheduled job (example: nightly export). Replace: shop, name, schedule, image, command.
+# timeZone takes an IANA name (stable since v1.27); CRON_TZ/TZ inside schedule is rejected.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly-export
+  namespace: shop
+spec:
+  schedule: "15 2 * * *"
+  timeZone: "Europe/Zurich"
+  concurrencyPolicy: Forbid # never two exports at once
+  startingDeadlineSeconds: 600 # a run missed by more than 10 min is skipped
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  suspend: false
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 3600
+      ttlSecondsAfterFinished: 86400
+      podReplacementPolicy: Failed # no overlap; with podFailurePolicy set, Failed is the default and the only allowed value
+      podFailurePolicy:
+        rules:
+          - action: FailJob # exit code 2 = bad input, retrying will not help
+            onExitCodes:
+              containerName: export
+              operator: In
+              values: [2]
+          - action: Ignore # evictions/drains do not count against backoffLimit
+            onPodConditions:
+              - type: DisruptionTarget
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: nightly-export
+        spec:
+          restartPolicy: Never # required with podFailurePolicy
+          serviceAccountName: nightly-export
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: export
+              image: registry.example.com/shop/export:1.8.0
+              args: ["--target", "s3://exports/shop"]
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 256Mi
+                limits:
+                  memory: 512Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir: {}

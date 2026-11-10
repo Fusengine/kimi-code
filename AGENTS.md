@@ -1,6 +1,6 @@
 # AGENTS.md — Fusengine Kimi Code plugin suite (source repo)
 
-Source repository of the 25 Kimi Code plugins deployed to
+Source repository of the 26 Kimi Code plugins deployed to
 `~/.kimi-code/plugins/managed/fusengine/`. The GLOBAL Fusengine rules
 (identity, non-negotiables, APEX, swarms, SOLID/DRY, tooling) are NOT restated
 here: they are installed into `~/.kimi-code/AGENTS.md` from
@@ -10,7 +10,7 @@ fences, and loaded natively every session. Keep this file project-only.
 
 ## Layout
 
-- `plugins/` — the 25 plugins (source of truth for manifests, skills, agents)
+- `plugins/` — the 26 plugins (source of truth for manifests, skills, agents)
 - `core-overrides/kimi-rules/` — canonical kimi-rules plugin, copied over
   `plugins/kimi-rules/` by `scripts/apply-core-overrides.ts`
 - `core-overrides/ai-pilot-agents/` — hand-optimized ai-pilot agents
@@ -22,7 +22,7 @@ fences, and loaded natively every session. Keep this file project-only.
 
 ## Commands
 
-- `bun run validate` — manifest/shim/MCP checks, must end `25/25 plugins valid.`
+- `bun run validate` — manifest/shim/MCP checks, must end `26/26 plugins valid.`
 - `bun test scripts/tests/` — installer e2e tests
 - `bun run install` — install/update into `$KIMI_CODE_HOME` (dry-run by default)
 - `bun run scripts/apply-core-overrides.ts` — re-sync core-overrides → plugins
@@ -43,7 +43,11 @@ fences, and loaded natively every session. Keep this file project-only.
 4. **Hook commands**: every hook in a `kimi.plugin.json` must invoke
    `kimi-hook-shim.mjs` — enforced by `scripts/lib/validate-checks.ts`.
 5. **Harness floor**: `package.json` `fusengine.harnessMinVersion` (currently
-   0.1.108 — lessons requested in caveman style; per-recipient injection
+   0.1.115 — English user messages, wider security-scan coverage, bounded
+   cartographer reads, stop gates + report recovery incl. background agents,
+   scratchpad redirect, `rm -r` in temp dirs asks instead of blocking, `&>`
+   redirect handling, PRD patch handling; 0.1.108 — lessons requested in
+   caveman style; per-recipient injection
    registry for Claude Code only, Kimi output byte-identical; 0.1.107 — APEX
    deny lists all missing prerequisites, SOLID detection for
    react/tanstack-start/astro/java/csharp/ruby/generic per FUSE_SOLID_MAX_LINES;

@@ -1,0 +1,26 @@
+# Velero Schedule (velero.io/v1, Velero 1.18). Replace: names, namespaces, storage location.
+# Apply with: kubectl diff -f velero-schedule.yaml ; kubectl apply --dry-run=server -f velero-schedule.yaml
+# The BackupStorageLocation "offsite" must already exist in the velero namespace.
+# snapshotMoveData needs CSI snapshots plus the data-mover components installed;
+# check `velero backup describe NAME --details` after the first run.
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-apps
+  namespace: velero
+spec:
+  schedule: "0 3 * * *"            # cron, in the Velero server's time zone
+  paused: false
+  useOwnerReferencesInBackup: false # true would delete the backups when the schedule is deleted
+  template:
+    includedNamespaces:
+      - shop
+      - billing
+    excludedResources:
+      - events
+    snapshotVolumes: true
+    snapshotMoveData: true          # copy snapshot data into the backup location (off-site leg)
+    datamover: velero               # built-in data mover
+    csiSnapshotTimeout: 10m
+    storageLocation: offsite
+    ttl: 720h0m0s                   # 30 days; expiry deletes the backup and its snapshots

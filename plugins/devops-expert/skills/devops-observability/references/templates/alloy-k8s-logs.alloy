@@ -1,0 +1,54 @@
+// Alloy v1.21 on Kubernetes: pod logs via the Kubernetes API -> Loki (no node file mounts needed).
+// Needs RBAC to list/watch pods and read pods/log (see the Alloy Helm chart or loki.source.kubernetes docs).
+// Validate:  alloy validate config.alloy
+discovery.kubernetes "pods" {
+  role = "pod"
+}
+
+discovery.relabel "pod_logs" {
+  targets = discovery.kubernetes.pods.targets
+
+  // Keep the stream label set low-cardinality: namespace, app, container.
+  // pod name is NOT promoted to a label (it churns); filter on it with a line filter or structured metadata.
+  rule {
+    source_labels = ["__meta_kubernetes_namespace"]
+    target_label  = "namespace"
+  }
+  rule {
+    source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+    target_label  = "app"
+  }
+  rule {
+    source_labels = ["__meta_kubernetes_pod_container_name"]
+    target_label  = "container"
+  }
+  // Example exclusion: do not collect logs of one namespace (adapt or remove).
+  rule {
+    source_labels = ["__meta_kubernetes_namespace"]
+    regex         = "kube-system"
+    action        = "drop"
+  }
+}
+
+loki.source.kubernetes "pods" {
+  targets    = discovery.relabel.pod_logs.output
+  forward_to = [loki.process.pods.receiver]
+}
+
+loki.process "pods" {
+  // JSON application logs: pull `level` out and keep it as structured metadata, not as a stream label.
+  stage.json {
+    expressions = { level = "level" }
+  }
+  stage.structured_metadata {
+    values = { level = "" }
+  }
+
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki.monitoring.svc:3100/loki/api/v1/push"
+  }
+}

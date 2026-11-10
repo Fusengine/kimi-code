@@ -1,0 +1,30 @@
+---
+# molecule/default/molecule.yml - ansible-native configuration (docs: molecule ansible-native).
+# Targets come from plain Ansible inventory: point it ONLY at disposable lab hosts you own,
+# never at production and never at the control node itself (converge is a real run).
+ansible:
+  executor:
+    backend: ansible-playbook
+    args:
+      ansible_playbook:
+        - --inventory=inventory/
+  env:
+    ANSIBLE_FORCE_COLOR: true
+  cfg:
+    defaults:
+      gathering: smart
+    ssh_connection:
+      pipelining: true
+  playbooks:
+    converge: converge.yml
+    verify: verify.yml
+
+scenario:
+  # idempotence re-runs converge and fails if any task reports "changed".
+  test_sequence:
+    - converge
+    - idempotence
+    - verify
+
+verifier:
+  name: ansible

@@ -1,0 +1,27 @@
+# Template: sudoers drop-in for an operations group.
+# File name MUST NOT contain a "." or end in "~" - sudo silently skips such files in sudoers.d.
+# Install (keep a second root session open):
+#   visudo -f /etc/sudoers.d/ops          # edit through visudo, never a plain editor
+#   visudo -cf /etc/sudoers.d/ops         # check this file
+#   visudo -c                             # check the whole tree
+#   chmod 0440 /etc/sudoers.d/ops
+#   sudo -l -U <member>                   # effective rights, from the spare session
+# Sources: https://www.sudo.ws/docs/man/sudoers.man/ , https://www.sudo.ws/docs/man/visudo.man/
+
+# New pseudo-terminal per command: blocks terminal-injection and background processes that keep
+# access to the user's terminal after the command ends (sudoers(5), use_pty).
+Defaults:%ops use_pty
+
+# Read-only diagnostics without a password prompt. --no-pager is forced as the first argument:
+# under elevated privileges the pager (less) is a security boundary - it can run shell commands
+# (systemctl(1), $SYSTEMD_PAGERSECURE). Members must type the commands exactly in this form.
+Cmnd_Alias OPS_DIAG = /usr/bin/journalctl --no-pager *, /usr/bin/systemctl --no-pager status *, /usr/bin/systemctl --no-pager list-units *, /usr/bin/systemctl --no-pager list-timers *
+
+# Service lifecycle for the application units only (password required).
+Cmnd_Alias OPS_APP = /usr/bin/systemctl restart myapp.service, /usr/bin/systemctl reload myapp.service
+
+%ops ALL=(root) NOPASSWD: OPS_DIAG
+%ops ALL=(root) OPS_APP
+
+# Paths differ per distro (/usr/bin vs /bin symlinks): check with "command -v systemctl" and adjust.
+# Avoid "NOPASSWD: ALL" and wildcards on commands that accept arbitrary arguments (editors, pagers, shells).

@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: gitops
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://git.example.com/org/gitops.git
+  ref:
+    branch: main        # production clusters: pin a tag or commit instead

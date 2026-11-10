@@ -1,0 +1,20 @@
+<!--
+  libvirt directory storage pool (pool type "dir").
+  Schema: https://libvirt.org/formatstorage.html (read 2026-11-10).
+  Apply (after the read-only inventory and the user's go):
+    virsh -c qemu:///system pool-define libvirt-dir-pool.xml
+    virsh -c qemu:///system pool-build vmimages
+    virsh -c qemu:///system pool-start vmimages
+    virsh -c qemu:///system pool-autostart vmimages
+  Verify: virsh -c qemu:///system pool-info vmimages
+  Undo (no data deleted): pool-destroy then pool-undefine. NEVER pool-delete without a go.
+  The target directory must exist on a filesystem with enough space; for qemu
+  the directory and its files need the ownership libvirt expects (check the
+  distribution's default pool before copying its mode).
+-->
+<pool type="dir">
+  <name>vmimages</name>
+  <target>
+    <path>/srv/vm/images</path>
+  </target>
+</pool>

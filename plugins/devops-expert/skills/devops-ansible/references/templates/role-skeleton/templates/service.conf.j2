@@ -1,0 +1,4 @@
+{# roles/example_service/templates/service.conf.j2 #}
+# {{ ansible_managed | default('Managed by Ansible') }}
+listen_port = {{ example_service_port }}
+log_level = {{ example_service_log_level }}

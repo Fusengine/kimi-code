@@ -1,0 +1,3 @@
+# Third-party collection (O-X-L), API based; needs python httpx or requests on the controller.
+collections:
+  - name: oxlorg.opnsense

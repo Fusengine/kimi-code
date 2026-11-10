@@ -1,0 +1,7 @@
+---
+# roles/example_service/handlers/main.yml
+# Runs once at the end of the play section when a notifying task changed something.
+- name: Restart example service
+  ansible.builtin.service:
+    name: "{{ example_service_name }}"
+    state: restarted

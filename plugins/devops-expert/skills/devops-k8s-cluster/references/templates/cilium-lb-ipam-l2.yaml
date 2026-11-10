@@ -1,0 +1,39 @@
+# Cilium LB IPAM pool + L2 announcement policy (Cilium 1.20.x).
+# Requires Helm values: kubeProxyReplacement: true and l2announcements.enabled: true (see cilium-values.yaml).
+# The pool range must be unused on the LAN (outside DHCP, not a host address) and in the nodes' broadcast domain.
+# Check:  kubectl get ippools   |   kubectl -n kube-system get lease | grep cilium-l2announce
+# Sources: https://docs.cilium.io/en/stable/network/lb-ipam/  https://docs.cilium.io/en/stable/network/l2-announcements/
+apiVersion: "cilium.io/v2"
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lan-pool
+spec:
+  blocks:
+    # start/stop form ONE block; keep them in the same list item
+    - start: "<FIRST_FREE_IP>"
+      stop: "<LAST_FREE_IP>"
+  # Only Services labelled pool=lan may take addresses from this pool.
+  serviceSelector:
+    matchLabels:
+      pool: lan
+---
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: lan-l2
+spec:
+  serviceSelector:
+    matchLabels:
+      pool: lan
+  # Announce from workers only; one node per Service answers ARP/NDP (Lease-based election).
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: DoesNotExist
+  # Regexes of interfaces that may announce; they must also be in Cilium's "devices".
+  interfaces:
+    - ^eth[0-9]+
+  # Both default to false: a policy needs at least one set to true.
+  loadBalancerIPs: true
+  externalIPs: false
+# Do not combine with Services using externalTrafficPolicy: Local (incompatible with L2 announcements).

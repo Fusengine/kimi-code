@@ -1,0 +1,39 @@
+# Cilium 1.20.4 Helm values: kube-proxy replacement, optional L2 announcements and Gateway API.
+# Install:  helm install cilium cilium/cilium --version 1.20.4 -n kube-system -f cilium-values.yaml
+# Upgrade:  helm upgrade cilium cilium/cilium --version <X> -n kube-system -f cilium-values.yaml   (always the full file, or --reuse-values)
+# Sources: https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/
+#          https://docs.cilium.io/en/stable/network/l2-announcements/
+#          https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/
+#          https://docs.siderolabs.com/kubernetes-guides/cni/deploying-cilium.md (Talos block)
+
+# Kube-proxy replacement. The cluster must have been created WITHOUT kube-proxy (kubeadm: proxy.disabled / --skip-phases=addon/kube-proxy).
+kubeProxyReplacement: true
+# The agent cannot use the in-cluster "kubernetes" Service without kube-proxy: name the API server directly.
+# kubeadm / k3s: the controlPlaneEndpoint host and port.  Talos: host "localhost", port 7445 (KubePrism).
+k8sServiceHost: "<API_ENDPOINT_DNS_OR_IP>"
+k8sServicePort: 6443
+
+# L2 announcements (beta): answers ARP/NDP for LoadBalancer IPs. Requires kubeProxyReplacement: true.
+# Raises API traffic: size the client rate limit using the sizing section of the Cilium page, then uncomment.
+l2announcements:
+  enabled: false
+# k8sClientRateLimit:
+#   qps: <QPS>
+#   burst: <BURST>
+
+# Gateway API controller. Install the Gateway API CRDs at the version Cilium documents (v1.6.3 for Cilium 1.20.4) FIRST,
+# then restart cilium-operator and the cilium DaemonSet after enabling.
+gatewayAPI:
+  enabled: false
+
+# --- Talos only: uncomment the whole block ---
+# ipam:
+#   mode: kubernetes
+# securityContext:
+#   capabilities:
+#     ciliumAgent: [CHOWN, KILL, NET_ADMIN, NET_RAW, IPC_LOCK, SYS_ADMIN, SYS_RESOURCE, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+#     cleanCiliumState: [NET_ADMIN, SYS_ADMIN, SYS_RESOURCE]
+# cgroup:
+#   autoMount:
+#     enabled: false
+#   hostRoot: /sys/fs/cgroup

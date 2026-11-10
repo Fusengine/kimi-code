@@ -1,0 +1,31 @@
+# One Application per environment directory (apps/web/overlays/<env>).
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: web
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://git.example.com/org/gitops.git
+        revision: v1.4.2                 # pin: a merged folder must not deploy by itself
+        directories:
+          - path: apps/web/overlays/*
+  template:
+    metadata:
+      name: 'web-{{index .path.segments 3}}'
+    spec:
+      project: shop
+      source:
+        repoURL: https://git.example.com/org/gitops.git
+        targetRevision: v1.4.2
+        path: '{{.path.path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'shop-{{index .path.segments 3}}'   # segments: [apps web overlays <env>]
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+        # Automation is set here, not on the generated children. Production: leave it out.

@@ -1,0 +1,37 @@
+# Template: oneshot job started by job.timer (cron replacement).
+# Install: /etc/systemd/system/job.service + /etc/systemd/system/job.timer, then
+#   systemd-analyze verify /etc/systemd/system/job.service /etc/systemd/system/job.timer
+#   systemctl daemon-reload && systemctl enable --now job.timer     # enable the TIMER
+#   systemctl start job.service                                     # one manual run to test
+#   journalctl -u job.service -n 50 --no-pager
+# Sources: https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html
+#          https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html
+#          https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
+
+[Unit]
+Description=Nightly job (replaces the old crontab entry)
+Wants=network-online.target
+After=network-online.target
+# Optional alert unit, e.g. a templated notifier:
+# OnFailure=notify-failure@%n.service
+
+[Service]
+Type=oneshot
+# No Restart= on a timer-driven oneshot: the next timer run is the retry.
+ExecStart=/usr/local/bin/job.sh --apply
+User=job
+Group=job
+# Lower priority than interactive work.
+Nice=10
+IOSchedulingClass=idle
+
+# Sandbox (see hardened.service for the full set and ../systemd-hardening-resources.md).
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+StateDirectory=job
+ReadWritePaths=/srv/job-output
+
+# Kill a hung run instead of overlapping the next one.
+TimeoutStartSec=2h

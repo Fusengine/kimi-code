@@ -1,0 +1,48 @@
+// Template: local unattended-upgrades policy (Debian / Ubuntu).
+// Install: /etc/apt/apt.conf.d/52unattended-upgrades-local  (sorts after the packaged
+//          50unattended-upgrades, so package upgrades never conflict with these edits).
+// Enable the periodic run in /etc/apt/apt.conf.d/20auto-upgrades:
+//   APT::Periodic::Update-Package-Lists "1";
+//   APT::Periodic::Unattended-Upgrade "1";
+// Check:   unattended-upgrade --dry-run --debug
+//          less /var/log/unattended-upgrades/unattended-upgrades.log
+//          systemctl list-timers 'apt-daily*'
+// Sources: https://raw.githubusercontent.com/mvo5/unattended-upgrades/master/data/50unattended-upgrades.Debian
+//          https://manpages.debian.org/trixie/unattended-upgrades/unattended-upgrade.8.en.html
+//          https://documentation.ubuntu.com/server/how-to/software/automatic-updates/
+//          https://manpages.debian.org/trixie/apt/apt.conf.5.en.html (#clear, list entries append)
+// Note: a list entry here APPENDS to the list from 50unattended-upgrades; "#clear" erases the
+//       inherited list first so this file fully defines the allowed origins.
+
+// Debian: security archive only (pattern copied from the upstream Debian default).
+// Values available on the host: "apt-cache policy".
+#clear Unattended-Upgrade::Origins-Pattern;
+Unattended-Upgrade::Origins-Pattern {
+        "origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+};
+
+// Ubuntu instead (upstream Ubuntu default uses Allowed-Origins "origin:archive" pairs):
+// #clear Unattended-Upgrade::Allowed-Origins;
+// Unattended-Upgrade::Allowed-Origins {
+//         "${distro_id}:${distro_codename}-security";
+// };
+
+// Python regular expressions of packages never upgraded automatically.
+Unattended-Upgrade::Package-Blacklist {
+//      "linux-";
+};
+
+// Mail a report (needs a working MTA / mailx on the host).
+// Unattended-Upgrade::Mail "ops@example.invalid";
+// Unattended-Upgrade::MailReport "on-change";
+
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "false";
+
+// Reboot only inside a maintenance window and with monitoring; default upstream is "false".
+Unattended-Upgrade::Automatic-Reboot "false";
+// Unattended-Upgrade::Automatic-Reboot-WithUsers "false";
+// Unattended-Upgrade::Automatic-Reboot-Time "03:30";
+
+Unattended-Upgrade::SyslogEnable "true";

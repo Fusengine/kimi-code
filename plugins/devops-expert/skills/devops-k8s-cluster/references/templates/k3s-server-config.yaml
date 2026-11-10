@@ -1,0 +1,31 @@
+# /etc/rancher/k3s/config.yaml for an HA k3s SERVER (embedded etcd), Cilium as CNI without kube-proxy.
+# Keys map to CLI flags (repeatable flags are lists). CLI arguments override this file.
+# Flags marked IDENTICAL must be the same on every server or the join fails
+# ("critical configuration value mismatch"). Source: https://docs.k3s.io/installation/configuration
+# and https://docs.k3s.io/datastore/ha-embedded
+#
+# First server:   cluster-init: true   (and no "server:" key)
+# Servers 2 and 3: remove cluster-init, set  server: "https://<FIRST_SERVER>:6443"
+# The shared secret: prefer the file/env over committing it to Git.
+cluster-init: true
+# server: "https://<FIRST_SERVER>:6443"
+token: "<K3S_TOKEN>"
+tls-san:
+  - "<API_ENDPOINT_DNS_OR_VIP>"
+write-kubeconfig-mode: "0600"
+node-label:
+  - "role=control-plane"
+
+# IDENTICAL on all servers --------------------------------------------------
+cluster-cidr: "10.42.0.0/16"
+service-cidr: "10.43.0.0/16"
+flannel-backend: "none" # Cilium provides pod networking
+disable-network-policy: true # avoid two policy engines
+disable-kube-proxy: true # Cilium kube-proxy replacement; remove if you keep kube-proxy
+# disable:
+#   - servicelb # if MetalLB / Cilium LB IPAM provides LoadBalancer IPs (verify the component name in the k3s docs for your version)
+
+# Snapshots ------------------------------------------------------------------
+etcd-snapshot-retention: 5 # local retention is per server node
+# S3 target (preferred): etcd-s3: true / etcd-s3-endpoint / etcd-s3-bucket / etcd-s3-folder / etcd-s3-retention
+# Snapshot schedule key: see https://docs.k3s.io/cli/etcd-snapshot (the schedule section was not readable when this template was written)

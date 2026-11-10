@@ -1,0 +1,31 @@
+# Prometheus Operator PrometheusRule (apiVersion monitoring.coreos.com/v1, operator v0.95.1).
+# spec.groups[] has the same shape as a Prometheus rule file: name, interval, limit, query_offset, rules.
+# promtool does not read this wrapper: copy spec.groups into a plain rule file to lint it.
+# Server check:  kubectl --context CTX apply --dry-run=server -f prometheusrule.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: web-slo-symptoms
+  namespace: shop
+  labels:
+    release: kube-prometheus-stack     # must match the Prometheus ruleSelector
+spec:
+  groups:
+    - name: web-requests
+      interval: 30s
+      rules:
+        - record: job:http_requests:rate5m
+          expr: sum by (job) (rate(http_requests_total{job="web"}[5m]))
+        - record: job:http_requests_errors:ratio_rate5m
+          expr: |
+            sum by (job) (rate(http_requests_total{job="web", code=~"5.."}[5m]))
+            /
+            sum by (job) (rate(http_requests_total{job="web"}[5m]))
+        - alert: WebHighErrorRatio
+          expr: job:http_requests_errors:ratio_rate5m{job="web"} > 0.05
+          for: 10m
+          labels:
+            severity: page
+          annotations:
+            summary: "web returns 5xx for a ratio {{ $value }} of requests"
+            runbook_url: "https://runbooks.example.com/WebHighErrorRatio"

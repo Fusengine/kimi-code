@@ -1,0 +1,44 @@
+# GitLab CI/CD component. Save as templates/build-image.yml inside a
+# component project (a project whose repo has templates/, README.md and a
+# release tag). A `spec:` header, then `---`, then the jobs.
+#
+# Consumer (same GitLab instance only; pin to a released version, never ~latest
+# for production):
+#   include:
+#     - component: $CI_SERVER_FQDN/my-org/ci-components/build-image@1.0.0
+#       inputs:
+#         stage: build
+#         image-name: registry.example.com/my-org/app
+spec:
+  inputs:
+    stage:
+      default: build
+      description: Pipeline stage the job runs in
+    image-name:
+      description: Full image repository to push
+    dockerfile:
+      default: Dockerfile
+    platforms:
+      default: linux/amd64
+      options: [linux/amd64, "linux/amd64,linux/arm64"]
+---
+build-image:
+  stage: $[[ inputs.stage ]]
+  image: docker:cli
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker buildx create --use
+    - >
+      docker buildx build
+      --platform "$[[ inputs.platforms ]]"
+      --file "$[[ inputs.dockerfile ]]"
+      --tag "$[[ inputs.image-name ]]:$CI_COMMIT_SHA"
+      --provenance=mode=max --sbom=true
+      --push .

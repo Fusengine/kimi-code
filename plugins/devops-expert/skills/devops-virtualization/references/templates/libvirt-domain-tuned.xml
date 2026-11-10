@@ -1,0 +1,55 @@
+<!--
+  Tuned libvirt domain, fragments to merge into `virsh edit <dom>` (not a full
+  definition). Elements and attributes verified against
+  https://libvirt.org/formatdomain.html on 2026-11-10 (libvirt 12.9.0).
+
+  PRECONDITIONS
+  - Guest is shut off (virsh shutdown, wait for "shut off").
+  - Rollback copy: virsh dumpxml <dom> > /root/<dom>.before.xml
+  - Host: hugepages reserved (HugePages_Free >= guest RAM / page size) and the
+    host CPUs / NUMA node named below exist (lscpu). ADAPT every number.
+  - Do NOT use host-passthrough here if the guest will be live-migrated across
+    non-identical hosts; use mode='host-model'.
+  ROLLBACK: virsh define /root/<dom>.before.xml
+  VERIFY: virsh vcpupin <dom>; virsh numatune <dom>; grep -i huge /proc/meminfo
+-->
+<domain type="kvm">
+  <memory unit="GiB">8</memory>
+  <memoryBacking>
+    <hugepages>
+      <page size="1" unit="G" nodeset="0"/>
+    </hugepages>
+  </memoryBacking>
+  <vcpu>4</vcpu>
+  <iothreads>2</iothreads>
+  <cputune>
+    <vcpupin vcpu="0" cpuset="2"/>
+    <vcpupin vcpu="1" cpuset="3"/>
+    <vcpupin vcpu="2" cpuset="4"/>
+    <vcpupin vcpu="3" cpuset="5"/>
+    <emulatorpin cpuset="0-1"/>
+    <iothreadpin iothread="1" cpuset="0-1"/>
+    <iothreadpin iothread="2" cpuset="0-1"/>
+  </cputune>
+  <numatune>
+    <memory mode="strict" nodeset="0"/>
+  </numatune>
+  <cpu mode="host-passthrough" migratable="off">
+    <topology sockets="1" dies="1" clusters="1" cores="4" threads="1"/>
+    <numa>
+      <cell id="0" cpus="0-3" memory="8" unit="GiB"/>
+    </numa>
+  </cpu>
+  <devices>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="qcow2" cache="none" discard="unmap" iothread="1"/>
+      <source file="/srv/vm/images/db01.qcow2"/>
+      <target dev="vda" bus="virtio"/>
+    </disk>
+    <interface type="bridge">
+      <source bridge="br0"/>
+      <model type="virtio"/>
+    </interface>
+    <memballoon model="virtio"/>
+  </devices>
+</domain>

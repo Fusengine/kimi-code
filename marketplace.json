@@ -37,6 +37,11 @@
       "source": "./plugins/design-expert"
     },
     {
+      "id": "fuse-devops",
+      "displayName": "DevOps",
+      "source": "./plugins/devops-expert"
+    },
+    {
       "id": "fuse-go",
       "displayName": "Go",
       "source": "./plugins/go-expert"
