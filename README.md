@@ -88,3 +88,7 @@ The hand-written core lives in `core-overrides/` (`kimi-rules/` plugin + the 8 a
 - One `type:"prompt"` hook (core-guards Stop) dropped — Kimi hooks are command-only; noted in `plugins/migration-report.json`.
 - Agent `model:` routing (sonnet/opus) removed — all subagents run on the main model (K3).
 - See `docs/MIGRATION.md` §5 for the full list and rationales.
+
+## License
+
+MIT — Copyright (c) 2026 Fusengine Sàrl. See [`LICENSE`](LICENSE).

@@ -1,7 +1,8 @@
 {
   "name": "@fusengine/kimi-code",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Fusengine plugin ecosystem migrated to Kimi Code CLI",
   "scripts": {

@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.31] - 2026-11-11
+
+### Added
+- license: MIT `LICENSE` at the repo root, Copyright (c) 2026 Fusengine Sàrl; `license` field in `package.json`; License section in `README.md`; `docs/decisions.md` records the license and copyright-holder decisions.
+
 ## [1.0.30] - 2026-11-11
 
 ### Changed
