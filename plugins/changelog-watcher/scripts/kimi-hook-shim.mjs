@@ -1,30 +1,30 @@
 #!/usr/bin/env bun
 /**
  * kimi-hook-shim.mjs — bridge between Kimi Code hooks and the Fusengine harness.
- *
  * Kimi runs: bun "${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs" <scope> [args]
- * The harness ships a NATIVE kimi adapter (>= 0.1.83) that reads KIMI_CODE_HOME
- * and KIMI_PLUGIN_ROOT itself, and returns denials as JSON on stdout (exit 0):
- *   {"hookSpecificOutput":{"permissionDecision":"deny","permissionDecisionReason":"..."}}
+ * The harness's NATIVE kimi adapter (>= 0.1.83) reads KIMI_CODE_HOME and
+ * KIMI_PLUGIN_ROOT itself and returns denials as JSON on stdout (exit 0).
  *
- * Deny classification (the manchot fix), on permissionDecisionReason:
- * "[CONFIRM]" (git/install/rm) → the deny is SUPPRESSED so Kimi's permission
- * system prompts interactively instead of dead-ending; "[BLOCKED]" (rm -rf /,
- * force-push) → forwarded verbatim. Anything else passes through unchanged.
- * Fail-open on any setup problem.
+ * Deny classification, on permissionDecisionReason: "[CONFIRM]" (git/install/rm)
+ * → SUPPRESSED so Kimi's permission system prompts instead of dead-ending;
+ * "[BLOCKED]" (rm -rf /, force-push) → forwarded verbatim. Fail-open on any
+ * setup problem.
  *
- * Env precedence: $KIMI_HOME/.env is overlaid ON TOP of the inherited
- * environment when spawning the harness. The harness's own loadDotenv never
- * overrides an existing var, so cross-harness shell pollution (e.g. fish
- * conf.d/claude-env.fish exporting every key of ~/.claude/.env — TTL, refs)
- * would otherwise win over the kimi config in every hook process.
+ * Env: $KIMI_HOME/.env is overlaid ON TOP of the inherited environment (the
+ * harness's loadDotenv never overrides, so shell pollution would win otherwise).
+ *
+ * Harness path: $KIMI_CODE_HOME/harness-current/ (atomic-switch pointer written
+ * by harness-autoupdate.mjs) when present, else the legacy node_modules dir.
+ * SessionStart asks the optional sibling harness-autoupdate.mjs to reach the
+ * package.json floor; every other event is untouched.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-const HARNESS_REL = "node_modules/@fusengine/harness/dist/cli/bin.mjs";
+const HARNESS_SUB = "dist/cli/bin.mjs";
+const HARNESS_REL = `node_modules/@fusengine/harness/${HARNESS_SUB}`;
 
 /**
  * Events whose return value Kimi consumes; every other one is observation-only
@@ -76,12 +76,7 @@ function isConfirmDeny(stdout) {
 		&& hso.permissionDecisionReason.includes("[CONFIRM]");
 }
 
-/**
- * Rules-scope env: the harness reads its rules corpus from
- * <KIMI_PLUGIN_ROOT>/rules, but kimi sets KIMI_PLUGIN_ROOT to the SUITE root
- * and the corpus lives in the kimi-rules sub-plugin. Remap the var to that
- * sub-plugin when its rules/ dir exists, else the injection comes out empty.
- */
+/** Rules scope: the corpus lives in the kimi-rules sub-plugin but kimi sets KIMI_PLUGIN_ROOT to the SUITE root — remap it there when its rules/ exists. */
 function rulesScopeEnv(env) {
 	const root = env.KIMI_PLUGIN_ROOT;
 	if (!root) return env;
@@ -94,12 +89,7 @@ function eventNameOf(stdin) {
 	try { return JSON.parse(stdin)?.hook_event_name ?? ""; } catch { return ""; }
 }
 
-/**
- * Normalize tool_input onto the Claude wire shape the harness expects: Kimi
- * sends `path`, harness consumers (lessons write-tracker) read `file_path` and
- * silently no-op without it. Fail-open: payload returned byte-identical on any
- * parse problem.
- */
+/** Map Kimi's tool_input.path onto `file_path` (harness consumers no-op without it); payload unchanged on any parse problem. */
 function normalizeToolInput(stdin) {
 	try {
 		const payload = JSON.parse(stdin);
@@ -112,13 +102,7 @@ function normalizeToolInput(stdin) {
 	} catch { return stdin; }
 }
 
-/**
- * Parse the project cwd from the stdin payload; "" when unreadable/missing.
- * Kimi runs plugin hooks with the process cwd set to the PLUGIN ROOT and the
- * harness CLI passes `process.cwd()` to its gates — without this, cwd-sensitive
- * gates (pre-commit tsc/eslint sweep) evaluate the deployed suite instead of
- * the user's project and block every commit with phantom errors.
- */
+/** Project cwd from the payload ("" if missing): Kimi runs hooks with cwd = PLUGIN ROOT, which would make cwd-sensitive gates (pre-commit sweep) check the suite, not the project. */
 function payloadCwdOf(stdin) {
 	try {
 		const cwd = JSON.parse(stdin)?.cwd;
@@ -134,14 +118,10 @@ function agentsNote(scope, kimiHome) {
 
 /**
  * Adapt the harness stdout to what Kimi actually consumes.
- *
- * Kimi never reads `hookSpecificOutput.additionalContext` — that key is Claude
- * Code's and occurs 0 times in the Kimi bundle (verified on 2.0.0 and 0.43.1).
- * Context reaches the model on UserPromptSubmit ONLY, as plain stdout text, so:
- * an additionalContext envelope is UNWRAPPED there instead of being dropped;
- * deny envelopes are forwarded verbatim; on observation-only events context
- * payloads are dropped rather than written for nothing (the harness side
- * effects have already happened by then).
+ * Kimi never reads `hookSpecificOutput.additionalContext` (0 occurrences in the
+ * 2.0.0 / 0.43.1 bundles); context reaches the model on UserPromptSubmit ONLY,
+ * as plain stdout, so the envelope is UNWRAPPED there; deny envelopes are
+ * forwarded verbatim; observation-only events drop context payloads.
  * @param stdout - Raw harness stdout.
  * @param scope - Plugin scope (argv[2]).
  * @param eventName - `hook_event_name` from the stdin payload.
@@ -161,10 +141,25 @@ function renderForKimi(stdout, scope, eventName, kimiHome) {
 	return isContext && parsed === undefined ? `${note}${stdout.trimEnd()}\n` : stdout;
 }
 
+/**
+ * SessionStart only: let the optional sibling updater move an older harness to the floor; never throws.
+ * Kimi runs one SessionStart shim per scope in parallel; only the `rules` one speaks (prints/leaves notes).
+ */
+async function autoUpdate(kimiHome, scope) {
+	try {
+		const { maybeUpdate, takeLog } = await import("./harness-autoupdate.mjs");
+		const speak = scope === "rules";
+		const note = speak ? takeLog(kimiHome) : ""; // previous attempt's one-line problem note, shown once
+		if (note) process.stderr.write(`kimi-hook-shim: ${note}\n`);
+		maybeUpdate({ kimiHome, env: process.env, shimDir: import.meta.dirname, platform: process.platform, quiet: !speak });
+	} catch { /* fail-open: no updater next to this shim (lone-file deploy) or it failed */ }
+}
+
 async function main() {
 	const stdin = await readStdin();
 	const kimiHome = process.env.KIMI_CODE_HOME || join(homedir(), ".kimi-code");
-	const bin = join(kimiHome, HARNESS_REL);
+	const pointer = join(kimiHome, "harness-current", HARNESS_SUB);
+	const bin = existsSync(pointer) ? pointer : join(kimiHome, HARNESS_REL);
 	if (!existsSync(bin)) {
 		process.stderr.write(`kimi-hook-shim: harness bin not found under ${kimiHome} — run scripts/install-kimi.ts (skipped)\n`);
 		process.exit(0);
@@ -173,6 +168,7 @@ async function main() {
 	const scope = process.argv[2] || "core";
 	const args = process.argv.slice(3);
 	const eventName = eventNameOf(stdin);
+	if (eventName === "SessionStart") await autoUpdate(kimiHome, scope);
 	const payloadCwd = payloadCwdOf(stdin);
 	const base = scope === "rules" ? rulesScopeEnv(process.env) : process.env;
 	const child = spawnSync("bun", [bin, "hook", "kimi", scope, ...args], {

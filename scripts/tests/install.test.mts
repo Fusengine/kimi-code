@@ -5,7 +5,7 @@
  * idempotently. The last test guards the real repo's marketplace.json.
  */
 import { beforeAll, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, lstatSync, mkdirSync, readFileSync, symlinkSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { INSTALLER, makeHarness, makeRepo, runInstaller, tmp, write } from "./install-fixtures.mts";
@@ -35,6 +35,7 @@ describe("install-kimi", () => {
 	test("--yes installs AGENTS.md fences, harness, agents, resolved MCP", () => {
 		write(join(home, ".env"), "FAKE_TOKEN=tok123\n");
 		write(join(home, "config.toml"), '[[hooks]]\nevent = "Stop"\ncommand = "echo mine"\n');
+		symlinkSync("/nonexistent-auto-update-target", join(home, "harness-current")); // stale auto-update pointer
 		const r = runInstaller(home, repo, harness, ["--yes"]);
 		expect(r.code).toBe(0);
 		expect(r.out).toContain("Installed state verified");
@@ -44,6 +45,7 @@ describe("install-kimi", () => {
 		expect(agentsMd()).toContain("# Fake Global Template");
 		expect(agentsMd()).not.toContain("# Fake Repo Instructions");
 		expect(existsSync(join(home, "node_modules/@fusengine/harness/dist/cli/bin.mjs"))).toBe(true);
+		expect(() => lstatSync(join(home, "harness-current"))).toThrow(); // setup stage drops the pointer
 		expect(existsSync(join(home, "agents", "fake-agent.md"))).toBe(true);
 		const servers = mcpServers(home);
 		expect(servers["fake-stdio"].command).toBe("npx");

@@ -19,7 +19,7 @@ The security-expert agent reports; it never fixes the audited project. Severity 
 |---------------|------------|------------|
 | DETECT | Analyze | explore-codebase |
 | RESEARCH | Analyze | research-expert + Context7/Exa |
-| SCAN | Analyze | harness CLI `bun "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness/dist/cli/bin.mjs" scan <dir>` + skill patterns + Grep |
+| SCAN | Analyze | harness CLI `bun "$(test -f "${KIMI_CODE_HOME:-$HOME/.kimi-code}/harness-current/dist/cli/bin.mjs" && echo "${KIMI_CODE_HOME:-$HOME/.kimi-code}/harness-current" || echo "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness")/dist/cli/bin.mjs" scan <dir>` + skill patterns + Grep |
 | VERIFY | eLicit | read-only refutation pass, optionally challenger per candidate |
 | REPORT | eLicit | report at `docs/security/YYYY-MM-DD-<scope>.md` |
 | HANDOFF | — (ends the audit) | findings returned; the caller then dispatches the domain expert, then sniper |

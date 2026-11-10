@@ -31,9 +31,21 @@ fences, and loaded natively every session. Keep this file project-only.
 
 ## Repo-specific rules
 
-1. **Shim edits**: edit ONLY `scripts/hooks/kimi-hook-shim.mjs`, then copy it
-   into every `plugins/*/scripts/` (the loop in `apply-core-overrides.ts`
-   `installShims()`). Never edit a plugin's copy directly.
+1. **Shim edits**: edit ONLY `scripts/hooks/kimi-hook-shim.mjs` (and its siblings
+   `harness-autoupdate.mjs`, `harness-update-worker.mjs`), then copy all three into every `plugins/*/scripts/` (the
+   loop in `apply-core-overrides.ts` `installShims()`). Never edit a plugin's
+   copy directly. **Harness auto-update**: on SessionStart only, a harness older
+   than the floor is staged into `$KIMI_CODE_HOME/harness-versions/` by a
+   detached single-flight worker and switched with one atomic symlink rename
+   (`harness-current`, preferred by the shim; setup stages remove it); a failed
+   install pauses retries 30 min (`FUSE_ENSURE_DEPS_BACKOFF_MIN`; the stamp is
+   written before the install); a one-line note in `.harness-update.log` is printed once at
+   the next SessionStart; no auto-update on win32. `FUSENGINE_HARNESS_INSTALL_CMD`
+   (tests) is honoured only with `FUSENGINE_TEST=1`. Every `scripts/` dir also ships
+   `harness-floor.json` (generated from `package.json` by `installShims()`; a floor
+   bump needs a re-sync, enforced by `shipped-modules.test.mts`) so a lone
+   marketplace plugin knows the floor. Plugins without a SessionStart hook
+   (17 with other hooks, 4 with none incl. devops-expert) never self-update.
 2. **kimi-rules edits**: edit `core-overrides/kimi-rules/`, then re-run
    `apply-core-overrides.ts`. `plugins/kimi-rules/` is regenerated.
 3. **AGENTS.md source chain**: the installer copies
