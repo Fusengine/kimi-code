@@ -110,7 +110,7 @@ describe("install-kimi", () => {
 	test("real repo dry-run regenerates marketplace.json with 26 entries", () => {
 		const proc = spawnSync("bun", [INSTALLER], { encoding: "utf8" });
 		expect(proc.status).toBe(0);
-		expect(`${proc.stdout}\n${proc.stderr}`).toContain(">=0.1.115");
+		expect(`${proc.stdout}\n${proc.stderr}`).toContain(">=0.1.116");
 		const market = JSON.parse(readFileSync(join(import.meta.dir, "..", "..", "marketplace.json"), "utf8"));
 		expect(market.plugins).toHaveLength(26);
 	});

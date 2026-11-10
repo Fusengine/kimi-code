@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.30] - 2026-11-11
+
+### Changed
+- deps: harness floor raised to @fusengine/harness 0.1.116 (`fusengine.harnessMinVersion`, `harness-floor.json` beside every shim) — fixes the false shell-redirect CONFIRM on `( … 2>&1) || true` introduced in 0.1.115; redirects to code files stay blocked. Existing installs below the floor self-update at the next SessionStart.
+
 ## [1.0.29] - 2026-11-10
 
 ### Added

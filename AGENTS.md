@@ -59,6 +59,7 @@ fences, and loaded natively every session. Keep this file project-only.
 4. **Hook commands**: every hook in a `kimi.plugin.json` must invoke
    `kimi-hook-shim.mjs` — enforced by `scripts/lib/validate-checks.ts`.
 5. **Harness floor**: `package.json` `fusengine.harnessMinVersion` (currently
+   0.1.116 — fixes the false shell-redirect CONFIRM on `( … 2>&1) || true`;
    0.1.115 — English user messages, wider security-scan coverage, bounded
    cartographer reads, stop gates + report recovery incl. background agents,
    scratchpad redirect, `rm -r` in temp dirs asks instead of blocking, `&>`

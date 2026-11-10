@@ -10,7 +10,7 @@ import { spawnSync } from "node:child_process";
 
 export const REPO = resolve(import.meta.dir, "../..");
 export const SHIM = join(REPO, "scripts/hooks/kimi-hook-shim.mjs");
-export const FLOOR = "0.1.115";
+export const FLOOR = "0.1.116";
 
 /** Fake harness bin: proves its package version, resolves a sibling dep, optionally lazy-imports a chunk. */
 export const FAKE_BIN = `import { appendFileSync, readFileSync } from "node:fs";
