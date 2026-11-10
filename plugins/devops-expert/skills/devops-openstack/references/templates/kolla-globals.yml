@@ -1,0 +1,75 @@
+---
+# /etc/kolla/globals.yml - minimal production baseline for Kolla-Ansible 23.x (OpenStack 2026.2 Hibiscus)
+# 3 control+network nodes, N computes, OVN, external Ceph, TLS on the external VIP.
+# Every key below exists in the 2026.2 sample:
+# https://opendev.org/openstack/kolla-ansible/src/branch/stable/2026.2/etc/kolla/globals.yml
+# Host- or group-specific values (interface names that differ per host) go in inventory
+# host_vars/ or group_vars/, NOT here: globals.yml is passed as extra vars and wins over all.
+
+# Dummy variable kept from the upstream sample
+workaround_ansible_issue_8743: true
+
+# --- Images ---
+kolla_base_distro: "rocky"              # debian | rocky | ubuntu - match the host OS
+kolla_container_engine: docker          # docker | podman
+# openstack_release: leave unset - the tool deploys its own series
+docker_registry: "registry.internal.example.com:4000"   # local registry, recommended for multinode
+docker_registry_insecure: false
+
+# --- VIPs and names ---
+kolla_internal_vip_address: "10.10.10.254"          # unused IP on the api_interface network
+kolla_internal_fqdn: "api-int.cloud.example.com"
+kolla_external_vip_address: "203.0.113.10"
+kolla_external_fqdn: "api.cloud.example.com"
+keepalived_virtual_router_id: "51"                  # unique per L2 segment (0-255)
+openstack_region_name: "RegionOne"
+
+# --- Interfaces (defaults; override per host in inventory if names differ) ---
+network_interface: "bond0"                 # default for the management-type networks below
+api_interface: "bond0.10"                  # management/API network, internal only
+tunnel_interface: "bond0.20"               # Geneve overlay; jumbo frames recommended
+kolla_external_vip_interface: "bond0.30"   # public API network
+neutron_external_interface: "bond1"        # provider/external network, NO IP address on it
+
+# --- Networking ---
+neutron_plugin_agent: "ovn"                # openvswitch (default) | ovn
+neutron_ovn_distributed_fip: false         # true = FIP traffic leaves from computes (needs external bridge there)
+enable_neutron_provider_networks: false    # true = VMs attach directly to provider VLANs on computes
+
+# --- TLS ---
+kolla_enable_tls_external: "yes"           # needs kolla_external_vip_interface set
+kolla_enable_tls_internal: "no"
+kolla_copy_ca_into_containers: "yes"       # when the certificates come from a private CA
+# certificates expected in /etc/kolla/certificates/ (haproxy.pem, haproxy-internal.pem)
+
+# --- Services ---
+enable_openstack_core: true               # glance, keystone, neutron, nova, heat, horizon
+enable_cinder: true
+enable_cinder_backup: true
+enable_octavia: false                      # enable with neutron_plugin_agent ovn -> OVN provider driver agent
+enable_designate: false
+enable_barbican: false
+enable_magnum: false
+enable_skyline: false
+enable_ceph_rgw: false                     # Swift-compatible object store via external Ceph RGW
+enable_mariabackup: true                   # then: kolla-ansible mariadb-backup (schedule it yourself)
+enable_prometheus: false                   # monitoring stack: see devops-observability
+enable_central_logging: false
+
+# --- External Ceph (keyrings + ceph.conf under /etc/kolla/config/{glance,cinder,nova}/) ---
+glance_backend_ceph: "yes"
+glance_backend_file: "no"
+cinder_backend_ceph: "yes"
+cinder_backup_driver: "ceph"
+nova_backend_ceph: "yes"
+ceph_glance_user: "glance"
+ceph_glance_pool_name: "images"
+ceph_cinder_user: "cinder"
+ceph_cinder_pool_name: "volumes"
+ceph_cinder_backup_user: "cinder-backup"
+ceph_cinder_backup_pool_name: "backups"
+ceph_nova_pool_name: "vms"
+
+# --- Compute ---
+nova_compute_virt_type: "kvm"              # qemu only for nested labs
+nova_console: "novnc"

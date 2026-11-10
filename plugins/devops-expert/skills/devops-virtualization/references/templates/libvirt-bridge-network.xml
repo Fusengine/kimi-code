@@ -1,0 +1,21 @@
+<!--
+  libvirt network that exposes an EXISTING host bridge (br0) to guests.
+  Schema: https://libvirt.org/formatnetwork.html (bridge forward mode, read 2026-11-10).
+  The bridge itself (member NIC, address, STP) is created outside libvirt,
+  see skill devops-networking. libvirt only attaches guest taps to it.
+
+  Apply (after the user's go):
+    virsh -c qemu:///system net-define libvirt-bridge-network.xml
+    virsh -c qemu:///system net-start hostbridge
+    virsh -c qemu:///system net-autostart hostbridge
+  Verify: virsh -c qemu:///system net-info hostbridge     (Active: yes, Bridge: br0)
+  Guest NIC:  <interface type='network'><source network='hostbridge'/><model type='virtio'/></interface>
+  Direct form without this network (also valid):
+              <interface type='bridge'><source bridge='br0'/><model type='virtio'/></interface>
+  Undo: net-destroy hostbridge; net-undefine hostbridge  (guests on it lose connectivity).
+-->
+<network>
+  <name>hostbridge</name>
+  <forward mode="bridge"/>
+  <bridge name="br0"/>
+</network>

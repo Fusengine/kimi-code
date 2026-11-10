@@ -1,0 +1,41 @@
+# /etc/traefik/dynamic/app.yml - dynamic configuration (file provider, hot-reloaded).
+# Structure verified in Context7 /traefik/traefik v3.7.15 (file provider, service healthCheck, tls.options).
+
+http:
+  routers:
+    app:
+      rule: Host(`app.example.com`)
+      entryPoints:
+        - websecure
+      middlewares:
+        - secure-headers
+        - rate-limit
+      service: app
+      tls:
+        options: modern
+
+  middlewares:
+    secure-headers:
+      headers:
+        stsSeconds: 31536000
+        forceSTSHeader: true
+    rate-limit:
+      rateLimit:
+        average: 50          # requests per second (period default 1s)
+        burst: 100
+
+  services:
+    app:
+      loadBalancer:
+        servers:
+          - url: http://127.0.0.1:8080
+        healthCheck:
+          path: /healthz
+          interval: 10s
+          timeout: 3s
+
+tls:
+  options:
+    modern:
+      minVersion: VersionTLS12
+      sniStrict: true

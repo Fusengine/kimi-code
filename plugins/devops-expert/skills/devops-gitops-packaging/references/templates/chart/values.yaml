@@ -1,0 +1,19 @@
+# replicaCount is the number of pods (ignored when autoscaling is managed elsewhere).
+replicaCount: 2
+# imageRepository is the image without tag.
+imageRepository: "registry.example.com/org/web"
+# imageTag is the image tag; set imageDigest for production.
+imageTag: "1.4.2"
+# imageDigest, when set, wins over imageTag (format sha256:...).
+imageDigest: ""
+# containerPort is the port the app listens on.
+containerPort: 8080
+# existingSecret names a pre-created Secret injected as env vars (never put values here).
+existingSecret: ""
+# resources are requests and limits for the web container.
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    memory: "256Mi"

@@ -1,0 +1,10 @@
+---
+# roles/example_service/defaults/main.yml - the role's public interface (lowest precedence, easy to override).
+# Prefix every variable with the role name.
+example_service_name: example
+example_service_package: example
+example_service_version: "1.4.2"
+example_service_version_command: "example --version"
+example_service_config_path: /etc/example/service.conf
+example_service_port: 8080
+example_service_log_level: info

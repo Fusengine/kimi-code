@@ -1,0 +1,80 @@
+# Template: sandboxed long-running daemon.
+# Install: /etc/systemd/system/myapp.service, then
+#   systemd-analyze verify /etc/systemd/system/myapp.service
+#   systemctl daemon-reload && systemctl enable --now myapp.service
+#   systemd-analyze security myapp.service
+# Sources: https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html
+#          https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html
+#          https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html
+# Each directive below needs the systemd version noted in ../systemd-hardening-resources.md;
+# compare with `systemctl --version`. Loosen one directive at a time when the journal shows a denial.
+
+[Unit]
+Description=myapp daemon
+Documentation=https://example.invalid/myapp
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=exec
+ExecStart=/usr/local/bin/myapp --config /etc/myapp/config.toml
+Restart=on-failure
+RestartSec=5s
+
+# Identity: transient user; state/logs/runtime dirs owned by it.
+DynamicUser=yes
+StateDirectory=myapp
+LogsDirectory=myapp
+RuntimeDirectory=myapp
+ConfigurationDirectory=myapp
+UMask=0077
+
+# Optional environment file ("-" = may be absent). Secrets: prefer LoadCredential=.
+EnvironmentFile=-/etc/myapp/env
+# LoadCredential=api-token:/etc/myapp/api-token
+
+# Filesystem
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+
+# Kernel and system
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=pid
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+# Remove for JIT runtimes (Node.js, Java, LuaJIT):
+MemoryDenyWriteExecute=yes
+
+# Capabilities: none. For a port < 1024 use:
+#   CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+#   AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=
+
+# Network and syscalls
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+# "relatively safe basic choice for the majority of system services" (systemd.exec):
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Resources (cgroup v2): throttle before the hard limit.
+MemoryHigh=768M
+MemoryMax=1G
+TasksMax=256
+CPUWeight=100
+
+[Install]
+WantedBy=multi-user.target

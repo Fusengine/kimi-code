@@ -1,0 +1,23 @@
+<!--
+  libvirt NAT network with a DHCP range and one static lease.
+  Schema: https://libvirt.org/formatnetwork.html (read 2026-11-10).
+  Pick a subnet that does not overlap the LAN or any VPN on the host.
+
+  Apply (after the user's go):
+    virsh -c qemu:///system net-define libvirt-nat-network.xml
+    virsh -c qemu:///system net-start labnat
+    virsh -c qemu:///system net-autostart labnat
+  Verify: virsh -c qemu:///system net-dhcp-leases labnat
+  Undo: net-destroy labnat; net-undefine labnat
+-->
+<network>
+  <name>labnat</name>
+  <bridge name="virbr10"/>
+  <forward mode="nat"/>
+  <ip address="192.168.150.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.150.100" end="192.168.150.254"/>
+      <host mac="52:54:00:00:15:10" name="web01.lab.example" ip="192.168.150.10"/>
+    </dhcp>
+  </ip>
+</network>

@@ -1,0 +1,49 @@
+# Prometheus Operator ServiceMonitor + PodMonitor (apiVersion monitoring.coreos.com/v1, operator v0.95.1).
+# Check before applying:  kubectl --context CTX apply --dry-run=server -f servicemonitor.yaml
+# With kube-prometheus-stack the Prometheus only selects objects carrying the Helm release label
+# unless prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues is false (see kube-prometheus-stack-values.yaml).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: web
+  namespace: shop
+  labels:
+    release: kube-prometheus-stack     # must match the Prometheus serviceMonitorSelector
+spec:
+  selector:                            # selects Services, not Pods
+    matchLabels:
+      app.kubernetes.io/name: web
+  namespaceSelector:
+    matchNames: [shop]
+  jobLabel: app.kubernetes.io/name
+  targetLabels: [app.kubernetes.io/version]
+  sampleLimit: 20000                   # a scrape over the limit fails: protects the TSDB
+  labelLimit: 64
+  endpoints:
+    - port: metrics                    # NAME of the Service port, not a number
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+      scheme: http
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          regex: "go_gc_.*"
+          action: drop
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: web-sidecar
+  namespace: shop
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:                            # selects Pods directly (no Service needed)
+    matchLabels:
+      app.kubernetes.io/name: web
+  namespaceSelector:
+    matchNames: [shop]
+  podMetricsEndpoints:
+    - port: sidecar-metrics            # NAME of the container port
+      path: /metrics
+      interval: 30s

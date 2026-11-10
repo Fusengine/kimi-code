@@ -1,0 +1,97 @@
+# Prometheus 3.x server configuration (verified keys: configuration.md of v3.16.0).
+# Validate:  promtool check config prometheus.yml
+# Reload:    SIGHUP, or POST /-/reload when started with --web.enable-lifecycle
+#            (a production reload is a proposal: see observability-safe-ops.md).
+global:
+  scrape_interval: 30s        # default 1m
+  scrape_timeout: 10s         # must not exceed scrape_interval
+  evaluation_interval: 30s    # default 1m
+  external_labels:            # identify this server on alerts and remote write
+    cluster: homelab
+    replica: prom-a           # distinct per HA replica; drop it before dedup in Thanos/Mimir
+  # Guardrails against cardinality blow-ups: a target over the limit FAILS its scrape.
+  sample_limit: 50000
+  label_limit: 64
+  # scrape_native_histograms: true   # opt in only after reading promql-essentials.md
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: alertmanager
+    static_configs:
+      - targets: ["alertmanager:9093"]
+
+  # Hosts: file-based service discovery. Each file holds a list of
+  # {targets: [...], labels: {...}}; edits are picked up without a reload.
+  - job_name: node
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/node-*.yml
+        refresh_interval: 5m
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: "([^:]+)(:[0-9]+)?"
+        target_label: instance
+        replacement: "$1"
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["cadvisor:8080"]
+    metric_relabel_configs:
+      # Drop series nobody queries before they reach the TSDB.
+      - source_labels: [__name__]
+        regex: "container_(tasks_state|memory_failures_total)"
+        action: drop
+
+  # Blackbox probes (multi-target pattern from the blackbox_exporter README).
+  - job_name: blackbox-http
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://example.com
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115      # the exporter's own host:port
+
+  - job_name: blackbox-exporter
+    static_configs:
+      - targets: ["blackbox:9115"]
+
+  - job_name: loki
+    static_configs:
+      - targets: ["loki:3100"]
+
+  - job_name: alloy
+    static_configs:
+      - targets: ["alloy:12345"]
+
+# Long-term storage (uncomment and fill in; see long-term-storage.md).
+# remote_write:
+#   - url: https://mimir.example.com/api/v1/push
+#     name: mimir
+#     queue_config:
+#       max_shards: 50
+#       capacity: 10000
+#     write_relabel_configs:
+#       - source_labels: [__name__]
+#         regex: "go_.*"
+#         action: drop
+
+# Retention is a COMMAND-LINE FLAG, not part of this file:
+#   --storage.tsdb.retention.time=30d --storage.tsdb.retention.size=40GB

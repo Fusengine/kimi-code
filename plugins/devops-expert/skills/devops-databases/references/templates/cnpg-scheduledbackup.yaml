@@ -1,0 +1,34 @@
+# cnpg-scheduledbackup.yaml - weekly base backup of the Cluster in cnpg-cluster.yaml through the Barman Cloud plugin.
+# CloudNativePG docs: "In most cases a weekly base backup is sufficient"; WAL archiving (continuous) gives point-in-time recovery
+# between base backups. The schedule field is a SIX-field cron expression WITH SECONDS: sec min hour day-of-month month day-of-week.
+# A completed base backup is not a proof: restore it into a throwaway namespace on a schedule (restore-test-pitr-runbook.md).
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: pg-main-weekly
+  namespace: databases
+spec:
+  schedule: "0 30 2 * * 0"           # Sundays 02:30:00 (time zone semantics not verified: check the first run in 'kubectl get backup')
+  immediate: true                    # also take one backup right after creation, so the first restore test has a backup
+  backupOwnerReference: self         # self = the ScheduledBackup owns its Backup objects; cluster = the Cluster owns them; none = legacy.
+                                     #   Kubernetes garbage collection follows ownership: decide before deleting either object
+  cluster:
+    name: pg-main                    # immutable after creation
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+  # suspend: true                    # uncomment to pause scheduled backups temporarily (record who paused and when to resume)
+---
+# On-demand backup (apply only when needed, e.g. right before a risky change; each is a change, ask first):
+# apiVersion: postgresql.cnpg.io/v1
+# kind: Backup
+# metadata:
+#   name: pg-main-pre-migration-20261110
+#   namespace: databases
+# spec:
+#   cluster:
+#     name: pg-main
+#   method: plugin
+#   pluginConfiguration:
+#     name: barman-cloud.cloudnative-pg.io

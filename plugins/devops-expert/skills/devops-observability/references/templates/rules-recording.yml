@@ -1,0 +1,21 @@
+# Recording rules, naming level:metric:operations (prometheus.io/docs/practices/rules).
+# Validate:  promtool check rules rules-recording.yml
+# Aggregate with sum/rate BEFORE recording; never record an average of averages.
+groups:
+  - name: node-aggregates
+    interval: 1m
+    rules:
+      - record: instance:node_cpu_utilisation:rate5m
+        expr: 1 - avg without (cpu) (rate(node_cpu_seconds_total{mode="idle"}[5m]))
+
+      - record: instance:node_memory_utilisation:ratio
+        expr: 1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes
+
+      - record: instance:node_network_receive_bytes:rate5m
+        expr: sum without (device) (rate(node_network_receive_bytes_total{device!~"lo|veth.*|docker.*|br-.*"}[5m]))
+
+  - name: probe-aggregates
+    interval: 1m
+    rules:
+      - record: job:probe_success:ratio_avg1h
+        expr: avg by (job) (avg_over_time(probe_success[1h]))

@@ -1,0 +1,5 @@
+# NoCloud meta-data. "instance-id" is required (NoCloud datasource page, cloud-init 26.2).
+# Change instance-id for every new guest cloned from the same image, otherwise cloud-init
+# treats the clone as the same instance and skips the per-instance first-boot modules.
+instance-id: web01-001
+local-hostname: web01

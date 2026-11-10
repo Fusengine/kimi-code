@@ -1,0 +1,112 @@
+# cnpg-cluster.yaml - CloudNativePG 1.30.x: Cluster + Barman Cloud plugin ObjectStore + Pooler.
+# Prerequisites (separate, verified before applying):
+#   - CloudNativePG operator 1.30.x installed (supports Kubernetes 1.34-1.36) and the Barman Cloud plugin installed
+#     in the SAME namespace as the operator (https://cloudnative-pg.io/plugin-barman-cloud/).
+#   - Secrets created by your secret tooling (devops-secrets), never from this file: 'app-user-credentials' (basic-auth),
+#     'object-store-credentials' (ACCESS_KEY_ID / ACCESS_SECRET_KEY). The values below are NOT in this file.
+# Apply sequence: kubectl diff -f, kubectl apply --dry-run=server -f, apply after the user's go (devops-kubernetes).
+# API groups: postgresql.cnpg.io/v1 (Cluster, Pooler), barmancloud.cnpg.io/v1 (ObjectStore).
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: pg-main-store
+  namespace: databases
+spec:
+  # Recovery window: backups older than the first valid backup before the window are deleted after the next backup completes.
+  retentionPolicy: "30d"
+  configuration:
+    destinationPath: s3://CHANGE_ME-bucket/pg-main/
+    endpointURL: https://CHANGE_ME-s3-endpoint
+    s3Credentials:
+      accessKeyId:
+        name: object-store-credentials
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: object-store-credentials
+        key: ACCESS_SECRET_KEY
+    wal:
+      compression: gzip
+    data:
+      compression: gzip
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg-main
+  namespace: databases
+spec:
+  description: "Main application database"
+  # Pin the operand image (tag and, in production, digest). 18.6 is the current 18 minor (2026-11-10).
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.6-system-trixie
+  instances: 3                       # 1 primary + 2 replicas; the operator handles failover
+  primaryUpdateStrategy: unsupervised   # rolling update switches the primary automatically; 'supervised' waits for a manual switchover
+  enableSuperuserAccess: false       # no postgres superuser Secret exposed to apps
+
+  postgresql:
+    parameters:
+      shared_buffers: 2GB
+      max_connections: "200"
+      work_mem: 16MB
+      maintenance_work_mem: 512MB
+      max_wal_size: 8GB
+      checkpoint_timeout: 15min
+      log_min_duration_statement: 500ms
+      pg_stat_statements.max: "10000"
+      pg_stat_statements.track: all
+    pg_hba:
+      - hostssl all all 10.0.0.0/8 scram-sha-256   # CHANGE_ME: your pod CIDR / app network
+
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+      secret:
+        name: app-user-credentials   # kubernetes.io/basic-auth with username and password keys
+
+  storage:
+    storageClass: CHANGE_ME-storageclass
+    size: 100Gi
+  walStorage:                        # separate WAL volume: keeps WAL I/O and a filling WAL disk away from data
+    storageClass: CHANGE_ME-storageclass
+    size: 20Gi
+
+  resources:
+    requests:
+      cpu: "2"
+      memory: 8Gi
+    limits:
+      memory: 8Gi                    # memory limit = request; CPU limit left unset on purpose (devops-kubernetes)
+
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: topology.kubernetes.io/zone
+    podAntiAffinityType: required    # one instance per zone/node; use 'preferred' on small clusters
+
+  # WAL archiving + base backups through the Barman Cloud plugin
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: pg-main-store
+
+  monitoring:
+    enablePodMonitor: false          # deprecated in CNPG 1.30; create a PodMonitor yourself (devops-observability)
+---
+# PgBouncer in front of the primary. The Pooler name must differ from every Cluster name in the namespace.
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: pg-main-pooler-rw
+  namespace: databases
+spec:
+  cluster:
+    name: pg-main                    # immutable after creation
+  instances: 2
+  type: rw
+  pgbouncer:
+    poolMode: transaction            # session state (SET, LISTEN, session advisory locks) does not work; see connection-pooling-pgbouncer.md
+    parameters:
+      max_client_conn: "1000"
+      default_pool_size: "20"
+      max_prepared_statements: "100"

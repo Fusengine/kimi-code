@@ -1,0 +1,56 @@
+# Reusable workflow (callee). Lives in .github/workflows/ of a shared repo.
+# Caller example (pin by full SHA for any workflow you do not own):
+#   jobs:
+#     build:
+#       uses: my-org/ci-shared/.github/workflows/build-test.yml@<full-commit-sha>
+#       with:
+#         make-target: test
+#       secrets:
+#         registry_token: ${{ secrets.REGISTRY_TOKEN }}
+name: build-test (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      make-target:
+        description: Make target to run
+        required: false
+        type: string
+        default: test
+      runner:
+        description: Runner label (use a pinned image label, not -latest)
+        required: false
+        type: string
+        default: ubuntu-24.04
+    secrets:
+      registry_token:
+        description: Token to pull private dependencies
+        required: false
+    outputs:
+      sha:
+        description: Commit that was built
+        value: ${{ jobs.run.outputs.sha }}
+
+permissions: {}
+
+jobs:
+  run:
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 20
+    # The caller can only reduce these, never raise them.
+    permissions:
+      contents: read
+    outputs:
+      sha: ${{ steps.meta.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: meta
+        run: echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+      - name: Run target
+        env:
+          # Untrusted/templated values go through env, never inline in run:.
+          TARGET: ${{ inputs.make-target }}
+          REGISTRY_TOKEN: ${{ secrets.registry_token }}
+        run: make -- "$TARGET"

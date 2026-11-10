@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: shop
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io   # project cannot be deleted while applications reference it
+spec:
+  description: Shop team applications
+  sourceRepos:
+    - https://git.example.com/org/gitops.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: shop            # never the argocd namespace: it grants admin access
+  clusterResourceWhitelist: []   # no cluster-scoped kinds (create Namespaces outside the project)
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: LimitRange
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+  roles:
+    - name: read-only
+      description: Read-only access to the shop project
+      policies:
+        - p, proj:shop:read-only, applications, get, shop/*, allow
+      groups:
+        - shop-readers
+  syncWindows:
+    - kind: deny
+      schedule: "0 22 * * *"     # no syncs 22:00-23:00
+      duration: 1h
+      applications:
+        - "*-prod"
+      manualSync: false

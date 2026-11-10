@@ -1,0 +1,36 @@
+---
+# roles/example_service/tasks/main.yml
+# Rules: FQCN, named tasks, native modules, state present (not latest), honest changed_when.
+- name: Install the service package
+  ansible.builtin.package:
+    name: "{{ example_service_package }}"
+    state: present
+
+- name: Render the service configuration
+  ansible.builtin.template:
+    src: service.conf.j2
+    dest: "{{ example_service_config_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  notify: Restart example service
+
+- name: Ensure the service is enabled and running
+  ansible.builtin.service:
+    name: "{{ example_service_name }}"
+    state: started
+    enabled: true
+
+- name: Read the installed version (read-only probe)
+  ansible.builtin.command: "{{ example_service_version_command }}"
+  register: example_service_installed_version
+  changed_when: false
+  check_mode: false
+
+- name: Assert the installed version is the expected one
+  ansible.builtin.assert:
+    that: example_service_version in example_service_installed_version.stdout
+    fail_msg: "expected {{ example_service_version }}, got {{ example_service_installed_version.stdout }}"
+    quiet: true
+  when: not ansible_check_mode

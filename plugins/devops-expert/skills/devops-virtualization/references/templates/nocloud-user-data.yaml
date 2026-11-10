@@ -1,0 +1,22 @@
+#cloud-config
+# NoCloud user-data for a distribution cloud image (the first line MUST be "#cloud-config").
+# Keys verified against https://docs.cloud-init.io/en/latest/reference/modules.html
+# (cloud-init 26.2 docs, read 2026-11-10). Validate before use:
+#   cloud-init schema -c nocloud-user-data.yaml --annotate
+# Replace every <...>. Never put a real password or private key in this file.
+# cloud-init applies most of this ONCE (first boot of an instance-id).
+users:
+  - name: <admin-user>
+    gecos: Admin
+    shell: /bin/bash
+    lock_passwd: true            # key-only login
+    sudo: "ALL=(ALL) NOPASSWD:ALL"   # drop NOPASSWD if the policy requires a password
+    ssh_authorized_keys:
+      - <ssh-ed25519 AAAA... public key of the admin>
+ssh_pwauth: false
+disable_root: true
+package_update: true
+packages:
+  - qemu-guest-agent             # package name is distribution-specific, verify
+runcmd:
+  - [systemctl, enable, --now, qemu-guest-agent]

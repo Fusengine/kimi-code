@@ -1,0 +1,42 @@
+# CPU-based autoscaling for Deployment "web" (autoscaling/v2).
+# Requires: Metrics Server in the cluster and CPU requests on every container
+# (utilization is a percentage of the request). Remove "replicas" from the Deployment in Git.
+# The behavior below restates the documented defaults with a slower scale-down rate.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web
+  namespace: shop
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web
+  minReplicas: 2 # keep >= 2 so the PodDisruptionBudget can allow one eviction
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300 # documented default
+      policies:
+        - type: Percent
+          value: 50 # remove at most half of the pods per minute
+          periodSeconds: 60
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+      selectPolicy: Max
+      # tolerance: 0.05  # per-direction tolerance, stable since v1.37 - only on 1.37+ control planes

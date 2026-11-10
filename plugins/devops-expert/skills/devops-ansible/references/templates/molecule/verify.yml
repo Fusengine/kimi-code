@@ -1,0 +1,22 @@
+---
+# molecule/default/verify.yml - asserts the end state; read-only checks only.
+- name: Verify
+  hosts: lab
+  gather_facts: false
+  tasks:
+    - name: The service listens on its port
+      ansible.builtin.wait_for:
+        port: 8080
+        timeout: 10
+
+    - name: The configuration file exists with the expected mode
+      ansible.builtin.stat:
+        path: /etc/example/service.conf
+      register: verify_config
+
+    - name: Assert the configuration file state
+      ansible.builtin.assert:
+        that:
+          - verify_config.stat.exists
+          - verify_config.stat.mode == "0644"
+        quiet: true

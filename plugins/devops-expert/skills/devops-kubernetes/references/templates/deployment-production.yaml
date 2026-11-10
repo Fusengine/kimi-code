@@ -1,0 +1,137 @@
+# Production-grade stateless app: Deployment + Service + PodDisruptionBudget.
+# Replace: shop (namespace), web (name), image, ports, probe paths, resources.
+# Assumes: namespace labelled pod-security.kubernetes.io/enforce=restricted,
+# ServiceAccount "web" from rbac-least-privilege.yaml, an HPA owning replicas (hpa.yaml).
+# Apply: kubectl --context CTX -n shop diff -f . ; kubectl --context CTX -n shop apply --dry-run=server -f .
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: shop
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/part-of: shop
+spec:
+  # replicas omitted on purpose: the HPA owns it. Set it only if no HPA exists.
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 600
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: web
+        app.kubernetes.io/part-of: shop
+    spec:
+      serviceAccountName: web
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: web
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: web
+      containers:
+        - name: app
+          image: registry.example.com/shop/web:2.3.0 # pin a tag, preferably @sha256 digest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: web-config-v1 # immutable, versioned name
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              memory: 256Mi # memory limit always; CPU limit deliberately omitted
+          startupProbe:
+            httpGet:
+              path: /livez
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /livez # process health only, never a dependency
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 5"] # drop from endpoints before SIGTERM; needs a shell in the image
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: shop
+  labels:
+    app.kubernetes.io/name: web
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web
+  namespace: shop
+spec:
+  maxUnavailable: 1
+  unhealthyPodEvictionPolicy: AlwaysAllow
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web

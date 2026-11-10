@@ -1,0 +1,39 @@
+# kubeadm HA control plane, stacked etcd, API objects kubeadm.k8s.io/v1beta4.
+# Use:  sudo kubeadm init --config kubeadm-ha-config.yaml --upload-certs
+# Do NOT also pass --certificate-key on the command line (it cannot be mixed with --config).
+# Replace every <PLACEHOLDER>. Verify field names with: kubeadm config print init-defaults
+# Source: https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+nodeRegistration:
+  # criSocket: "unix:///var/run/containerd/containerd.sock" # set only if auto-detection is ambiguous
+  kubeletExtraArgs:
+    - name: node-ip
+      value: "<THIS_NODE_IP>" # needed on multi-homed nodes (Cilium kube-proxy replacement relies on a correct InternalIP)
+localAPIEndpoint:
+  advertiseAddress: "<THIS_NODE_IP>"
+  bindPort: 6443
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+kubernetesVersion: "v<K8S_VERSION>" # e.g. the latest 1.37 patch; kubeadm, kubelet and kubectl should match
+clusterName: "<CLUSTER_NAME>"
+# DNS name of the TCP load balancer / VIP in front of ALL control-plane nodes. Must match the LB address forever.
+controlPlaneEndpoint: "<API_ENDPOINT_DNS>:6443"
+networking:
+  serviceSubnet: "10.96.0.0/16"
+  podSubnet: "10.244.0.0/16" # must agree with the CNI's IPAM settings
+  dnsDomain: "cluster.local"
+apiServer:
+  certSANs:
+    - "<API_ENDPOINT_DNS>"
+    - "<VIP_OR_LB_IP>"
+etcd:
+  local:
+    dataDir: "/var/lib/etcd"
+# Keep kube-proxy off when Cilium replaces it (kubeProxyReplacement=true). Remove this block to keep kube-proxy.
+proxy:
+  disabled: true
+# Optional: ECDSA keys and explicit validity (defaults: RSA-2048, 8760h leaf, 87600h CA)
+# encryptionAlgorithm: ECDSA-P256
+# certificateValidityPeriod: 8760h

@@ -1,0 +1,14 @@
+apiVersion: v2
+name: web
+description: Example stateless web service chart
+type: application
+version: 0.1.0            # chart SemVer: bump on every chart change
+appVersion: "1.4.2"       # quoted: informational, not related to version
+kubeVersion: ">=1.35.0-0"
+annotations:
+  example.com/owner: platform-team
+# dependencies:
+#   - name: postgresql
+#     version: "16.x.x"
+#     repository: oci://registry.example.com/charts
+#     condition: postgresql.enabled

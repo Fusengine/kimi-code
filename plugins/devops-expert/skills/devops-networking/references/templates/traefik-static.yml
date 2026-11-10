@@ -1,0 +1,40 @@
+# /etc/traefik/traefik.yml - static configuration (Traefik v3.7).
+# Keys verified in Context7 /traefik/traefik v3.7.15 (entrypoints, ACME reference, file provider).
+# Run first with the Let's Encrypt STAGING caServer; remove that line only when issuance works
+# (production rate limits are real). Mount /letsencrypt on persistent storage.
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: le
+
+certificatesResolvers:
+  le:
+    acme:
+      email: admin@example.com
+      storage: /letsencrypt/acme.json        # chmod 600
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory   # REMOVE for production
+      keyType: EC256                          # default is RSA4096
+      httpChallenge:
+        entryPoint: web
+      # Wildcard certificates need DNS-01 instead of httpChallenge:
+      # dnsChallenge:
+      #   provider: cloudflare                # credentials via the provider's environment variables
+      #   resolvers: ["1.1.1.1:53", "9.9.9.9:53"]
+
+providers:
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+# No `api:` block on purpose: never enable `api.insecure` (unauthenticated dashboard) on a public host.

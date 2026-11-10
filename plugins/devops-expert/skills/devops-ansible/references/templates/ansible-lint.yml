@@ -1,0 +1,26 @@
+---
+# Copy to the project root as `.ansible-lint` (run ansible-lint from that root).
+# Profiles, each extending the previous: min, basic, moderate, safety, shared, production.
+profile: production
+
+exclude_paths:
+  - .cache/
+  - collections/
+
+# Opt-in rules switched on (they are not loaded by default).
+enable_list:
+  - no-log-password
+  - no-same-owner
+  - name[prefix]
+  - args
+
+# Findings that stay visible but do not fail the run. Prefer .ansible-lint-ignore entries over skip_list.
+warn_list:
+  - experimental
+
+# Enforce role-prefixed variable names and loop variables.
+var_naming_pattern: "^[a-z_][a-z0-9_]*$"
+loop_var_prefix: "^(__|{role}_)"
+
+# true for air-gapped CI: no requirements.yml install, no schema refresh.
+offline: false

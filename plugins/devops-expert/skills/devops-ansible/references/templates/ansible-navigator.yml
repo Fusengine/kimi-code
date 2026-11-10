@@ -1,0 +1,22 @@
+---
+# ./ansible-navigator.yml (project dir, no leading dot) or ~/.ansible-navigator.yml (leading dot).
+# Only one settings file per directory; ANSIBLE_NAVIGATOR_CONFIG overrides the lookup.
+ansible-navigator:
+  execution-environment:
+    enabled: true
+    image: registry.example.net/ee/infra-ee:2026.11.0   # your built EE image, pinned tag
+    container-engine: podman                            # auto tries podman, docker, container
+    pull:
+      policy: missing                                   # always | missing | never | tag
+    volume-mounts:
+      - src: "~/.ssh/known_hosts"
+        dest: "/root/.ssh/known_hosts"
+        options: "ro"
+    environment-variables:
+      pass:
+        - ANSIBLE_VAULT_PASSWORD_FILE
+  mode: stdout
+  playbook-artifact:
+    enable: false
+  logging:
+    level: warning

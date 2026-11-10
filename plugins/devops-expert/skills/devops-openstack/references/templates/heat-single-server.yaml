@@ -1,0 +1,125 @@
+heat_template_version: 2021-04-16   # "wallaby" - latest HOT version listed in the 2026.2 HOT spec
+
+description: >
+  One private network behind a router on an existing external network, a security
+  group allowing SSH from one CIDR, one server on a port, a floating IP and a data volume.
+  Resource types and properties verified in
+  https://docs.openstack.org/heat/2026.2/template_guide/openstack.html
+  Validate: openstack orchestration template validate -t heat-single-server.yaml
+  Preview:  openstack stack create --dry-run -t heat-single-server.yaml --parameter key_name=alice-key demo
+  Create:   openstack stack create --wait -t heat-single-server.yaml --parameter key_name=alice-key demo
+  Delete (deletes every resource below, including the volume data): openstack stack delete demo
+
+parameters:
+  key_name:
+    type: string
+    description: Existing Nova keypair
+    constraints:
+      - custom_constraint: nova.keypair
+  image:
+    type: string
+    default: ubuntu-24.04
+    constraints:
+      - custom_constraint: glance.image
+  flavor:
+    type: string
+    default: m1.medium
+    constraints:
+      - custom_constraint: nova.flavor
+  external_network:
+    type: string
+    default: public
+    constraints:
+      - custom_constraint: neutron.network
+  subnet_cidr:
+    type: string
+    default: 10.30.0.0/24
+  dns_nameserver:
+    type: string
+    default: 192.0.2.53
+  ssh_cidr:
+    type: string
+    description: CIDR allowed to SSH in
+    default: 198.51.100.0/24
+  volume_size:
+    type: number
+    default: 20
+
+resources:
+  net:
+    type: OS::Neutron::Net
+
+  subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: net }
+      cidr: { get_param: subnet_cidr }
+      ip_version: 4
+      dns_nameservers:
+        - { get_param: dns_nameserver }
+
+  router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: external_network }
+
+  router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: router }
+      subnet: { get_resource: subnet }
+
+  secgroup:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      rules:
+        - direction: ingress
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+          remote_ip_prefix: { get_param: ssh_cidr }
+        - direction: ingress
+          protocol: icmp
+          remote_ip_prefix: { get_param: ssh_cidr }
+
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: net }
+      fixed_ips:
+        - subnet: { get_resource: subnet }
+      security_groups:
+        - { get_resource: secgroup }
+
+  server:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key_name }
+      networks:
+        - port: { get_resource: port }
+
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    depends_on: router_interface
+    properties:
+      floating_network: { get_param: external_network }
+      port_id: { get_resource: port }
+
+  data_volume:
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: volume_size }
+
+  data_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      instance_uuid: { get_resource: server }
+      volume_id: { get_resource: data_volume }
+
+outputs:
+  floating_ip:
+    description: Public address of the server
+    value: { get_attr: [floating_ip, floating_ip_address] }

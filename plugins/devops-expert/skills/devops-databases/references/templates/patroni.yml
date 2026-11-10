@@ -1,0 +1,94 @@
+# patroni.yml - one node of a 3-node Patroni 4.1.x cluster with an etcd (v3 API) DCS.
+# Install as /etc/patroni/patroni.yml on each node; change name, listen and connect_address per node.
+# Keys checked against the Patroni docs (yaml_configuration.rst, dynamic_configuration.rst) on 2026-11-10.
+# SECRETS: values below are placeholders. Real passwords are injected through the environment variables Patroni supports
+# (PATRONI_SUPERUSER_PASSWORD, PATRONI_REPLICATION_PASSWORD, PATRONI_RESTAPI_PASSWORD) from the secret store (devops-secrets);
+# never commit them. The file mode must be 0600, owner postgres.
+# `bootstrap.dcs` is applied ONCE when the cluster is first initialised; afterwards change it with
+#   patronictl -c /etc/patroni/patroni.yml edit-config   (dynamic configuration lives in the DCS).
+# Validate before use:  patroni --validate-config /etc/patroni/patroni.yml
+
+scope: pg-main                      # cluster name, identical on every node
+name: CHANGE_ME_node1               # unique per node
+namespace: /service/                # path in the DCS (default /service)
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: CHANGE_ME_node1_ip:8008   # must be reachable from ALL nodes (used in the leader race)
+  authentication:
+    username: patroni_api
+    password: CHANGE_ME                      # use PATRONI_RESTAPI_PASSWORD instead of a literal
+  # TLS for the REST API (recommended):
+  # certfile: /etc/patroni/tls/node.crt
+  # keyfile: /etc/patroni/tls/node.key
+  # cafile: /etc/patroni/tls/ca.crt
+
+etcd3:
+  hosts: CHANGE_ME_etcd1:2379,CHANGE_ME_etcd2:2379,CHANGE_ME_etcd3:2379
+  protocol: https
+  cacert: /etc/patroni/tls/etcd-ca.crt
+  cert: /etc/patroni/tls/etcd-client.crt
+  key: /etc/patroni/tls/etcd-client.key
+
+bootstrap:
+  dcs:
+    ttl: 30                         # failover starts after the leader fails to renew for ttl seconds (min 20)
+    loop_wait: 10                   # rule: loop_wait + 2 * retry_timeout <= ttl
+    retry_timeout: 10               # DCS/network trouble shorter than this does not demote the leader (min 3)
+    maximum_lag_on_failover: 1048576   # bytes; replicas lagging more than this cannot win the leader race
+    synchronous_mode: false         # true or quorum = no committed-data loss on failover, writes can block (see ha-patroni.md)
+    failsafe_mode: false            # true = a primary survives a DCS outage if all members acknowledge it
+    postgresql:
+      use_pg_rewind: true           # needs data checksums (default in initdb 18) and/or wal_log_hints = on
+      parameters:
+        wal_level: replica
+        hot_standby: "on"
+        max_wal_senders: 10
+        max_replication_slots: 10
+        wal_log_hints: "on"
+        archive_mode: "on"
+        archive_command: pgbackrest --stanza=main archive-push %p
+        archive_timeout: 5min
+        max_slot_wal_keep_size: 50GB      # cap it: see replication-streaming-logical.md
+        password_encryption: scram-sha-256
+        shared_preload_libraries: pg_stat_statements
+      pg_hba:
+        - local all postgres peer
+        - hostssl replication replicator CHANGE_ME_db_subnet/24 scram-sha-256
+        - hostssl all rewind_user CHANGE_ME_db_subnet/24 scram-sha-256   # pg_rewind from a rejoining member
+        - hostssl all all CHANGE_ME_app_subnet/24 scram-sha-256
+        - host all all 0.0.0.0/0 reject
+  initdb:                           # options passed to initdb on the first node
+    - encoding: UTF8
+    - data-checksums                # default in 18; explicit for older majors
+  # Custom bootstrap from a pgBackRest backup (disaster recovery) replaces initdb: see the Patroni "custom bootstrap" docs.
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: CHANGE_ME_node1_ip:5432
+  data_dir: /var/lib/postgresql/18/main
+  bin_dir: /usr/lib/postgresql/18/bin
+  pgpass: /var/lib/postgresql/.pgpass_patroni   # Patroni writes this file; keep outside the data directory
+  authentication:
+    superuser:
+      username: postgres
+      password: CHANGE_ME                        # PATRONI_SUPERUSER_PASSWORD
+    replication:
+      username: replicator
+      password: CHANGE_ME                        # PATRONI_REPLICATION_PASSWORD
+    rewind:
+      username: rewind_user
+      password: CHANGE_ME                        # needed by pg_rewind
+  # Rebuild replicas from the backup repository instead of the leader (requires a pgBackRest restore wrapper):
+  # create_replica_methods: [pgbackrest, basebackup]
+
+watchdog:
+  mode: automatic                   # off | automatic | required (required = a node without a working watchdog never leads)
+  device: /dev/watchdog
+  safety_margin: 5
+
+tags:
+  nofailover: false                 # true keeps this node out of the leader race (reporting/delayed replica)
+  noloadbalance: false
+  clonefrom: false
+  nosync: false

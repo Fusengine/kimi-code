@@ -1,0 +1,16 @@
+# Grafana dashboard provider, mount at /etc/grafana/provisioning/dashboards/ (Grafana 13.3 docs).
+# Dashboard JSON files live under options.path. Export from the UI with "Export for sharing externally",
+# strip the "id" field, keep a stable "uid", and review the JSON diff in Git like any other code.
+apiVersion: 1
+
+providers:
+  - name: git-managed
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: true            # removing a file does not delete the dashboard from the database
+    updateIntervalSeconds: 30
+    allowUiUpdates: false            # UI edits are not saved over the file: change Git, not the UI
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: true

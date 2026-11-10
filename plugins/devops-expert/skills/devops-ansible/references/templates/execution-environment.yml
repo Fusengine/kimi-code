@@ -1,0 +1,22 @@
+---
+# execution-environment.yml - ansible-builder schema version 3 (version: 3 is mandatory; otherwise v1 is assumed).
+# Base images must be RPM-based (dnf). Pin by digest for production use.
+version: 3
+
+images:
+  base_image:
+    name: docker.io/redhat/ubi9:latest
+
+dependencies:
+  ansible_core:
+    package_pip: ansible-core==2.21.6        # pin the line you validated
+  ansible_runner:
+    package_pip: ansible-runner
+  galaxy: collections/requirements.yml
+  python:
+    - jmespath
+  # system: bindep.txt                        # add a bindep file when collections need system packages
+
+additional_build_steps:
+  append_final:
+    - RUN ansible --version

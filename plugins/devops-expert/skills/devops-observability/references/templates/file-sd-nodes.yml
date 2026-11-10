@@ -1,0 +1,13 @@
+# File-based service discovery target file, referenced by file_sd_configs in prometheus.yml.
+# Format: list of static configs. Edits are detected by disk watch, no Prometheus reload needed.
+- targets:
+    - "web-01.example.com:9100"
+    - "web-02.example.com:9100"
+  labels:
+    env: prod
+    role: web
+- targets:
+    - "db-01.example.com:9100"
+  labels:
+    env: prod
+    role: db

@@ -1,0 +1,38 @@
+# /etc/network/interfaces - ifupdown2, VLAN-aware bridge on a bond (Proxmox/Debian style).
+# Syntax from https://pve.proxmox.com/pve-docs/chapter-sysadmin.html (Network Configuration),
+# read via Context7 /websites/pve_proxmox_pve-docs, 2026-11-10.
+#
+# APPLY: ifupdown2 reloads live with `ifreload -a`. There is NO built-in timer: schedule the
+# restore first (references/safe-network-changes.md), keep the console/IPMI and a second session.
+#   cp /etc/network/interfaces /root/interfaces.bak
+#   systemd-run --unit=net-revert --on-active=180s /bin/sh -c 'cp /root/interfaces.bak /etc/network/interfaces && ifreload -a'
+#   ifreload -a        # then confirm from a NEW session:  systemctl stop net-revert.timer
+# On a Proxmox node edit via the GUI (writes interfaces.new) or follow devops-proxmox instead.
+# Interface names, addresses, VLAN range are placeholders: REPLACE.
+
+auto lo
+iface lo inet loopback
+
+iface eno1 inet manual
+iface eno2 inet manual
+
+auto bond0
+iface bond0 inet manual
+        bond-slaves eno1 eno2
+        bond-miimon 100
+        bond-mode 802.3ad
+        bond-xmit-hash-policy layer2+3
+
+auto vmbr0
+iface vmbr0 inet manual
+        bridge-ports bond0
+        bridge-stp off
+        bridge-fd 0
+        bridge-vlan-aware yes
+        bridge-vids 2-4094
+
+# host management address on VLAN 5, tagged on the bridge
+auto vmbr0.5
+iface vmbr0.5 inet static
+        address 10.10.10.2/24
+        gateway 10.10.10.1

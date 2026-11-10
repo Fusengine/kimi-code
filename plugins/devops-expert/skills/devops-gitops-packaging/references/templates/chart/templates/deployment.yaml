@@ -1,0 +1,32 @@
+# Helm template (contains {{ }}; exempt from plain YAML parsing).
+# Pod hardening, probes and PDB: see devops-kubernetes templates/deployment-production.yaml.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "web.fullname" . }}
+  labels:
+    {{- include "web.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "web.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "web.selectorLabels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: web
+          image: {{ include "web.image" . | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.containerPort }}
+          {{- if .Values.existingSecret }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.existingSecret }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

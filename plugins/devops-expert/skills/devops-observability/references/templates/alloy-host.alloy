@@ -1,0 +1,66 @@
+// Grafana Alloy v1.21 host agent: node metrics -> Prometheus remote write, log files -> Loki.
+// Components and arguments checked against the Alloy v1.21.3 reference.
+// Validate:  alloy validate /etc/alloy/config.alloy
+// Run:       alloy run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+
+// ---- metrics ---------------------------------------------------------------
+prometheus.exporter.unix "host" {
+  // Built-in node_exporter collectors; no separate node_exporter process needed.
+  include_exporter_metrics = true
+}
+
+discovery.relabel "host" {
+  targets = prometheus.exporter.unix.host.targets
+
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+}
+
+prometheus.scrape "host" {
+  targets         = discovery.relabel.host.output
+  forward_to      = [prometheus.remote_write.default.receiver]
+  scrape_interval = "30s"
+  job_name        = "node"
+}
+
+prometheus.remote_write "default" {
+  external_labels = {
+    cluster = "homelab",
+  }
+
+  endpoint {
+    // Prometheus needs --web.enable-remote-write-receiver for this URL; Mimir uses /api/v1/push.
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
+
+// ---- logs ------------------------------------------------------------------
+local.file_match "varlog" {
+  path_targets = [
+    {"__path__" = "/var/log/*.log", "job" = "varlog", "host" = constants.hostname},
+  ]
+  sync_period = "10s"
+}
+
+loki.source.file "varlog" {
+  targets    = local.file_match.varlog.targets
+  forward_to = [loki.process.drop_noise.receiver]
+}
+
+loki.process "drop_noise" {
+  // Drop debug-level lines at the edge; keep the label set small (job, host).
+  stage.drop {
+    expression          = "(?i)level=debug"
+    drop_counter_reason = "debug_line"
+  }
+
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

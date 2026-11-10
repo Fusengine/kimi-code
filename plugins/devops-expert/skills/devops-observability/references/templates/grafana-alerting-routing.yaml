@@ -1,0 +1,22 @@
+# Grafana-managed alerting: contact point + notification policy as code
+# (mount at /etc/grafana/provisioning/alerting/; format from the Grafana 13.3 file-provisioning page).
+# Use this only for Grafana-managed alerts. Metric alerts belong in Prometheus rules + Alertmanager.
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: forward-to-alertmanager
+    receivers:
+      - uid: fwd-am
+        type: prometheus-alertmanager
+        disableResolveMessage: false
+        settings:
+          url: http://alertmanager:9093
+
+policies:
+  - orgId: 1
+    receiver: forward-to-alertmanager
+    group_by: [grafana_folder, alertname]
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h

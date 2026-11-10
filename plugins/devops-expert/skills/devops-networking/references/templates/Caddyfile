@@ -1,0 +1,37 @@
+# /etc/caddy/Caddyfile - automatic HTTPS reverse proxy (Caddy 2.11).
+# Directives verified at caddyserver.com/docs (reverse_proxy, encode, global options) via Context7
+# /websites/caddyserver_caddyfile, 2026-11-10.
+# Validate:  caddy validate --config /etc/caddy/Caddyfile
+# Reload:    caddy reload --config /etc/caddy/Caddyfile   (or systemctl reload caddy)
+
+{
+	email admin@example.com
+	# While testing, use the staging CA to avoid rate limits:
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+
+	# Behind another proxy/CDN only: trust its address so X-Forwarded-* from it is kept.
+	# servers {
+	#	trusted_proxies static 203.0.113.0/24
+	# }
+}
+
+app.example.com {
+	encode zstd gzip
+
+	header Strict-Transport-Security "max-age=31536000"
+
+	reverse_proxy 127.0.0.1:8080 127.0.0.1:8081 {
+		health_uri      /healthz
+		health_interval 10s
+		health_timeout  3s
+		# Caddy sets X-Forwarded-For/-Proto/-Host itself; add Host only if the app needs the upstream's.
+	}
+}
+
+# Wildcard needs DNS-01 and a Caddy build with the DNS provider module (xcaddy), e.g.:
+# *.example.com {
+#	tls {
+#		dns cloudflare {env.CF_API_TOKEN}
+#	}
+#	...
+# }

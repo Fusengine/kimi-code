@@ -1,0 +1,20 @@
+---
+# collections/requirements.yml
+# Install:  ansible-galaxy collection install -r collections/requirements.yml
+# (a file holding both `roles:` and `collections:` also works with `ansible-galaxy install -r`).
+# Versions read from the Galaxy API on 2026-11-10; keep a range that stays inside one major.
+collections:
+  - name: ansible.posix
+    version: ">=2.2.2,<3.0.0"
+  - name: community.general
+    version: ">=14.0.1,<15.0.0"
+  # Uncomment what the project uses (see devops-proxmox / devops-openstack):
+  # - name: community.proxmox
+  #   version: ">=2.1.0,<3.0.0"
+  # - name: openstack.cloud
+  #   version: ">=2.6.0,<3.0.0"
+
+# Roles: exact versions only (ranges are not supported for roles). Pin Git sources to a tag or commit, never a branch.
+# roles:
+#   - name: example.role
+#     version: "1.9.6"

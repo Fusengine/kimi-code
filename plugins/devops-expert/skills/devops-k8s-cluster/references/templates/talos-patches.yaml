@@ -1,0 +1,27 @@
+# Talos v1.14 control-plane patch: no default Flannel CNI, no kube-proxy (Cilium replaces both),
+# DHCP on the node interface, install disk chosen by a stable property.
+# Use (before bootstrap):
+#   talosctl machineconfig patch controlplane.yaml --patch controlplane-patch-1.yaml --output controlplane.yaml
+# or at generation time:
+#   talosctl gen config --with-secrets secrets.yaml <cluster> https://<endpoint>:6443 --config-patch-control-plane @controlplane-patch-1.yaml
+# Find values with:  talosctl --nodes <ip> get links --insecure   |   talosctl get disks --insecure --nodes <ip>
+# Sources: https://docs.siderolabs.com/kubernetes-guides/cni/deploying-cilium.md
+#          https://docs.siderolabs.com/talos/v1.14/getting-started/prodnotes.md
+# On Talos < 1.14 use the legacy form instead:  cluster: { network: { cni: { name: none } }, proxy: { disabled: true } }
+apiVersion: v1alpha1
+kind: KubeFlannelCNIConfig
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: <NETWORK_INTERFACE_NAME> # interface whose OPER state is up
+---
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: disk.serial == "<DISK_SERIAL>" # prefer serial/wwid over /dev/sdX; dev_path form: disk.dev_path == "/dev/<name>"

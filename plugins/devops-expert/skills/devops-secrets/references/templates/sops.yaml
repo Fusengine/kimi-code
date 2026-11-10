@@ -1,0 +1,26 @@
+# Copy to the repository root as `.sops.yaml`. Placeholders only: replace each
+# <...> value with an age PUBLIC key (starts with "age1"). Never put an age
+# identity (private key) in this file or anywhere in Git.
+#
+# Rules are matched top to bottom by path_regex; the first match wins.
+# Keep at least two recipients per environment: the cluster/CI identity and an
+# offline recovery identity held by a different custodian.
+creation_rules:
+  # Production Kubernetes Secrets: encrypt only the value fields so the manifest
+  # (apiVersion, kind, metadata) stays readable and parseable.
+  - path_regex: secrets/prod/.*\.ya?ml$
+    encrypted_regex: ^(data|stringData)$
+    age: "<AGE_PUBLIC_KEY_PROD_CLUSTER>,<AGE_PUBLIC_KEY_OFFLINE_RECOVERY>"
+
+  # Staging uses different identities so a staging leak does not expose prod.
+  - path_regex: secrets/staging/.*\.ya?ml$
+    encrypted_regex: ^(data|stringData)$
+    age: "<AGE_PUBLIC_KEY_STAGING_CLUSTER>,<AGE_PUBLIC_KEY_OFFLINE_RECOVERY>"
+
+  # Anything else under secrets/: encrypt every value (dotenv, json, yaml).
+  - path_regex: secrets/.*
+    age: "<AGE_PUBLIC_KEY_PERSON_A>,<AGE_PUBLIC_KEY_OFFLINE_RECOVERY>"
+
+stores:
+  yaml:
+    indent: 2

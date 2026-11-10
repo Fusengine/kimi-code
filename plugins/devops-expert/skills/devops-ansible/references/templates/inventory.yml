@@ -1,0 +1,26 @@
+---
+# inventories/production/hosts.yml - one inventory directory per environment.
+# Check what it resolves to before any run:  ansible-inventory -i inventories/production --graph
+all:
+  vars:
+    ansible_user: deploy
+    # Secrets are NOT set here: see group_vars-all.yml (vault_ indirection).
+  children:
+    web:
+      hosts:
+        web[01:03].example.net:          # numeric range -> web01, web02, web03
+      vars:
+        example_service_port: 8080
+    db:
+      hosts:
+        db01.example.net:
+          ansible_host: 10.0.20.11       # host-level override of the address
+        db02.example.net:
+          ansible_host: 10.0.20.12
+      vars:
+        example_service_port: 5432
+    # Parent group made of child groups (YAML: children:, INI: [prod:children])
+    production:
+      children:
+        web:
+        db:

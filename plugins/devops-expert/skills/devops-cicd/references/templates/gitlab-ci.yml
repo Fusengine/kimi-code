@@ -1,0 +1,114 @@
+# .gitlab-ci.yml: rules, needs (DAG), environments, resource_group, protected
+# production deploy. Keywords verified at docs.gitlab.com/ci/yaml on 2026-11-10.
+# Adapt `image`, `script` lines and the runner `tags` to the project.
+stages:
+  - build
+  - test
+  - deploy
+
+workflow:
+  # Run branch pipelines only when no merge request is open (avoids duplicates).
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
+  auto_cancel:
+    on_new_commit: interruptible
+
+default:
+  image: node:24-bookworm-slim
+  interruptible: true # newer pipeline may cancel this job...
+  timeout: 20m
+  tags: [docker] # ...on runners carrying this tag
+
+variables:
+  # Non-sensitive config only. Secrets live in Settings > CI/CD > Variables
+  # (masked, protected), never in this file.
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+
+lint:
+  stage: test
+  needs: [] # starts immediately, does not wait for build
+  script:
+    - npm ci
+    - npm run lint
+  cache:
+    key:
+      files: [package-lock.json]
+    paths: [.npm/]
+
+build:
+  stage: build
+  script:
+    - npm ci --cache .npm
+    - npm run build
+  artifacts:
+    paths: [dist/]
+    expire_in: 14 days
+  cache:
+    key:
+      files: [package-lock.json]
+    paths: [.npm/]
+    policy: pull-push
+
+unit:
+  stage: test
+  needs: [build] # DAG: runs as soon as build finishes
+  parallel:
+    matrix:
+      - NODE: ["22", "24"]
+  image: node:${NODE}-bookworm-slim
+  script:
+    - npm ci
+    - npm test
+
+deploy_staging:
+  stage: deploy
+  needs: [build, unit]
+  resource_group: staging # one deploy at a time per environment
+  environment:
+    name: staging
+    url: https://staging.example.com
+    on_stop: stop_staging
+    auto_stop_in: 7 days
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  interruptible: false # never cancel a deploy mid-flight
+  script:
+    - ./scripts/promote.sh staging "$CI_COMMIT_SHA"
+
+stop_staging:
+  stage: deploy
+  needs: []
+  environment:
+    name: staging
+    action: stop
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+  interruptible: false
+  script:
+    - ./scripts/teardown.sh staging
+
+# PRODUCTION DEPLOY. Needs a protected environment (Settings > CI/CD >
+# Protected environments, Premium/Ultimate) so only approved roles can run it.
+# See references/destructive-pipeline-actions.md before editing.
+deploy_production:
+  stage: deploy
+  needs: [deploy_staging]
+  resource_group: production
+  environment:
+    name: production
+    url: https://app.example.com
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual
+  manual_confirmation: "Deploy $CI_COMMIT_TAG to PRODUCTION?"
+  interruptible: false
+  id_tokens:
+    BAO_ID_TOKEN:
+      aud: https://bao.example.com # audience the secret store expects
+  script:
+    - ./scripts/promote.sh production "$CI_COMMIT_SHA"

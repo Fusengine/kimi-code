@@ -1,0 +1,35 @@
+# Release automation: a pushed version tag creates a GitHub Release with
+# generated notes. Tag creation itself stays a human (or commit-agent) act.
+# PUBLISHES a release: see references/destructive-pipeline-actions.md.
+name: release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: release # add required reviewers here for a human gate
+    permissions:
+      contents: write # create the release; nothing else
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Create draft release with generated notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          # --verify-tag aborts if the tag is missing on the remote;
+          # --draft lets a human review before publishing.
+          gh release create "$TAG" --verify-tag --generate-notes --draft

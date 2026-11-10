@@ -1,7 +1,7 @@
 {
   "name": "fusengine",
   "version": "1.0.27",
-  "description": "Fusengine agentic suite for Kimi Code (K3): 25 plugins, 212 skills, APEX workflow, harness-powered hooks",
+  "description": "Fusengine agentic suite for Kimi Code (K3): 26 plugins, 230 skills, APEX workflow, harness-powered hooks",
   "author": {
     "name": "Fusengine",
     "url": "https://github.com/fusengine"
@@ -24,6 +24,7 @@
     "./plugins/changelog-watcher/skills/",
     "./plugins/commit-pro/skills/",
     "./plugins/design-expert/skills/",
+    "./plugins/devops-expert/skills/",
     "./plugins/go-expert/skills/",
     "./plugins/hermes-expert/skills/",
     "./plugins/laravel-expert/skills/",

@@ -1,0 +1,63 @@
+// Alloy v1.21 as an OTLP gateway: apps send OTLP; metrics -> Prometheus remote write,
+// logs -> Loki, traces -> an OTLP/HTTP backend (Tempo). Components checked in the Alloy v1.21.3 reference.
+// Validate:  alloy validate config.alloy
+otelcol.receiver.otlp "default" {
+  grpc {}   // :4317
+  http {}   // :4318
+
+  output {
+    metrics = [otelcol.processor.memory_limiter.default.input]
+    logs    = [otelcol.processor.memory_limiter.default.input]
+    traces  = [otelcol.processor.memory_limiter.default.input]
+  }
+}
+
+// First in the chain: refuses data instead of letting the process be OOM-killed.
+otelcol.processor.memory_limiter "default" {
+  check_interval   = "1s"
+  limit_percentage = 80
+
+  output {
+    metrics = [otelcol.processor.batch.default.input]
+    logs    = [otelcol.processor.batch.default.input]
+    traces  = [otelcol.processor.batch.default.input]
+  }
+}
+
+// Batch after anything that drops data (sampling), before exporters.
+otelcol.processor.batch "default" {
+  output {
+    metrics = [otelcol.exporter.prometheus.default.input]
+    logs    = [otelcol.exporter.loki.default.input]
+    traces  = [otelcol.exporter.otlphttp.tempo.input]
+  }
+}
+
+otelcol.exporter.prometheus "default" {
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+prometheus.remote_write "default" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
+
+otelcol.exporter.loki "default" {
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+otelcol.exporter.otlphttp "tempo" {
+  client {
+    endpoint = "http://tempo:4318"
+    tls {
+      insecure = true   // lab only: use TLS between networks
+    }
+  }
+}

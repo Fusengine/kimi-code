@@ -1,0 +1,40 @@
+# Two ordered Kustomizations: controllers first, then apps.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infrastructure
+  namespace: flux-system
+spec:
+  interval: 1h
+  retryInterval: 2m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: gitops
+  path: ./infrastructure/production
+  prune: false                   # enable deliberately, after review: a prune deletes objects removed from Git
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: web
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infrastructure
+  interval: 10m
+  retryInterval: 2m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: gitops
+  path: ./apps/web/overlays/prod
+  targetNamespace: shop          # the namespace must exist (ship it in infrastructure)
+  prune: true
+  deletionPolicy: Orphan         # deleting this Kustomization leaves the workloads running
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: web
+      namespace: shop
