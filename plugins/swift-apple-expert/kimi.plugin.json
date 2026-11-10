@@ -1,6 +1,6 @@
 {
   "name": "fuse-swift-apple-expert",
-  "version": "1.1.21",
+  "version": "1.1.22",
   "description": "Expert Swift 6.4.2 + SwiftUI (Xcode 27.2) for iOS 27.2, macOS 27.2, iPadOS 27.2, watchOS 27.2, visionOS 27.2, tvOS 27.2 with Liquid Glass, @Observable, actors, SwiftData inheritance",
   "author": {
     "name": "Fusengine",

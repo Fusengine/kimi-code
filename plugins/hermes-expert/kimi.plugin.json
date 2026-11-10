@@ -1,6 +1,6 @@
 {
   "name": "fuse-hermes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Expert Nous Research Hermes Agent 0.23+ — config.yaml, SOUL.md / .hermes.md, profiles, delegation, cron, gateways, security, plus chief-of-staff operating patterns driven by a universal profile.yaml",
   "author": {
     "name": "Fusengine",
