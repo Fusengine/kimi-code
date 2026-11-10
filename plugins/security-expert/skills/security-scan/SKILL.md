@@ -1,73 +1,86 @@
 ---
 name: security-scan
-description: Use when scanning for XSS, SQL injection, command injection, hardcoded secrets, or any OWASP Top 10 vulnerability across a codebase.
+description: "Use when scanning a codebase or a change for XSS, injection, command execution, SSRF, path traversal, weak crypto, hardcoded secrets, insecure deserialization or any OWASP Top 10:2025 vulnerability, and reporting verified findings."
 ---
 
 
 <objective>
-This skill orchestrates a full security scan across JavaScript/TypeScript, PHP, Python,
-Swift/iOS, Go, and Rust: it detects the language from project markers, loads the matching
-pattern set, runs the harness's automated scanner (OWASP patterns ported into
-`@fusengine/harness`), maps findings to OWASP Top 10 categories, and generates a structured
-report.
+This skill finds and reports application-code vulnerabilities. It combines a first-pass
+pattern scanner shipped in `@fusengine/harness`, manual per-language patterns, optional
+presence-checked tools (secret scanners, SAST engines), and a read-only refutation pass that keeps
+only findings with confidence ≥ 8 and a concrete exploit scenario. Findings are mapped to CWE and
+OWASP Top 10:2025 (plus the API Security Top 10 2023 for API code) and written to
+`docs/security/YYYY-MM-DD-<scope>.md` in the audited repository.
 
-Pattern categories include XSS, SQL injection, command injection, unsafe code execution
-(eval/exec), SSRF, weak cryptography, hardcoded secrets, insecure deserialization, and path
-traversal/LFI/RFI, plus GraphQL-specific patterns (introspection, depth/complexity limiting,
-batching, authorization) when a GraphQL endpoint is present.
-
-After scanning, it delegates fixes to the sniper agent with file:line, vulnerability, and
-fix — it does not apply fixes itself.
+It reports; it never fixes. Verified findings, each with a re-test check, go back to the caller.
 </objective>
 
 # Security Scan Skill
 
-## Overview
-
-Orchestrates the full security scanning workflow across all supported languages.
-
-## Supported Languages
-
-| Language | Marker Files | Pattern Count |
-|----------|-------------|---------------|
-| JavaScript/TypeScript | package.json | 25+ |
-| PHP | composer.json | 20+ |
-| Python | requirements.txt, pyproject.toml | 18+ |
-| Swift/iOS | Package.swift, *.xcodeproj | 15+ |
-| Go | go.mod | 12+ |
-| Rust | Cargo.toml | 10+ |
-
 ## Workflow
 
-1. **Detect** language from project markers
-2. **Load** patterns from `references/scan-patterns.md`
-3. **Run** `bun ${KIMI_PLUGIN_ROOT}/../node_modules/@fusengine/harness/dist/cli/bin.mjs scan <dir>` for automated scanning (OWASP patterns ported into the harness)
-4. **Map** findings to OWASP categories via `references/owasp-top10.md`
-5. **Generate** report using `references/templates/scan-report.md`
+1. **Scope.** Full repository by default. When asked to review a change (`--diff`, a PR, a
+   branch), limit the scan to the files changed against the merge base and say so in the report
+   header:
+   `git diff --name-only $(git merge-base HEAD <base>)` (default `<base>`: the branch the caller
+   names, else `origin/HEAD`). Unchanged files are read only to trace data flow, not reported.
+2. **Detect** languages and frameworks from project markers (`package.json`, `composer.json`,
+   `pyproject.toml`, `requirements.txt`, `Package.swift`, `*.xcodeproj`, `go.mod`, `Cargo.toml`,
+   `Gemfile`, `pom.xml`, `build.gradle*`, `*.csproj`) and from the file extensions actually present
+   (`git ls-files | rg -o '\.[A-Za-z0-9]+$' | sort | uniq -c`).
+3. **Automated first pass:**
+   `bun "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness/dist/cli/bin.mjs" scan <dir>`
+   This is a first-pass pattern scanner, not a complete audit. Read what its output says it
+   scanned. If it prints a coverage summary, compare it with step 2: every language or file type
+   present in the repository but not reported as scanned is covered with the manual patterns
+   below. The scanner prints a coverage summary only in releases that include it; if it prints none,
+   treat every detected language as not covered and apply the manual patterns to all of them. A single `language` field is not a
+   coverage summary: a coverage summary lists the languages and the number of files scanned for
+   each.
+4. **Manual patterns** for the languages not covered (or to complete the first pass):
+   - JS/TS family (`.js .jsx .mjs .cjs .ts .tsx .mts .cts .vue .svelte .astro`), Next.js, TanStack
+     Start, React, Astro → [scan-patterns.md](references/scan-patterns.md)
+   - PHP / Laravel → [scan-patterns-php.md](references/scan-patterns-php.md)
+   - Python, Swift/iOS, Go, Rust → [scan-patterns-extra.md](references/scan-patterns-extra.md)
+   - Ruby, Java, Kotlin/Android, C# → [scan-patterns-other.md](references/scan-patterns-other.md)
+   - GraphQL endpoint present → [graphql-security.md](references/graphql-security.md)
+5. **Secrets** in every repository, any language → [secrets-patterns.md](references/secrets-patterns.md)
+   (single source of secret patterns; optional git-history scan with a presence-checked tool).
+6. **Optional SAST** when an engine is already installed (`command -v semgrep opengrep codeql`),
+   with its licence conditions → [sast-tools.md](references/sast-tools.md). Never install a tool.
+7. **Triage** every candidate → [triage.md](references/triage.md): refutation pass (source → sink,
+   framework protections, reachability, test/doc/generated file), confidence 1-10, report only
+   ≥ 8 with an exploit scenario, 5-7 to "needs manual review", then a second read-only pass.
+   Severity is set by impact and exploitability there; it overrides the scanner's raw label and the
+   "max severity" columns of the pattern references.
+8. **Map** to CWE and OWASP Top 10:2025 → [owasp-top10.md](references/owasp-top10.md).
+9. **Report** with [the report template](references/templates/scan-report.md): shared finding
+   fields, scanner coverage (what really ran, what was absent), needs manual review, and a
+   re-test check per finding. A secret value is never printed.
 
-## Pattern Categories
+## Hand-off
 
-- XSS (Cross-Site Scripting)
-- SQL Injection
-- Command Injection
-- Code Execution (eval, exec)
-- SSRF (Server-Side Request Forgery)
-- Weak Cryptography
-- Hardcoded Secrets
-- Insecure Deserialization
-- Path Traversal / LFI / RFI
+The skill does not edit code and does not dispatch fixes. Return the report path and the
+verified findings (id, severity, confidence, CWE, standard reference, `file:line`, evidence,
+exploit scenario, recommendation, re-test check) to the caller, which decides who fixes them.
 
-## Integration
+## Out of scope (peer skills)
 
-After scanning, delegate fixes to sniper:
-```
-Agent(subagent_type="sniper", prompt="Security fixes: [FILE:LINE] [VULN] [FIX]")
-```
+Dependencies and lockfiles → [dependency-audit](../dependency-audit/SKILL.md); single-package CVE
+lookups → [cve-research](../cve-research/SKILL.md); JWT/session/OAuth/password flows →
+[auth-audit](../auth-audit/SKILL.md); HTTP headers, CSP, CORS →
+[security-headers](../security-headers/SKILL.md); AI-agent configuration (hooks, MCP, skills) →
+[agentic-security](../agentic-security/SKILL.md).
 
 ## References
 
-- [OWASP Top 10 Mapping](references/owasp-top10.md)
-- [Scan Patterns by Language](references/scan-patterns.md)
-- [Report Template](references/templates/scan-report.md)
-- [GraphQL Security Patterns](references/graphql-security.md) — Load when the target exposes a GraphQL endpoint (introspection, depth/complexity limiting, batching, authorization checks).
-- [Scan Patterns - Python, Swift/iOS, Go, Rust](references/scan-patterns-extra.md) — Load when scanning Python, Swift/iOS, Go, or Rust source code (patterns not covered in `scan-patterns.md`).
+- [OWASP Top 10:2025 mapping + API Security Top 10 2023](references/owasp-top10.md)
+- [Patterns - JavaScript / TypeScript family](references/scan-patterns.md)
+- [Patterns - PHP / Laravel](references/scan-patterns-php.md)
+- [Patterns - Python, Swift/iOS, Go, Rust](references/scan-patterns-extra.md)
+- [Patterns - Ruby, Java, Kotlin, C#](references/scan-patterns-other.md)
+- [Secret patterns and git-history scanning](references/secrets-patterns.md)
+- [GraphQL security patterns](references/graphql-security.md) — load when the target exposes a GraphQL endpoint.
+- [Optional SAST engines and licences](references/sast-tools.md)
+- [Triage: refutation, confidence, severity](references/triage.md)
+- [Report template](references/templates/scan-report.md)

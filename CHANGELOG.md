@@ -3,6 +3,17 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.27] - 2026-11-10
+
+### Added
+- security-expert: agentic-security skill (AI agent, MCP, hooks, plugins and CI-agent security audit) ported from claude-plugins v1.39.47 (security-expert 1.0.20).
+
+### Changed
+- security-expert: agent, rules, scan command and 5 skills (auth-audit, cve-research, dependency-audit, security-headers, security-scan) refreshed from claude-plugins v1.39.47, with new references (security-expert 1.0.20).
+
+### Fixed
+- security-expert: harness scanner path resolves under Kimi via `${KIMI_CODE_HOME:-$HOME/.kimi-code}` (security-expert 1.0.20).
+
 ## [1.0.26] - 2026-11-09
 
 ### Changed

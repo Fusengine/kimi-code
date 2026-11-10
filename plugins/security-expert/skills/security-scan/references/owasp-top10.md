@@ -9,8 +9,20 @@ related: scan-patterns.md
 
 # OWASP Top 10:2025 Mapping
 
-Source: https://top10.owasp.org/2025/ (category pages + CWE lists in https://github.com/OWASP/Top10/tree/master/2025/docs/en).
+Source: https://top10.owasp.org/2025/ (list of the ten categories re-checked 2026-11-10: names and
+order below match it) + CWE lists in https://github.com/OWASP/Top10/tree/master/2025/docs/en.
 Always cite findings as `Axx:2025` — never mix 2021 numbers into a 2025 report.
+The severities below are typical values; the verified severity of a finding comes from
+[triage.md](triage.md). Per-language patterns: [scan-patterns.md](scan-patterns.md) (JS/TS),
+[scan-patterns-php.md](scan-patterns-php.md), [scan-patterns-extra.md](scan-patterns-extra.md)
+(Python, Swift, Go, Rust), [scan-patterns-other.md](scan-patterns-other.md) (Ruby, Java, Kotlin, C#).
+The **Grep** lines below are quick cues, not a pattern set: a cue containing `\s`, `.*` or `\$` is a
+regex (`rg -e`); any other cue such as `eval(` or `createHash('md5')` is literal text (`rg -F -e`).
+The escaped, reviewed regexes live in the per-language pattern files.
+Mapping rule for CWE-319 (cleartext transmission): a configuration switch that enables cleartext
+(App Transport Security exceptions, `usesCleartextTraffic`) → A02; cleartext URLs or protocols used
+in code → A04. This CWE-319 rule, and the pairings of CWE-770, CWE-1336, CWE-617 and CWE-939
+with a category in the pattern files, are this skill's own rule, not OWASP's published mapping.
 
 ## A01:2025 Broken Access Control (includes SSRF)
 
@@ -27,6 +39,7 @@ Always cite findings as `Axx:2025` — never mix 2021 numbers into a 2025 report
 - **Grep**: `DEBUG.*=.*true`, `NSAllowsArbitraryLoads`, `introspection:\s*true`, `Access-Control-Allow-Origin.*\*`, `resolve_entities=True`
 - **Severity**: HIGH
 - **Fix**: Hardened, repeatable config per environment; disable debug/introspection in prod; disable external entities
+- **Detail**: HTTP security headers, CSP, HSTS, CORS → [security-headers](../../security-headers/SKILL.md)
 
 ## A03:2025 Software Supply Chain Failures
 
@@ -35,10 +48,10 @@ Always cite findings as `Axx:2025` — never mix 2021 numbers into a 2025 report
 - **Grep**:
   - `"\*"` or `"latest"` as a version in `package.json` / `composer.json`
   - `npm install` (instead of `npm ci`), `bun install` without `--frozen-lockfile` in CI files
-  - `uses: [^@]+@(main|master|v[0-9]+)$` in `.github/workflows/*.yml` (not pinned to a commit SHA)
+  - `uses:\s*[^.\s][^@\s]*@` lines whose ref is not a 40-hex SHA (exact command: dependency-audit `references/ci-github-actions.md` §1)
   - `curl .*\| *(ba)?sh`, `wget .*\| *(ba)?sh`
   - `"(pre|post)install":` in third-party `package.json`
-- **Tool**: native audit (`npm audit`, `composer audit`, `pip-audit`, `cargo audit`, `govulncheck`) + `osv-scanner` for lockfiles; generate an SBOM (CycloneDX/SPDX)
+- **Tool**: dependency and lockfile audits belong to [dependency-audit](../../dependency-audit/SKILL.md); single-package CVE lookups to [cve-research](../../cve-research/SKILL.md)
 - **Severity**: varies (CRITICAL for known-exploited CVE or malicious package, HIGH for unpinned CI actions/missing lockfile)
 - **Fix**: Commit lockfiles, install with `npm ci` / `--frozen-lockfile`, pin CI actions to SHAs, remove unused/unmaintained deps, staged rollouts
 
@@ -70,7 +83,8 @@ Always cite findings as `Axx:2025` — never mix 2021 numbers into a 2025 report
 
 - **Risk**: Broken auth, hardcoded credentials (CWE-798/259), improper certificate validation (CWE-295), session fixation (CWE-384)
 - **Patterns**: Plaintext passwords, hardcoded API keys, weak JWT, TLS verification disabled
-- **Grep**: `password\s*=\s*["']`, `apiKey\s*=\s*["']`, `AKIA[0-9A-Z]{16}`, `verify=False`, `InsecureSkipVerify.*true`, `rejectUnauthorized:\s*false`
+- **Grep**: hardcoded credentials → [secrets-patterns.md](secrets-patterns.md) (single source); TLS: `verify=False`, `InsecureSkipVerify.*true`, `rejectUnauthorized:\s*false`
+- **Detail**: JWT, sessions, OAuth, passwords, MFA → [auth-audit](../../auth-audit/SKILL.md)
 - **Severity**: CRITICAL
 - **Fix**: Secrets manager, strong hashing, MFA, token rotation, never disable certificate validation
 
@@ -94,9 +108,9 @@ Always cite findings as `Axx:2025` — never mix 2021 numbers into a 2025 report
 
 - **Risk**: Failing open (CWE-636), swallowed errors (CWE-390/391/703/754/755), error messages leaking internals (CWE-209), uncaught exceptions (CWE-248), unchecked return values (CWE-252)
 - **Grep**:
-  - JS/TS: `catch\s*(\(\w*\))?\s*\{\s*\}`, `catch.*\{[^}]*(return true|next\(\))`, `res\.(send|json)\(.*(err|error)\.stack`
+  - These A10 entries are regexes (not literal cues): JS/TS `catch\s*(\([^)]*\))?\s*\{\s*\}`, `catch[^{]*\{[^}]*(return true|next\(\))`, `res\.(send|json)\(.*(err|error)\.stack`
   - Python: `except:\s*pass`, `except Exception:\s*pass`
-  - PHP: `catch\s*\(\\?\w*Exception \$\w+\)\s*\{\s*\}`, `@\$` / `@\w+\(` (error suppression)
+  - PHP: `catch\s*\([^)]*\$\w+\)\s*\{\s*\}`, `@\$` / `@\w+\(` (error suppression)
   - Go: `_ = err`, `, _ := ` on calls returning `error`
   - Rust: `.unwrap()` / `.expect(` on request-path code
   - Swift: `try!`, `try?` discarding security-relevant errors
@@ -116,3 +130,35 @@ Always cite findings as `Axx:2025` — never mix 2021 numbers into a 2025 report
 | A09 Security Logging and Monitoring Failures | A09 Security Logging and Alerting Failures |
 | A10 Server-Side Request Forgery | merged into A01 Broken Access Control |
 | — | A10 Mishandling of Exceptional Conditions (new) |
+
+## API code: OWASP API Security Top 10 2023
+
+For REST/GraphQL/RPC endpoints, also cite the API list
+(https://owasp.org/API-Security/editions/2023/en/0x11-t10/, read 2026-11-10) next to the Top 10:2025
+category:
+
+| API risk | Usual Top 10:2025 pairing |
+|----------|---------------------------|
+| API1:2023 Broken Object Level Authorization | A01 |
+| API2:2023 Broken Authentication | A07 |
+| API3:2023 Broken Object Property Level Authorization (excessive exposure, mass assignment) | A01 |
+| API4:2023 Unrestricted Resource Consumption | A06 (reported only with an attack path, see triage.md) |
+| API5:2023 Broken Function Level Authorization | A01 |
+| API6:2023 Unrestricted Access to Sensitive Business Flows | A06 |
+| API7:2023 Server Side Request Forgery | A01 |
+| API8:2023 Security Misconfiguration | A02 |
+| API9:2023 Improper Inventory Management | A02 |
+| API10:2023 Unsafe Consumption of APIs | A08 / A05 |
+
+The pairing column is this skill's mapping, not an OWASP table.
+
+## Peer skills
+
+| Topic | Skill |
+|-------|-------|
+| Dependencies, lockfiles, SBOM | [dependency-audit](../../dependency-audit/SKILL.md) |
+| CVE lookup for one package | [cve-research](../../cve-research/SKILL.md) |
+| JWT, sessions, OAuth, passwords, MFA | [auth-audit](../../auth-audit/SKILL.md) |
+| HTTP security headers, CSP, CORS | [security-headers](../../security-headers/SKILL.md) |
+| AI-coding-agent setup: settings, hooks, MCP servers, skills, agent CI workflows | [agentic-security](../../agentic-security/SKILL.md) |
+| GraphQL endpoints | [graphql-security.md](graphql-security.md) |

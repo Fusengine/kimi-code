@@ -5,42 +5,35 @@ alwaysApply: true
 
 # Security APEX Workflow
 
-## 5-Phase Security Audit
+## 6-Phase Security Audit
 
 ```
-DETECT → RESEARCH → SCAN → REPORT → FIX
+DETECT → RESEARCH → SCAN → VERIFY → REPORT → HANDOFF
 ```
+
+The security-expert agent reports; it never fixes the audited project. Severity scale, confidence threshold, noise policy and report format: `security-rules.md` (single source).
 
 ### Phase Mapping to APEX
 
 | Security Phase | APEX Phase | Agent/Tool |
 |---------------|------------|------------|
 | DETECT | Analyze | explore-codebase |
-| RESEARCH | Analyze | research-expert + Exa |
-| SCAN | Execute | security-scan.sh + Grep |
-| REPORT | eLicit | Sequential Thinking |
-| FIX | eXamine | sniper |
+| RESEARCH | Analyze | research-expert + Context7/Exa |
+| SCAN | Analyze | harness CLI `bun "${KIMI_CODE_HOME:-$HOME/.kimi-code}/node_modules/@fusengine/harness/dist/cli/bin.mjs" scan <dir>` + skill patterns + Grep |
+| VERIFY | eLicit | read-only refutation pass, optionally challenger per candidate |
+| REPORT | eLicit | report at `docs/security/YYYY-MM-DD-<scope>.md` |
+| HANDOFF | — (ends the audit) | findings returned; the caller then dispatches the domain expert, then sniper |
 
 ### Mandatory Rules
 
-1. **NEVER skip DETECT** - Wrong language = wrong patterns
+1. **NEVER skip DETECT** - Wrong stack = wrong patterns
 2. **ALWAYS research CVEs** before scanning
-3. **SCAN all categories** - XSS, SQLi, RCE, SSRF, secrets
-4. **REPORT with OWASP mapping** - Every finding has a category
-5. **FIX via sniper** - Never fix inline without validation
-
-### Severity Handling
-
-| Severity | Action | Deadline |
-|----------|--------|----------|
-| CRITICAL | Fix immediately, block deployment | Same session |
-| HIGH | Fix before merge | Same session |
-| MEDIUM | Fix if time permits | Next session |
-| LOW | Document for backlog | Tracked |
+3. **SCAN all categories** - XSS, SQLi, RCE, SSRF, secrets, agent configuration when present
+4. **NEVER skip VERIFY** - Only confidence ≥ 8 with an exploit scenario is reported
+5. **HANDOFF, never fix** - The agent writes only its report; remediation goes through the caller (domain expert, then sniper)
 
 ### Integration with Main APEX
 
 When used within the main APEX workflow:
-- Security scan runs during **eXamine** phase
-- Findings feed into sniper's validation
-- CRITICAL/HIGH block the workflow until fixed
+- The security audit runs during **eXamine** (diff scope vs the merge base for a change review)
+- CRITICAL and HIGH findings are flagged as blocking in the handoff; the caller decides and dispatches the fixes
