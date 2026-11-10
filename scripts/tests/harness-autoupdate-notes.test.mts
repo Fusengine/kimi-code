@@ -4,9 +4,9 @@
  * dropped when the update succeeds.
  */
 import { describe, expect, test } from "bun:test";
-import { existsSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { FLOOR, SHIM, answeredVersion, installs, makeFixture, runShim, sleep, waitFor } from "./harness-fixtures.mts";
+import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { FLOOR, REPO, SHIM, answeredVersion, installs, makeFixture, runShim, sleep, waitFor } from "./harness-fixtures.mts";
 import { burst } from "./harness-helpers.mts";
 
 const SCOPES = ["rules", "core", "carto", "lessons", "memory", "solid"];
@@ -36,15 +36,29 @@ describe("back-off stamp", () => {
 });
 
 describe("one-line note", () => {
-	test("names both versions and is printed once per session (6 parallel shims, only `rules` speaks)", async () => {
+	test("names both versions and is printed exactly once (6 parallel shims, every scope speaks, atomic consume)", async () => {
 		const f = makeFixture("0.1.110");
 		runShim(SHIM, f, "SessionStart", { INSTALL_FAIL: "1" });
 		expect(await waitFor(() => existsSync(join(f.home, ".harness-update.log")))).toBe(true);
 		const first = await burst(f, SCOPES);
 		expect(first.filter((r) => r.stderr.includes("0.1.110") && r.stderr.includes(FLOOR)).length).toBe(1);
-		const second = await burst(f, SCOPES); // next session: one reminder while the pause is active
-		expect(second.filter((r) => r.stderr.includes("0.1.110") && r.stderr.includes("paused")).length).toBe(1);
+		const second = await burst(f, SCOPES); // a note was just shown: no reminder within the back-off window
+		expect(second.filter((r) => r.stderr.includes("0.1.110")).length).toBe(0);
 		expect(runShim(SHIM, f, "PreToolUse").stderr).not.toContain("0.1.110"); // other events print nothing
+	});
+
+	test("a lone core-guards (no `rules` scope anywhere) prints the failure note exactly once", async () => {
+		const f = makeFixture("0.1.110");
+		const root = join(dirname(f.home), "managed", "core-guards");
+		mkdirSync(root, { recursive: true });
+		cpSync(join(REPO, "plugins/core-guards/scripts"), join(root, "scripts"), { recursive: true });
+		const shim = join(root, "scripts/kimi-hook-shim.mjs");
+		runShim(shim, f, "SessionStart", { INSTALL_FAIL: "1", KIMI_PLUGIN_ROOT: root }, "core");
+		expect(await waitFor(() => existsSync(join(f.home, ".harness-update.log")))).toBe(true);
+		const shown = runShim(shim, f, "SessionStart", { INSTALL_FAIL: "1", KIMI_PLUGIN_ROOT: root }, "core");
+		expect(shown.stderr).toContain("0.1.110");
+		expect(shown.stderr).toContain(FLOOR);
+		expect(runShim(shim, f, "SessionStart", { INSTALL_FAIL: "1", KIMI_PLUGIN_ROOT: root }, "core").stderr).not.toContain("0.1.110");
 	});
 
 	test("a successful update drops a pending reminder (no false 'paused' note next session)", async () => {

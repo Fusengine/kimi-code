@@ -120,11 +120,12 @@ describe("maybeUpdate notes", () => {
 		expect(c.logs[0]).toContain("0.1.110");
 		expect(c.logs[0]).toContain(FLOOR);
 	});
-	test("quiet (every SessionStart shim but the `rules` one): no reminder is written", () => {
+	test("a note shown within the back-off window suppresses the paused / win32 reminders", () => {
 		const paused = fakeDeps({ ...floorFile, ...legacy("0.1.110"), ...stamp(1) });
-		expect(maybeUpdate({ ...opts, quiet: true }, paused.deps)).toBe("paused");
+		const shown = { ...paused.deps, shownRecently: () => true };
+		expect(maybeUpdate(opts, shown)).toBe("paused");
 		const win = fakeDeps({ ...floorFile, ...legacy("0.1.110") });
-		expect(maybeUpdate({ ...opts, quiet: true, platform: "win32" }, win.deps)).toBe("unsupported");
+		expect(maybeUpdate({ ...opts, platform: "win32" }, { ...win.deps, shownRecently: () => true })).toBe("unsupported");
 		expect(paused.c.logs.length + win.c.logs.length).toBe(0);
 	});
 	test("spawn failure: back-off stamp + note naming both versions + lock released", () => {

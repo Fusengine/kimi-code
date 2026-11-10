@@ -143,15 +143,14 @@ function renderForKimi(stdout, scope, eventName, kimiHome) {
 
 /**
  * SessionStart only: let the optional sibling updater move an older harness to the floor; never throws.
- * Kimi runs one SessionStart shim per scope in parallel; only the `rules` one speaks (prints/leaves notes).
+ * Kimi runs one SessionStart shim per scope in parallel; any of them may print the note (atomic, so once).
  */
 async function autoUpdate(kimiHome, scope) {
 	try {
 		const { maybeUpdate, takeLog } = await import("./harness-autoupdate.mjs");
-		const speak = scope === "rules";
-		const note = speak ? takeLog(kimiHome) : ""; // previous attempt's one-line problem note, shown once
+		const note = takeLog(kimiHome); // previous attempt's one-line problem note: atomic rename, so parallel scopes print it once
 		if (note) process.stderr.write(`kimi-hook-shim: ${note}\n`);
-		maybeUpdate({ kimiHome, env: process.env, shimDir: import.meta.dirname, platform: process.platform, quiet: !speak });
+		maybeUpdate({ kimiHome, env: process.env, shimDir: import.meta.dirname, platform: process.platform });
 	} catch { /* fail-open: no updater next to this shim (lone-file deploy) or it failed */ }
 }
 
@@ -160,14 +159,18 @@ async function main() {
 	const kimiHome = process.env.KIMI_CODE_HOME || join(homedir(), ".kimi-code");
 	const pointer = join(kimiHome, "harness-current", HARNESS_SUB);
 	const bin = existsSync(pointer) ? pointer : join(kimiHome, HARNESS_REL);
+	const scope = process.argv[2] || "core";
+	const eventName = eventNameOf(stdin);
+	if (scope === "update") { // update-only scope (lone plugins without a SessionStart of their own): never spawns the harness
+		if (eventName === "SessionStart") await autoUpdate(kimiHome, scope);
+		process.exit(0);
+	}
 	if (!existsSync(bin)) {
 		process.stderr.write(`kimi-hook-shim: harness bin not found under ${kimiHome} — run scripts/install-kimi.ts (skipped)\n`);
 		process.exit(0);
 	}
 
-	const scope = process.argv[2] || "core";
 	const args = process.argv.slice(3);
-	const eventName = eventNameOf(stdin);
 	if (eventName === "SessionStart") await autoUpdate(kimiHome, scope);
 	const payloadCwd = payloadCwdOf(stdin);
 	const base = scope === "rules" ? rulesScopeEnv(process.env) : process.env;

@@ -44,8 +44,12 @@ fences, and loaded natively every session. Keep this file project-only.
    (tests) is honoured only with `FUSENGINE_TEST=1`. Every `scripts/` dir also ships
    `harness-floor.json` (generated from `package.json` by `installShims()`; a floor
    bump needs a re-sync, enforced by `shipped-modules.test.mts`) so a lone
-   marketplace plugin knows the floor. Plugins without a SessionStart hook
-   (17 with other hooks, 4 with none incl. devops-expert) never self-update.
+   marketplace plugin knows the floor. The 17 plugins that have hooks but no
+   SessionStart carry `... kimi-hook-shim.mjs" update` (timeout 5): shim scope
+   `update` runs the SessionStart auto-update and exits 0 without ever spawning
+   the harness; `build-root-manifest.ts` skips it, so the suite root manifest
+   stays at 71 hooks (the per-plugin corpus is 88). The 4 plugins with no hooks
+   (incl. devops-expert) never self-update.
 2. **kimi-rules edits**: edit `core-overrides/kimi-rules/`, then re-run
    `apply-core-overrides.ts`. `plugins/kimi-rules/` is regenerated.
 3. **AGENTS.md source chain**: the installer copies

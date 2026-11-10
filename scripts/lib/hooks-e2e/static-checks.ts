@@ -14,6 +14,7 @@ import { KIMI_EVENTS } from "./payload";
 export const KNOWN_SCOPES = new Set([
 	"core", "rules", "solid", "carto", "security", "changelog",
 	"aipilot", "lessons", "seo", "memory", "tailwindcss",
+	"update", // shim-only scope: SessionStart harness auto-update for lone plugins, never reaches the harness router
 ]);
 
 /** Violations for one rule: bad event, off-pattern command, unknown scope. */
@@ -26,6 +27,8 @@ export function checkRule(ref: HookRuleRef): string[] {
 		problems.push(`${tag}: command does not match the shim pattern: ${ref.hook.command}`);
 	} else if (!KNOWN_SCOPES.has(cmd.scope)) {
 		problems.push(`${tag}: unknown scope '${cmd.scope}'`);
+	} else if (cmd.scope === "update" && ref.hook.event !== "SessionStart") {
+		problems.push(`${tag}: scope 'update' is only valid on SessionStart`);
 	}
 	return problems;
 }

@@ -39,6 +39,11 @@
       "event": "PostToolUse",
       "matcher": "",
       "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" core"
+    },
+    {
+      "event": "SessionStart",
+      "command": "bun \"${KIMI_PLUGIN_ROOT}/scripts/kimi-hook-shim.mjs\" update",
+      "timeout": 5
     }
   ]
 }

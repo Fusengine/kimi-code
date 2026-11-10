@@ -46,7 +46,9 @@ async function checkPlugin(dir: string, name: string): Promise<Row> {
 	const issues = [...(await checkManifest(dir)), ...(await checkMarkdown(dir))];
 	let hooks = 0;
 	try {
-		hooks = ((await Bun.file(join(dir, "kimi.plugin.json")).json()).hooks ?? []).length;
+		// The lone-plugin `update` SessionStart is not aggregated into the suite root manifest (see build-root-manifest.ts).
+		const declared: { command: string }[] = (await Bun.file(join(dir, "kimi.plugin.json")).json()).hooks ?? [];
+		hooks = declared.filter((h) => !h.command.trim().endsWith(" update")).length;
 	} catch { /* reported by checkManifest */ }
 	return {
 		plugin: name,

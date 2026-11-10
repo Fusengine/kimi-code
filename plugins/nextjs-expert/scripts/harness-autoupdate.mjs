@@ -3,15 +3,10 @@
  * to the package.json floor (fusengine.harnessMinVersion). Kimi's plugin manager copies plugin files only, so
  * nothing else moves the harness of an existing install. Sibling of kimi-hook-shim.mjs and
  * harness-update-worker.mjs (same bytes in every plugin's scripts/); the shim treats it as optional.
- *
- * maybeUpdate: 2 file reads, no spawn, when the version is fine. Stale -> pause
- * check -> single-flight lock (generation files, atomic reclaim) -> detached
- * worker (survives the hook timeout), which stages under harness-versions/ and
- * switches with ONE rename(2) of the harness-current symlink. Old trees are
- * never touched by a switch. The back-off stamp is written before the install
- * (a SIGKILLed worker is not relaunched for 30 min, FUSE_ENSURE_DEPS_BACKOFF_MIN);
- * success clears it. Problems leave ONE note in .harness-update.log that the
- * shim prints once at the next SessionStart (takeLog).
+ * maybeUpdate: 2 file reads, no spawn, when the version is fine. Stale -> pause check -> single-flight lock
+ * (generation files) -> detached worker, which stages under harness-versions/ and switches with ONE rename(2)
+ * of the harness-current symlink. The back-off stamp is written before the install (FUSE_ENSURE_DEPS_BACKOFF_MIN,
+ * default 30 min); success clears it. Problems leave ONE note in .harness-update.log, printed once (takeLog).
  */
 import { spawn } from "node:child_process";
 import { closeSync, ftruncateSync, openSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync, writeSync } from "node:fs";
@@ -25,6 +20,7 @@ export const VERSIONS = "harness-versions";
 export const LOCK = ".harness-update.lock";
 export const PAUSE = ".harness-update-paused";
 export const LOG = ".harness-update.log";
+const SHOWN = ".harness-update.shown";
 
 export const readText = (p) => readFileSync(p, "utf8");
 
@@ -107,8 +103,13 @@ export function takeLog(kimiHome) {
 	const mine = `${p}.${process.pid}`;
 	try {
 		renameSync(p, mine);
+		writeFileSync(join(kimiHome, SHOWN), ""); // marks "a note was just shown" (reminders hold off for the back-off window)
 		return readText(mine).trim();
 	} catch { return ""; } finally { rmSync(mine, { force: true }); }
+}
+
+function shownRecently(kimiHome, env) {
+	try { return Date.now() - statSync(join(kimiHome, SHOWN)).mtimeMs < pauseMinutes(env) * 60_000; } catch { return false; }
 }
 
 /** Lock generations present in the home, ascending; 0 is the legacy un-numbered name. */
@@ -177,8 +178,8 @@ export function maybeUpdate(o, d = DEFAULT_DEPS) {
 	if (v === null) return "unknown"; // only a positively-known older version is touched
 	if (!isBelow(v, floor)) return "current";
 	const mins = pauseMinutes(o.env);
-	// Reminders are written by the `rules` shim only (o.quiet = false): Kimi runs one SessionStart shim per scope in parallel.
-	const remind = (line) => { if (!o.quiet) d.log(o.kimiHome, line, true); };
+	// Reminder (wx, never over a pending note), unless a note was shown within the window: parallel scopes print it once.
+	const remind = (line) => { if (!(d.shownRecently ?? shownRecently)(o.kimiHome, o.env)) d.log(o.kimiHome, line, true); };
 	if (o.platform === "win32") { // the symlink switch needs privileges there
 		remind(`harness ${v} is older than the required ${floor}; auto-update unavailable on win32, run setup.ps1`);
 		return "unsupported";

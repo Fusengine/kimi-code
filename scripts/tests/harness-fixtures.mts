@@ -13,8 +13,9 @@ export const SHIM = join(REPO, "scripts/hooks/kimi-hook-shim.mjs");
 export const FLOOR = "0.1.115";
 
 /** Fake harness bin: proves its package version, resolves a sibling dep, optionally lazy-imports a chunk. */
-export const FAKE_BIN = `import { readFileSync } from "node:fs";
+export const FAKE_BIN = `import { appendFileSync, readFileSync } from "node:fs";
 import dep from "figures";
+if (process.env.SPAWN_LOG) appendFileSync(process.env.SPAWN_LOG, "x\\n");
 const pkg = JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8"));
 let d = "";
 process.stdin.setEncoding("utf8");
