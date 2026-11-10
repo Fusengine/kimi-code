@@ -1,6 +1,6 @@
 {
   "name": "kimi-rules",
-  "version": "1.39.23",
+  "version": "1.39.24",
   "description": "Fusengine core rules for Kimi Code (K3) — critical rules, APEX workflow, agent swarms, SOLID/DRY, tooling, sub-agent conduct. Injected at SessionStart / SubagentStart / UserPromptSubmit.",
   "author": {
     "name": "Fusengine",

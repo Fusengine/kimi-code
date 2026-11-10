@@ -3,6 +3,18 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.28] - 2026-11-10
+
+### Added
+- plugin: new `devops-expert` (fuse-devops 1.0.0) — devops-expert agent + 18 self-hosted infrastructure skills (Docker, Kubernetes, Linux, Proxmox VE, OpenStack, Terraform/OpenTofu, Ansible, CI/CD, observability, storage and backup, secrets, databases), no hooks; registered in marketplace.json and the root manifest.
+- rules: project-detection row routing infrastructure repos to devops-expert (kimi-rules 1.39.24).
+
+### Changed
+- deps: harness floor raised to @fusengine/harness 0.1.115 (`fusengine.harnessMinVersion`, installer stages `>=0.1.115`, AGENTS.md harness-floor note); counters re-measured — 26 plugins, 230 skills, 40 agents (README, build-root-manifest, .kimi-plugin).
+
+### Fixed
+- tests: the live hook test layer restages a cached harness older than the floor instead of reporting a stale "cache hit".
+
 ## [1.0.27] - 2026-11-10
 
 ### Added
