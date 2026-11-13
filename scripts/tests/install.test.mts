@@ -63,6 +63,7 @@ describe("install-kimi", () => {
 		expect(cfg).toContain("# >>> fusengine hooks >>>");
 		expect(cfg).toContain('command = "echo mine"');
 		expect(existsSync(join(home, "hooks", "fusengine-hook-shim.mjs"))).toBe(true);
+		expect(readFileSync(join(home, "hooks", "kimi-permission-mode.mjs"), "utf8")).toBe("// fake shim sibling\n"); // the shim's static import
 		const market = JSON.parse(readFileSync(join(repo, "marketplace.json"), "utf8"));
 		expect(market.version).toBe("2");
 		expect(market.plugins.map((p: { id: string }) => p.id)).toEqual(["fuse-fake-one", "kimi-rules"]);
