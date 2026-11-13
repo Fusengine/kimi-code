@@ -49,8 +49,7 @@ Shared code: `Core/Services/`, `Core/Protocols/`, `Core/Extensions/`
 ```swift
 // Features/User/Views/UserView.swift - 200+ lines!
 struct UserView: View {
-    @State private var user: User?
-    @State private var isLoading = false
+    @State private var state: LoadState<User> = .idle   // see state-machines.md
 
     var body: some View {
         VStack { /* 150 lines of UI */ }
@@ -58,7 +57,7 @@ struct UserView: View {
             Task {
                 let url = URL(string: "https://api.example.com/user")!
                 let (data, _) = try await URLSession.shared.data(from: url)
-                user = try JSONDecoder().decode(User.self, from: data)
+                state = .loaded(try JSONDecoder().decode(User.self, from: data))
             }
         }
     }

@@ -29,10 +29,11 @@ import Foundation
 @Observable
 final class FeatureViewModel {
     // MARK: - State
+    // Mutually-exclusive states as ONE value: illegal states are unrepresentable.
+    // `LoadState<Value>` / `LoadFailure` are defined once in
+    // references/state-machines.md (Core/Models/LoadState.swift).
 
-    var data: FeatureData?
-    var isLoading = false
-    var error: Error?
+    private(set) var state: LoadState<FeatureData> = .idle
 
     // MARK: - Dependencies
 
@@ -48,24 +49,18 @@ final class FeatureViewModel {
 
     /// Loads feature data from API.
     func load() async {
-        isLoading = true
-        defer { isLoading = false }
-
-        do {
-            data = try await service.fetchData()
-            error = nil
-        } catch {
-            self.error = error
-        }
+        state = .loading
+        do    { state = .loaded(try await service.fetchData()) }
+        catch { state = .failed(LoadFailure(error)) }
     }
 
-    /// Refreshes data (pull-to-refresh).
+    /// Refreshes data (pull-to-refresh) without flashing the loading state.
+    /// A failed refresh keeps the content already on screen.
     func refresh() async {
-        do {
-            data = try await service.fetchData()
-            error = nil
-        } catch {
-            self.error = error
+        do { state = .loaded(try await service.fetchData()) }
+        catch {
+            if case .loaded = state { return }
+            state = .failed(LoadFailure(error))
         }
     }
 }
@@ -75,13 +70,13 @@ final class FeatureViewModel {
 extension FeatureViewModel {
     static var preview: FeatureViewModel {
         let vm = FeatureViewModel(service: MockFeatureService())
-        vm.data = .preview
+        vm.state = .loaded(.preview)   // private(set) is settable in-file
         return vm
     }
 
     static var previewLoading: FeatureViewModel {
         let vm = FeatureViewModel(service: MockFeatureService())
-        vm.isLoading = true
+        vm.state = .loading
         return vm
     }
 }

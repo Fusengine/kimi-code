@@ -76,6 +76,7 @@ File size: the only line limit is the hook ceiling (`FUSE_SOLID_MAX_LINES`). Spl
 | **ISP** | [interface-segregation.md](references/interface-segregation.md) | Fat protocols, splitting |
 | **DIP** | [dependency-inversion.md](references/dependency-inversion.md) | Injection, testing, mocking |
 | **Concurrency** | [concurrency-patterns.md](references/concurrency-patterns.md) | Actors, @MainActor, Sendable |
+| **State modeling** | [state-machines.md](references/state-machines.md) | Boolean soup, `LoadState`, transitions |
 | **Anti-Patterns** | [anti-patterns.md](references/anti-patterns.md) | Code smells detection |
 
 ### Templates
