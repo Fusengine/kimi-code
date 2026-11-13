@@ -34,11 +34,14 @@ struct FeatureView: View {
 
     var body: some View {
         Group {
-            if viewModel.isLoading {
+            // Exhaustive switch over one state value: the compiler enforces every case.
+            // `LoadState` is defined in references/state-machines.md.
+            switch viewModel.state {
+            case .idle, .loading:
                 ProgressView()
-            } else if let data = viewModel.data {
+            case .loaded(let data):
                 FeatureContent(data: data)
-            } else if let error = viewModel.error {
+            case .failed(let error):
                 ErrorView(error: error) {
                     Task { await viewModel.load() }
                 }

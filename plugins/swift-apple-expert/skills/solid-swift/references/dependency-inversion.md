@@ -90,8 +90,8 @@ final class UserService: UserServiceProtocol {
 // Features/User/ViewModels/UserViewModel.swift
 @MainActor @Observable
 final class UserViewModel {
-    var user: User?
-    var isLoading = false
+    // `LoadState` is defined in state-machines.md
+    private(set) var state: LoadState<User> = .idle
     private let service: UserServiceProtocol
 
     init(service: UserServiceProtocol) {
@@ -99,9 +99,9 @@ final class UserViewModel {
     }
 
     func load() async {
-        isLoading = true
-        defer { isLoading = false }
-        user = try? await service.fetchCurrentUser()
+        state = .loading
+        do    { state = .loaded(try await service.fetchCurrentUser()) }
+        catch { state = .failed(LoadFailure(error)) }
     }
 }
 ```

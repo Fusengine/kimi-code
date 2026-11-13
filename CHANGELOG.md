@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- solid-swift: `references/state-machines.md` (sum-type state modeling, `LoadState<Value>` with a `Sendable` + `Equatable` `LoadFailure`, Tier 2 transition functions); the `viewmodel.md` / `view.md` templates move from `isLoading` booleans to `state: LoadState<…>`. Adapted from the `coreyfloyd/agents` fork, credit to coreyfloyd (https://github.com/coreyfloyd/agents) (swift-apple-expert).
+
 ## [1.0.31] - 2026-11-11
 
 ### Added
