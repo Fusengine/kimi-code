@@ -13,13 +13,23 @@ Professional git commits following [Conventional Commits](https://www.convention
 
 ## Installation
 
-```bash
-# From marketplace
-/plugin marketplace add brunoazoulay/commit-pro
-/plugin install commit-pro
+Run inside Kimi Code. This installs the whole Fusengine suite, which includes this plugin:
 
-# Or local testing
-kimi --plugin-dir ./commit-pro
+```
+/plugins install https://github.com/fusengine/kimi-code
+```
+
+Then run the setup (hooks + API keys + MCP servers), and `/plugins reload` (or start a new session):
+
+```
+~/.kimi-code/plugins/managed/fusengine/setup.sh        # macOS / Linux
+~\.kimi-code\plugins\managed\fusengine\setup.ps1       # Windows
+```
+
+Or local testing, from a clone of this repository (Kimi Code requires an absolute path and copies the plugin to `~/.kimi-code/plugins/managed/<id>/`):
+
+```
+/plugins install /absolute/path/to/<clone>/plugins/commit-pro
 ```
 
 ## Commands

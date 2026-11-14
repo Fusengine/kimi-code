@@ -1,6 +1,6 @@
 {
   "name": "fuse-devops",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Expert self-hosted IT/DevOps — Docker, Kubernetes, Linux, Proxmox VE, OpenStack, Terraform/OpenTofu, Ansible, CI/CD, observability, storage and backup, secrets, databases — with a discovery, dry-run, one-go, verify, rollback safety model",
   "author": {
     "name": "Fusengine",

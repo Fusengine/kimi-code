@@ -14,8 +14,17 @@ Expert plugin for Tailwind CSS v4.3 with CSS-native configuration, @theme, @util
 
 ## Installation
 
-```bash
-kimi mcp add-json fuse-tailwindcss '{"type":"local","path":"plugins/tailwindcss"}'
+Run inside Kimi Code. This installs the whole Fusengine suite, which includes this plugin:
+
+```
+/plugins install https://github.com/fusengine/kimi-code
+```
+
+Then run the setup (hooks + API keys + MCP servers), and `/plugins reload` (or start a new session):
+
+```
+~/.kimi-code/plugins/managed/fusengine/setup.sh        # macOS / Linux
+~\.kimi-code\plugins\managed\fusengine\setup.ps1       # Windows
 ```
 
 ## Skills

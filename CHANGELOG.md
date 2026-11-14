@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.34] - 2026-11-15
+
+### Fixed
+- nextjs-expert (prisma-7 MCP doc): the non-existent `kimi mcp add` commands are replaced by `prisma-local` / `prisma-remote` entries in `$KIMI_CODE_HOME/mcp.json` (Kimi Code has no `mcp` subcommand), and the Cursor, Windsurf and Kimi Desktop config examples are made valid JSON (nextjs-expert 1.1.27).
+- plugin READMEs: the non-existent `/plugin install …` and `kimi plugins install` commands are replaced by the Kimi suite install procedure — `/plugins install https://github.com/fusengine/kimi-code`, then `managed/fusengine/setup.sh` / `setup.ps1`, then `/plugins reload` (commit-pro 1.2.29, core-guards 1.1.44, devops-expert 1.0.1, go-expert 1.0.9, hermes-expert 1.0.2, php-expert 1.0.10, prompt-engineer 1.1.13, react-expert 1.0.24, rust-expert 1.0.10, tailwindcss 1.1.14, tanstack-start-expert 1.0.9, typescript-expert 1.0.10).
+- core-guards: the setup path moves to `~/.kimi-code/plugins/managed/fusengine/`; commit-pro: local testing uses `/plugins install <absolute path>` (Kimi Code rejects relative plugin roots), and the post-commit parity reference no longer points at the Claude install command.
+
 ## [1.0.33] - 2026-11-14
 
 ### Added
