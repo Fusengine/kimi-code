@@ -54,6 +54,9 @@ Fetched 2026-10-12. `/slug` = `https://developer.apple.com/design/human-interfac
   (reserved for toggled state). — /buttons
 - Controls 60×60 pt default, 28×28 minimum. — /accessibility
 - Text: prefer 2D, white default, billboard spatial labels. — /typography
+- **Look to Scroll** (scroll by gaze, opt-in per scroll view; HIG 2026-03-24): reading
+  and browsing views only, not dense/control-heavy ones — `bars-menus-scroll.md`.
+  — /scroll-views
 
 ## Rule
 A watchOS/tvOS/visionOS value not on these pages is marked "to reconfirm on

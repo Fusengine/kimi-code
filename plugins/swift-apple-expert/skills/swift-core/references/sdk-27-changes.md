@@ -1,8 +1,8 @@
 ---
 name: sdk-27-changes
-description: Xcode 27.0-27.2 and OS 27.0-27.2 SDK changes that break or deprecate older guidance - scene lifecycle, launch screen, Intel, deprecations, 27.1/27.2 notes
-when-to-use: migrating an app to the 27 SDK, debugging a 27.x build or launch failure, choosing deployment targets, replacing a deprecated API
-keywords: Xcode 27.2, iOS 27.2, scene lifecycle, launch screen, Intel, ARCHS_STANDARD, ld64, FileDocument, PreviewProvider, On Demand Resources, WKExtension, Mac Catalyst
+description: Xcode 27.0-27.2 (current release) and OS 27.0-27.2 SDK changes that break or deprecate older guidance - scene lifecycle, launch screen, Intel, deprecations, 27.1/27.2 notes - plus a clearly labelled 27.3 beta section
+when-to-use: migrating an app to the 27 SDK, debugging a 27.x build or launch failure, choosing deployment targets, replacing a deprecated API, checking what the 27.3 beta adds
+keywords: Xcode 27.2, Xcode 27.3 beta, iOS 27.2, XCUIHinge, supportsMultiSeatPurchase, scene lifecycle, launch screen, Intel, ARCHS_STANDARD, ld64, FileDocument, PreviewProvider, On Demand Resources, WKExtension, Mac Catalyst
 priority: high
 related: swift-6-4.md, ../../build-distribution/references/app-store.md
 ---
@@ -10,6 +10,8 @@ related: swift-6-4.md, ../../build-distribution/references/app-store.md
 # 27 SDK Changes (current release: Xcode 27.2, OS 27.2)
 
 Xcode 27.2 ships Swift 6.4.2 and the iOS, iPadOS, macOS, tvOS, watchOS and visionOS 27.2 SDKs; it requires macOS Tahoe 26.6 or later and runs on Apple silicon only. Xcode 27.1 carried the iOS 27.1 SDK (iPhone Duo); 27.2 aligned every platform on 27.2.
+
+Xcode 27.3 and the OS 27.3 SDKs are a **beta**; items from them are collected in the last section, never mixed with the 27.2 guidance.
 
 Keep two things apart: the **SDK you build with** (27.2) and the **minimum deployment target** you support (your choice, often much lower). Deprecations below usually key off the SDK or off the deployment target, as stated.
 
@@ -47,10 +49,28 @@ Sources: Xcode 27 / 27.1 / 27.2 and iOS, macOS, tvOS, watchOS, visionOS 27 / 27.
 - **Mac Catalyst + iOS 27.1 API**: code using iOS 27.1-only APIs fails to compile for Mac Catalyst. Isolate with `#if !targetEnvironment(macCatalyst)` or set a Mac Catalyst 27.0 minimum deployment.
 - **iOS 27.2 ATT**: `AppTrackingTransparency` supports an alternative expanded prompt and yearly re-prompting for EU users; the alternative prompt is required for France, Germany, Italy, Poland and Romania. API: `requestTrackingAuthorization(preferExpandedInterface:additionalInformationAction:completionHandler:)` (renamed during the beta; verify the final signature on developer.apple.com before writing code).
 - **Xcode 27.2 JSON project format**: opt-in (File inspector), more merge-friendly and easier for agents to edit; such projects still open in earlier Xcode 27 releases. Convert only when every contributor is on Xcode 27.x.
-- **iPhone Duo** (27.1 SDK): Duo simulator runtime lacks StandBy and most app extensions; a `CameraCaptureAccessory` app can use both displays without a capture session (known issue 190155353). `ArrangementView` is available from 27.1 on every platform (see swiftui-core/hig-iphone-duo.md).
+- **iPhone Duo** (27.1 SDK): the Duo simulator runtime lacked StandBy and most app extensions in 27.1; 27.2 Device Hub adds StandBy in iPhone Duo. The 27.1 known issue that a `CameraCaptureAccessory` app could use both displays without an active capture session (190155353) is **fixed in Xcode 27.2** (Xcode 27.2 release notes, Simulator > Resolved Issues, https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes, read 2026-11-13). `ArrangementView` is available from 27.1 on every platform (see swiftui-core/hig-iphone-duo.md).
 - **Device Hub** (27.2): pinch/rotate via Sidecar or MacBook with Touch, input to iOS 17 simulators, Secure keyboard entry; CarPlay needs a USB-connected device. Previews: the RenderPreview MCP tool now returns render destinations and accepts one.
 - **StoreKit testing**: `SKTestSession.clearTransactions()` resets intro-offer eligibility, storefront/locale changes propagate through `Storefront.updates`, `dialogsDisabled` is honored (fixed in 27.2). Purchasing a subscription bundle member still allows unbundling instead of throwing (known issue).
 - **Simulator**: cloning a 27.2 runtime device can fail on file permissions; delete the `*.sb-????????-??????` files under the source device's `data` directory (workaround in the iOS 27.2 notes).
 - **Testing (Xcode 27)**: `XCUIVoiceOverService` drives VoiceOver from UI tests (focus, spoken output, navigation); a failed XCTest assertion inside a Swift Testing test (or vice versa) surfaces as a runtime-issue warning, controlled by the test plan's interoperability setting.
 - **Icon Composer 2.0** (Xcode 27): preview new sharper rendering (refractivity, outside specular, deeper shadows) for the 2027 OSes; one icon can serve both design generations.
 - **App Store upload minimum is still Xcode 26 / SDK 26** (https://developer.apple.com/news/upcoming-requirements/, checked 2026-11-08); building with Xcode 27.2 is allowed and the 27 SDK requirements above apply when you do.
+
+## Xcode 27.3 / OS 27.3 (BETA, not the current release)
+
+> **Beta.** Xcode 27.3 beta includes Swift 6.4 and the 27.3 SDKs for iOS, iPadOS, tvOS, watchOS, macOS and visionOS; it requires macOS Tahoe 26.6 or later. Behavior and APIs can change before release. Keep shipping on 27.2; use this list to plan, not to commit architecture.
+
+Sources (read 2026-11-13): https://developer.apple.com/documentation/xcode-release-notes/xcode-27_3-release-notes and https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_3-release-notes.
+
+| Beta item | Detail |
+|-----------|--------|
+| Device Hub drag and drop | Drop an `.app` or `.ipa` on a device to install it, drop a link to open it; on iOS simulators any other file is saved to the Files app. Option-drag simulates a two-finger touch on iPhone and iPad. Via Sidecar or a Mac with Touch only two touches reach the device (three or more are a macOS system gesture). CarPlay still needs a USB-connected device. |
+| Swift Testing UI tests | Xcode supports UI tests written with Swift Testing and `XCUIAutomation` (95593221). See testing.md. |
+| `XCUIHinge` | `XCUIDevice.hinge` returns `XCUIHinge?`; `angle` is settable to fold the iPhone Duo (187479559). See testing.md. |
+| GitHub Copilot | Available in the coding assistant (185837709). See mcp-tools/references/xcode-agents.md. |
+| RenderPreview MCP tool | Snapshot filenames and metadata include applied overrides; interactive delayed snapshots for macOS previews. |
+| `Product.supportsMultiSeatPurchase` | StoreKit multiseat subscriptions; `Bool` on `Product` and `AdvancedCommerceProduct`, reflects the App Store Connect setting; the symbol page marks every platform 27.3 as beta (https://developer.apple.com/documentation/storekit/product/supportsmultiseatpurchase). |
+| StoreKit Testing | Fixed: a purchase of a subscription-bundle member no longer lets the user unbundle (186018916); this closes the 27.2 known issue above. New known issue: first `SKTestSession` use may hang (186670057); workaround: set a StoreKit configuration file in the scheme's run options. |
+| Xcode distribution | Xcode ships as an Apple Encrypted Archive (`.aea`), extracted from the command line with `archiveutil extractXcodeAEA`; 27.3 is the last release available as `.xip` (111337953). Matters for CI images that unpack Xcode. |
+| SwiftUI | In apps built with the iOS 26 SDK, `ScrollEdgeEffectStyle.soft` rendered a fully transparent edge above a `safeAreaBar(edge:)` on iOS 27; on iOS 27.3 and later these apps get the iOS 27 soft edge effect (188312290). |

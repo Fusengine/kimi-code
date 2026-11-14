@@ -67,8 +67,22 @@ After implementation, run **sniper** for validation.
 |------|-----------|
 | MenuBarExtra, Settings, Windows | [app-structure.md](references/app-structure.md) |
 | XcodeBuildMCP macOS tools | [build-tools.md](references/build-tools.md) |
-| NSViewRepresentable, menus | [appkit-integration.md](references/appkit-integration.md) |
+| NSViewRepresentable, menus (native `Map` / `WebView` first) | [appkit-integration.md](references/appkit-integration.md) |
+| AppKit 26-27: Observable tracking, `NSRefreshController`, `NSControl.Events`, tab-role segmented control, `NSTextSelectionManager`, menu images | [appkit-27.md](references/appkit-27.md) |
+| App Attest, notifications, CloudKit, MapKit and other app frameworks on Mac | [apple-frameworks](../apple-frameworks/SKILL.md) |
 | Code signing, notarization | [notarization.md](references/notarization.md) |
+| Touch on Mac (touch display, Sidecar), gesture recognizers, hidden controls | [touch-input.md](references/touch-input.md) |
+| Toolbars (`ToolbarSpacer`, shared glass background), scroll edge effects, menu item icons | [toolbars-navigation.md](../swiftui-core/references/toolbars-navigation.md) |
+
+---
+
+## Liquid Glass on macOS
+
+API table and rules live in [liquid-glass.md](../swiftui-core/references/liquid-glass.md); do not duplicate them here. macOS specifics (HIG, read 2026-11-13):
+
+- Toolbars, sidebars and tab-style controls float in the glass layer; standard components adopt it automatically ([HIG toolbars](https://developer.apple.com/design/human-interface-guidelines/toolbars), updated 2025-12-16). Toolbar items have no bezel on macOS; people can customize or hide the toolbar, so it is never the only home of a command.
+- Sidebars ([HIG sidebars](https://developer.apple.com/design/human-interface-guidelines/sidebars), 2026-06-08): let content extend beneath (`backgroundExtensionEffect()`); sidebar icons follow the system accent color; offer Show/Hide Sidebar in the View menu.
+- Materials ([HIG materials](https://developer.apple.com/design/human-interface-guidelines/materials)): macOS keeps `NSVisualEffectView` materials with vibrancy and two blend modes (behind window, within window) for the content layer; glass is for controls and navigation only.
 
 ---
 
@@ -80,3 +94,4 @@ After implementation, run **sniper** for validation.
 4. **Settings window** - Use Settings scene
 5. **Notarization** - Required for distribution
 6. **Sandbox** - Enable for App Store
+7. **Touch is secondary** - Macs with a touch display and Sidecar iPads send touch: use standard controls and gesture recognizers, enlarge tap targets not controls, give hover-only controls a touch path ([touch-input.md](references/touch-input.md); HIG 2026-10-28)

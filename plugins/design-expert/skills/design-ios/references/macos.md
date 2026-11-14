@@ -1,8 +1,8 @@
 ---
 name: macos
-description: "macOS mockup rules from the HIG — system window frame, fixed text styles (no Dynamic Type), desktop tinting under the graphite accent, pointer styles, window layout and sidebar rules."
+description: "macOS mockup rules from the HIG — system window frame, fixed text styles (no Dynamic Type), desktop tinting under the graphite accent, pointer styles, touch as a secondary input (2026-10-28), window layout and sidebar rules."
 when-to-use: "Designing a macOS window, sidebar or toolbar mockup and its handoff spec."
-keywords: macos, window, desktop-tinting, graphite, pointer, sidebar, typography
+keywords: macos, window, desktop-tinting, graphite, pointer, touch, sidebar, typography
 priority: high
 related: ../SKILL.md, type-scales-other.md, semantic-colors.md, liquid-glass.md
 ---
@@ -39,7 +39,7 @@ color doesn't drift. Show it in the mockup as a variant, not as the default. —
 - Sidebar icons use the accent color by default and must follow the accent the user picks;
   fixed colors only sparingly to carry meaning (e.g. Mail's yellow VIP). — /sidebars
 
-## Pointer, not touch
+## Pointer first
 - macOS communicates interactivity through **standard pointer styles** and shows a
   **tooltip** after hovering a button; secondary click reveals context menus.
   — /pointing-devices, /buttons
@@ -48,9 +48,40 @@ color doesn't drift. Show it in the mockup as a variant, not as the default. —
   labeled as such.
 - Default control size 28×28 pt, minimum 20×20 pt (`touch-targets.md`).
 
+## Touch on Mac — secondary input (HIG change 2026-10-28, read 2026-11-13)
+Sources: /designing-for-macos, /gestures (macOS), /pointing-devices ("Touch support for
+hidden controls") — all three carry the 2026-10-28 change-log entry.
+- "In macOS, touch is secondary to keyboard and pointing device input." On a Mac with a
+  touch display, people "tend to use touch for brief, intentional interactions rather
+  than sustained work." The mockup stays a pointer-and-keyboard layout. — /gestures,
+  /designing-for-macos
+- **Same layout, same control size** when touch is supported; "Make tap targets bigger,
+  not the controls themselves" (the hit area may extend past the visual bounds). Standard
+  controls get an optimal tap target automatically. The HIG states **no numeric Mac tap
+  target** — write the hit-area size in the spec as a project token. — /gestures
+- **Expandable controls**: small or dense controls may show a temporary touch-sized
+  variant on tap (steppers, sliders, dials do it automatically). Show it as a state, not
+  as the default. — /gestures
+- **Touch never the only way in**; conversely give touch equivalents for pointer-only
+  actions (shift-drag, hover menus). — /gestures
+- **Hover-revealed controls**: decide which need touch (essential ones only — not
+  tooltips, not what a swipe already covers); a tap on their general location reveals
+  only the relevant ones, which hide again after use or a few seconds; keep the current
+  selection; put essential hidden controls in a context menu (touch and hold). Never keep
+  them visible permanently just for touch. Exceptions to the auto-hide: **sidebar** — a
+  tap on a header or row performs the same action as a click (expand/collapse, select)
+  and reveals only that item's controls, which stay visible until touch moves outside
+  the sidebar or a pointing device is used again; a tap on a hidden control's area
+  reveals it without activating it (it acts on the next tap). **Tabbed window** — a tap
+  anywhere shows the selected tab's close button until the pointer is used again. Spec
+  each as a "touch-revealed" state. — /pointing-devices
+
 ## Sidebars (also iPadOS) — /sidebars
 - Show **no more than two levels** of hierarchy. Deeper data → a **split view with a
   content list between the sidebar and the detail view**, not a third disclosure level.
 - With two levels, title each group with a short descriptive label.
 - Let people hide the sidebar (View menu Show/Hide Sidebar or a button); don't hide it by
   default. Sidebars float in the Liquid Glass layer; content can extend beneath them.
+- macOS sidebar row height, text and glyph size follow the small/medium/large sidebar
+  size people pick in General settings — state which size the mockup shows; no critical actions
+  at the bottom of a sidebar. (Read 2026-11-13; page change 2026-06-08.)

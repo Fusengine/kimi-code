@@ -88,7 +88,8 @@ struct ContentView: View {
 | Need | Reference |
 |------|-----------|
 | Focus, selection states | [focus-system.md](references/focus-system.md) |
-| AVKit, video playback | [media-playback.md](references/media-playback.md) |
+| AVKit, video playback, background audio, Now Playing (27) | [media-playback.md](references/media-playback.md) |
+| Dynamic Type / Large Text (tvOS 27) | [dynamic-type.md](references/dynamic-type.md) |
 | Siri Remote, gestures | [remote-control.md](references/remote-control.md) |
 
 ---
@@ -101,3 +102,4 @@ struct ContentView: View {
 4. **Remote-friendly** - Siri Remote gestures
 5. **Media-first** - Optimize for video/audio
 6. **Multi-user** - Support user switching
+7. **Large Text (tvOS 27)** - Semantic text styles, flexible constraints, layouts that adapt at accessibility sizes ([dynamic-type.md](references/dynamic-type.md))

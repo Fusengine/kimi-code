@@ -5,7 +5,7 @@ description: Use when implementing Swift 6 fundamentals — concurrency, archite
 
 
 <objective>
-Covers Swift 6 language and platform fundamentals shared across iOS, macOS, iPadOS, watchOS, and visionOS: async/await and actors with strict concurrency checking, Sendable typing, app architecture (MVVM with @Observable as the recommended default, Clean Architecture for complex apps), async testing with XCTest, String Catalog-based localization, and performance profiling with Instruments.
+Covers Swift 6 language and platform fundamentals shared across iOS, macOS, iPadOS, watchOS, and visionOS: async/await and actors with strict concurrency checking, Sendable typing, app architecture (MVVM with @Observable as the recommended default, Clean Architecture for complex apps), testing with Swift Testing first (XCTest as the legacy path), String Catalog-based localization, and performance profiling with Instruments.
 
 References cover each area in depth: concurrency, architecture/DI, testing, i18n, and performance.
 
@@ -34,7 +34,7 @@ After implementation, run **sniper** for validation.
 
 - Implementing async/await, actors, Sendable
 - Designing app architecture (MVVM, Clean Architecture)
-- Writing async tests with XCTest
+- Writing tests with Swift Testing (XCTest only for legacy and UI tests on Xcode 27.2 and earlier)
 - Localizing with String Catalogs
 - Profiling with Instruments
 
@@ -58,7 +58,7 @@ Modern async/await with strict concurrency checking. Actors provide thread-safe 
 MVVM with @Observable is the recommended pattern. Clean Architecture for complex apps with domain separation.
 
 ### Testing
-XCTest with native async/await support. No need for expectations with async tests.
+Swift Testing first: `@Test`, `#expect` / `#require`, exit tests (macOS only among Apple platforms), attachments, `Issue.record(severity:)`, `Test.cancel()`. UI tests in Swift Testing arrive with Xcode 27.3 (beta); XCTest stays the legacy and UI-test path on 27.2. Details in testing.md.
 
 ### Internationalization
 String Catalogs are mandatory. All user-facing text must be localized.
@@ -74,11 +74,11 @@ Profile with Instruments. Use lazy loading, avoid heavy work in view body.
 |------|-----------|
 | Async/await, actors, Sendable | [concurrency.md](references/concurrency.md) |
 | MVVM, Clean Architecture, DI | [architecture.md](references/architecture.md) |
-| XCTest, async tests, mocking | [testing.md](references/testing.md) |
+| Swift Testing, exit tests, attachments, XCTest legacy, UI tests | [testing.md](references/testing.md) |
 | String Catalogs, localization | [i18n.md](references/i18n.md) |
 | Instruments, optimization | [performance.md](references/performance.md) |
 | Swift 6.4.x: Swift Build/SwiftPM, Subprocess 1.0, language additions | [swift-6-4.md](references/swift-6-4.md) |
-| Xcode/OS 27.0-27.2: breaking changes, deprecations, 27.1/27.2 notes | [sdk-27-changes.md](references/sdk-27-changes.md) |
+| Xcode/OS 27.0-27.2 (current) + 27.3 beta: breaking changes, deprecations, release notes | [sdk-27-changes.md](references/sdk-27-changes.md) |
 
 ---
 
@@ -90,3 +90,5 @@ Profile with Instruments. Use lazy loading, avoid heavy work in view body.
 4. **String Catalogs** - ALL user-facing text must be localized
 5. **Profile in Release** - Always profile with `-O` optimization
 6. **Value types** - Prefer structs over classes
+7. **Swift Testing first** - New tests use `@Test` / `#expect`; XCTest only for legacy and, until Xcode 27.3 ships, UI tests
+8. **Swift 6.2 defaults** - Decide default MainActor isolation and approachable concurrency per target (`SWIFT_DEFAULT_ACTOR_ISOLATION`, `SWIFT_APPROACHABLE_CONCURRENCY`), see concurrency.md

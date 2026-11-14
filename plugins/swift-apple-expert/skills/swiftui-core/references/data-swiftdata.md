@@ -24,7 +24,7 @@ related: architecture.md
 Defines persistent model classes. Automatically generates schema.
 
 **Key Points:**
-- Apply to `final class`
+- Apply to a `class`. A base class you subclass cannot be `final`: Apple's inheritance article declares `@Model class Trip` and `@Model class BusinessTrip: Trip`. Mark leaf models `final` only when nothing subclasses them. Source: https://developer.apple.com/documentation/swiftdata/adopting-inheritance-in-swiftdata (read 2026-11-13)
 - Properties are automatically persisted
 - Use `@Attribute(.unique)` for unique constraints
 - Use `@Relationship` for associations
@@ -111,13 +111,36 @@ SwiftData now supports class inheritance.
 **Use when:** Natural "is-a" relationships, shared properties.
 **Avoid when:** Single shared property (use protocols), leaf-only queries.
 
-### Schema Migrations with Inheritance
+### Schema Migrations
+
+There is no `@Schema` macro (`Schema` is a final class). A migration is a `VersionedSchema` per version, a `SchemaMigrationPlan` that orders them, and a `MigrationStage` per hop. Inheritance changes migrate the same way; each version lists its model types in `models`.
 
 ```swift
-@Schema(version: 2, migratingFrom: .version(1)) {
-    // Migration logic
+enum SchemaV1: VersionedSchema {
+    static var versionIdentifier: Schema.Version { Schema.Version(1, 0, 0) }
+    static var models: [any PersistentModel.Type] { [Vehicle.self] }   // v1 model types
 }
+
+enum SchemaV2: VersionedSchema {
+    static var versionIdentifier: Schema.Version { Schema.Version(2, 0, 0) }
+    static var models: [any PersistentModel.Type] { [Vehicle.self, Car.self] }
+}
+
+enum AppMigrationPlan: SchemaMigrationPlan {
+    static var schemas: [any VersionedSchema.Type] { [SchemaV1.self, SchemaV2.self] }
+    static var stages: [MigrationStage] {
+        [.lightweight(fromVersion: SchemaV1.self, toVersion: SchemaV2.self)]
+    }
+}
+
+let container = try ModelContainer(
+    for: Schema(versionedSchema: SchemaV2.self),
+    migrationPlan: AppMigrationPlan.self,
+    configurations: []
+)
 ```
+
+`MigrationStage.custom(fromVersion:toVersion:willMigrate:didMigrate:)` takes optional `@Sendable (ModelContext) throws -> Void` closures for data transforms (all iOS 17.0+, verified on the JSON pages of `versionedschema`, `schemamigrationplan`, `migrationstage`, `modelcontainer`, `schema`; read 2026-11-13, e.g. https://developer.apple.com/documentation/swiftdata/schemamigrationplan).
 
 ### Query Subclasses
 
@@ -144,4 +167,5 @@ let sedans = try context.fetch(
 - ❌ Don't store large blobs (use FileManager)
 - ❌ Don't overuse inheritance (prefer composition)
 
+→ SwiftData 27 (query sections, `codable` option, observers): [data-swiftdata-27.md](data-swiftdata-27.md)
 → See `templates/swiftdata-model.md` for code examples

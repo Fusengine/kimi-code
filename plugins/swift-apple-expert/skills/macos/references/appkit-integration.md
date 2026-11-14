@@ -4,10 +4,12 @@ description: AppKit integration in SwiftUI with NSViewRepresentable, menus, tool
 when-to-use: using AppKit views in SwiftUI, accessing macOS-specific features, custom menus
 keywords: NSViewRepresentable, NSViewControllerRepresentable, AppKit, NSMenu, NSToolbar
 priority: medium
-related: app-structure.md
+related: appkit-27.md, touch-input.md, app-structure.md
 ---
 
 # AppKit Integration
+
+Check SwiftUI first (read on `developer.apple.com/tutorials/data/documentation/<path>.json`, 2026-11-13): maps are `Map` (content initializers macOS 14.0, `mapkit/map`) and web content is `WebView` + `WebPage` (macOS 26.0, `webkit/webview`, `webkit/webpage`); wrapping `MKMapView` or `WKWebView` in `NSViewRepresentable` is for older deployment targets or API those types do not cover. New AppKit APIs for macOS 26 and 27 (Observable tracking, `NSRefreshController`, `NSControl.Events`, tab-role segmented controls, `NSTextSelectionManager`): [appkit-27.md](appkit-27.md).
 
 ## When to Use
 

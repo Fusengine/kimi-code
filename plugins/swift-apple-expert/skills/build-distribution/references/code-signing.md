@@ -36,6 +36,19 @@ Let Xcode manage certificates and profiles.
 | Distribution | App Store/TestFlight |
 | Developer ID | macOS outside App Store |
 
+### Developer ID Sub-CA expiry (deadline 2027-02-01)
+
+The original Developer ID Certification Authority (Sub-CA) expires on **2027-02-01**; certificates it issued stop working that day. Replacements come from **Developer ID Certification Authority (G2)**, valid until 2031, but G2-issued certificates expire annually and must be renewed each year. Sources: https://developer.apple.com/news/?id=w4atic4c (2026-10-01) and https://developer.apple.com/help/account/certificates/replace-developer-id-certificates (both read 2026-11-13).
+
+| Step | Detail |
+|------|--------|
+| Check | Certificates, Identifiers & Profiles: Developer ID Application and Installer certificates expiring on or before 2027-02-01 are likely affected. Confirm in Keychain Access: Issuer Name > Organizational Unit `Apple Certification Authority` = old Sub-CA (replace), `G2` = current (no action) |
+| Create | New certificate; when asked for the Developer ID Certificate Intermediary choose **G2 Sub-CA** (Xcode 11.4.1 or later). Any other option may issue a certificate that also expires in 2027. Repeat for both Application and Installer types |
+| Re-sign installer packages (`.pkg`) | From 2027-02-01 a `.pkg` signed with an affected certificate no longer installs: re-sign every package before that date |
+| Re-sign Mac apps | Software already signed and notarized (with a secure timestamp) keeps working; sign future updates with the new certificate and a secure timestamp |
+
+A team can hold up to five Developer ID Application and five Installer certificates, so create and test the replacement before the old one expires. Notarization workflow: `macos` skill `references/notarization.md`.
+
 ### Provisioning Profiles
 Link app, team, certificates, and devices.
 
@@ -110,4 +123,5 @@ Centralized certificate management.
 - ✅ Store CI secrets securely
 - ❌ Don't share certificates insecurely
 - ❌ Don't commit profiles to git
+- ✅ Renew G2 Developer ID certificates yearly; calendar the 2027-02-01 Sub-CA cut-off
 - ❌ Don't ignore expiration dates

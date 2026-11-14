@@ -145,6 +145,8 @@ TabView {
 
 `PreviewProvider` is deprecated (iOS 27.0): use `#Preview`.
 
+More verified 26/27 APIs (`WebView`, `@Animatable`, drag containers, status bar, `TabsPickerStyle`, hinge toolbar APIs, behaviour changes): [swiftui-26-27-apis.md](swiftui-26-27-apis.md).
+
 Source: developer.apple.com/documentation/updates/swiftui (June 2026); symbols re-checked on developer.apple.com (Oct 2026); deprecations and 27.x notes from the iOS & iPadOS 27 / 27.2 release notes (Nov 2026), see swift-core `references/sdk-27-changes.md`.
 
 → See `templates/view-structure.md` for code examples

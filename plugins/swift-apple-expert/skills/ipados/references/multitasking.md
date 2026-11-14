@@ -10,6 +10,8 @@ related: keyboard-shortcuts.md
 
 # iPadOS Multitasking
 
+> Current HIG model (multitasking, windows; read 2026-11-13): people choose **full screen** or **windowed** apps; apps are not told which. The mode table below uses legacy terms. Menu bar, window controls and scene APIs: [menu-bar-windows.md](menu-bar-windows.md).
+
 ## When to Use
 
 - Supporting Split View

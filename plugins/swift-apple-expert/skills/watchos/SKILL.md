@@ -54,8 +54,25 @@ After implementation, run **sniper** for validation.
 | Need | Reference |
 |------|-----------|
 | Watch face complications | [complications.md](references/complications.md) |
-| Workout sessions, HealthKit | [workouts.md](references/workouts.md) |
+| Workout sessions, workout zones (27), HealthKit | [workouts.md](references/workouts.md) |
 | iPhone ↔ Watch sync | [watch-connectivity.md](references/watch-connectivity.md) |
+| Smart Stack widget sizes, accessory widgets, Live Activities on Watch | [hig-system-surfaces.md](../swiftui-core/references/hig-system-surfaces.md) |
+
+---
+
+## Vision on watchOS (27)
+
+The Vision framework supports watchOS 27: `DetectLensSmudgeRequest` is introduced on watchOS 27.0 (iOS, iPadOS, macOS, tvOS, visionOS 26.0) and returns a `SmudgeObservation` with a `confidence` from 0.0 to 1.0 (https://developer.apple.com/documentation/vision/detectlenssmudgerequest, read 2026-11-13). Session 237 "What's new in image understanding" covers Vision on watchOS and the new tap-to-segment request: https://developer.apple.com/videos/play/wwdc2026/237/. HealthKit on iOS is covered by the `apple-frameworks` skill; workouts on the watch stay in [workouts.md](references/workouts.md).
+
+---
+
+## Liquid Glass on watchOS
+
+API table and rules live in [liquid-glass.md](../swiftui-core/references/liquid-glass.md) (`glassEffect(_:in:)` is available on watchOS 26.0); do not duplicate them here. watchOS specifics (HIG, read 2026-11-13):
+
+- Standard components adopt the system look automatically; the HIG materials page lists watchOS as a supported platform ([HIG materials](https://developer.apple.com/design/human-interface-guidelines/materials)). Full-screen modal views are common on Apple Watch: keep the material backgrounds the system gives modal sheets instead of removing or replacing them.
+- Toolbars ([HIG toolbars](https://developer.apple.com/design/human-interface-guidelines/toolbars), 2025-12-16): toolbar buttons go in the top corners or along the bottom (`ToolbarItemPlacement.topBarLeading`, `.topBarTrailing`, `.bottomBar`, all watchOS 10.0); above scrolling content they stay visible, and a button placed inside the scroll view stays hidden until the person scrolls up. Use for essential functionality closely related to the view.
+- Scroll edge effects ([HIG scroll-views](https://developer.apple.com/design/human-interface-guidelines/scroll-views)): `scrollEdgeEffectStyle(_:for:)` is available on watchOS 26.0; keep `.automatic`.
 
 ---
 
