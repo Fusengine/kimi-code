@@ -11,4 +11,4 @@ git diff --name-only "${base:-$(git hash-object -t tree /dev/null)}" HEAD | grep
 For each NEW plugin lacking a page:
 
 1. Create `docs/plugins/<name>.md` mirroring a sibling page (title, How It Works, Configuration, Commands, Scripts tables).
-2. Add a row to the matching README plugin table **and** append the plugin to the `/plugin install …` command list.
+2. Add a row to the matching README plugin table **and** list the plugin in the README install section (the suite installs with `/plugins install https://github.com/fusengine/kimi-code`).

@@ -86,14 +86,17 @@ Modular SOLID statusline for Kimi Code terminal.
 
 ### 1. Install Plugin
 
-```bash
-/plugin install core-guards
+Run inside Kimi Code. This installs the whole Fusengine suite, which includes this plugin:
+
+```
+/plugins install https://github.com/fusengine/kimi-code
 ```
 
 ### 2. Install Hooks + Statusline
 
-```bash
-~/.kimi-code/plugins/marketplaces/fusengine-plugins/setup.sh
+```
+~/.kimi-code/plugins/managed/fusengine/setup.sh        # macOS / Linux
+~\.kimi-code\plugins\managed\fusengine\setup.ps1       # Windows
 ```
 
 This script will:
