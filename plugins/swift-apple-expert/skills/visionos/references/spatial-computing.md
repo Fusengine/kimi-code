@@ -92,6 +92,22 @@ await dismissSpace()
 
 ---
 
+## Look to Scroll
+
+Source: HIG scroll-views > Look to Scroll (added 2026-03-24; read 2026-11-13).
+
+- People scroll with their eyes by looking near the scroll view boundary (top/bottom, or sides). It does **not** work by default: add it per scroll view.
+- Add it in reading and browsing views; skip it in views with UI controls or dense information needing quick, precise scrolling (Notes: yes in the note, no in the note list). Support it in all similar views for consistency.
+- Prefer full-width or full-height scroll views for generous space and clear edges; if inset, provide clear boundaries. Parallax or scroll-driven animations can make it behave unexpectedly.
+- API (visionOS 26.0): `ScrollInputKind.look` (axes chosen automatically) and `ScrollInputKind.look(axes:)`, used with `scrollInputBehavior(_:for:)` and `ScrollInputBehavior` `.automatic/.enabled/.disabled`.
+
+```swift
+ScrollView { ArticleBody() }
+    .scrollInputBehavior(.enabled, for: .look)
+```
+
+---
+
 ## Best Practices
 
 - ✅ Start with windows

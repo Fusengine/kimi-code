@@ -32,7 +32,7 @@ All design work starts in `skills/design-method/SKILL.md`:
 | `design-system` | OKLCH tokens, typography, spacing, motion profile, the canonical forbidden-fonts list, the mechanical contrast-check step |
 | `design-web` | Marketing sites/landing pages — inspiration browsing (FULL/PAGE scope only), component generation, premium layout patterns, hard layout-discipline rules |
 | `design-webapp` | Dashboards, auth, settings, onboarding, data tables, command palettes — density and state coverage over marketing polish |
-| `design-ios` | iOS mockup + handoff — Dynamic Type, semantic colors, device viewports, Liquid Glass, SwiftUI-ready spec |
+| `design-ios` | Apple-platform mockup + handoff — Dynamic Type, semantic colors, device viewports, Liquid Glass, touch on Mac, bars/menus/scroll, system surfaces, app icons, App Store assets, generative AI, Apple design tools, SwiftUI-ready spec |
 | `design-android` | Android mockup + handoff — Material 3 Expressive type/shape/color scales, window size classes, Compose-ready spec |
 | `design-motion` | Motion gated by the `MOTION_INTENSITY` dial — most animation ideas die at the gate; mandatory hover/focus/disabled states and `prefers-reduced-motion` regardless |
 | `ux-copy` | Voice/tone, CTAs, error messages, empty states, the copy self-audit (em-dash crutch check, production-tell catalogue) |

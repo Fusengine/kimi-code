@@ -59,6 +59,24 @@ After implementation, run **sniper** for validation.
 | App Store submission | [app-store.md](references/app-store.md) |
 | Icons, assets | [app-icons.md](references/app-icons.md) |
 | In-app purchases, subscriptions | [storekit2.md](references/storekit2.md) |
+| IAP/subscription changes 2025-2026 (offer codes, retention, multiseat, Bundles) | [storekit-2026-updates.md](references/storekit-2026-updates.md) |
+| Review guidelines revisions, rejections | [app-review-guidelines.md](references/app-review-guidelines.md) |
+| Age ratings, new declarations, regional age laws | [age-ratings.md](references/age-ratings.md) |
+| Privacy manifest, required-reason API, SDK rule | [privacy-manifest.md](references/privacy-manifest.md) |
+| EU DMA terms, trader status, Japan/Brazil | [eu-alternative-distribution.md](references/eu-alternative-distribution.md) |
+| Nutrition Labels, Xcode Cloud, webhooks, product page assets | [app-store-connect-2026.md](references/app-store-connect-2026.md) |
+| macOS Developer ID, notarization (macos skill) | `macos` skill `references/notarization.md` |
+
+---
+
+## Deadlines (read 2026-11-13, sources in each reference)
+
+| Date | Action |
+|------|--------|
+| 2027-01-12 | Complete the Shared Location and Dating and Relationships age rating declarations ([age-ratings.md](references/age-ratings.md)) |
+| 2027-02-01 | Developer ID certificates from the old Sub-CA stop working, `.pkg` signed with them stop installing: move to G2 ([code-signing.md](references/code-signing.md)) |
+| Early 2027 | Regulated medical device status (EEA/UK/US) or updates are blocked; no new On-Demand Resources uploads ([app-store-connect-2026.md](references/app-store-connect-2026.md)) |
+| April 2027 | Upload with the iOS/iPadOS/tvOS/visionOS/watchOS 27 SDK, iOS 15+ target; iPhone Duo screenshots (specs page: apps on the iOS 27.1 SDK or later; news: all submissions) ([app-store.md](references/app-store.md)). Today the minimum is the 26 SDK and iOS 13 |
 
 ---
 
@@ -66,11 +84,12 @@ After implementation, run **sniper** for validation.
 
 - [ ] Version and build number updated
 - [ ] Layered app icon (Icon Composer) checked in default/dark/clear/tinted appearances, incl. alternate icons ([HIG app icons](https://developer.apple.com/design/human-interface-guidelines/app-icons))
-- [ ] Privacy manifest (PrivacyInfo.xcprivacy)
+- [ ] Privacy manifest (PrivacyInfo.xcprivacy) valid, SDK manifests covered ([privacy-manifest.md](references/privacy-manifest.md))
 - [ ] Release configuration
 - [ ] Archive validates
 - [ ] TestFlight tested
-- [ ] Screenshots updated
+- [ ] Screenshots updated (no alpha, required sizes)
+- [ ] Age rating, trader, medical device declarations ([age-ratings.md](references/age-ratings.md))
 - [ ] App Store metadata complete
 
 ---

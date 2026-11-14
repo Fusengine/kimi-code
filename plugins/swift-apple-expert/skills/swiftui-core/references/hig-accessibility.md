@@ -22,6 +22,7 @@ Sources:
 - Layout must adapt to **all** sizes, including the largest accessibility size (`DynamicTypeSize.accessibility5`).
 - At accessibility sizes: show as much useful text as at the largest standard size; **never truncate in scrollable regions**; switch horizontal rows to a **stacked layout**; reduce column count; keep primary elements at the top.
 - Meaningful icons must scale with text (SF Symbols do automatically).
+- Emphasized text styles (HIG typography, updated 2025-12-16; read 2026-11-13): system text styles have an emphasized variant (medium, semibold, bold or heavy depending on style and platform) applied through symbolic traits - SwiftUI `Text.bold()` (iOS 13.0+), UIKit `UIFontDescriptor.SymbolicTraits.traitBold`. The HIG type specification tables list the emphasized weight per style and platform.
 - Custom type minimums: iOS/iPadOS default 17 pt / min 11 pt; macOS 13/10; tvOS 29/23; visionOS 17/12; watchOS 16/12. macOS has no Dynamic Type.
 
 ```swift

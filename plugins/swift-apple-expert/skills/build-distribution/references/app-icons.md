@@ -11,6 +11,10 @@ related: code-signing.md, app-store.md
 
 Source: https://developer.apple.com/design/human-interface-guidelines/app-icons
 
+## Icon Formats (HIG update 2026-10-28)
+
+In iOS, iPadOS, macOS and watchOS you provide the icon in **one of two formats**: a nonlayered bitmap image (such as PNG) or a layered Icon Composer file. Apple recommends Icon Composer for more control over how Liquid Glass applies to individual elements and how color applies across appearance variants. Vector layers (SVG, PDF) stay crisp at any size; use PNG for mesh gradients and raster artwork. Icon Composer lets you annotate default, dark and mono variants. Source: https://developer.apple.com/design/human-interface-guidelines/app-icons (revision entry "October 28, 2026: Added guidance for app icon format options", read 2026-11-13).
+
 ## Layered Icons (Liquid Glass)
 
 - iOS, iPadOS, macOS and watchOS icons are a **background layer + one or more foreground layers**. The system applies Liquid Glass effects (specular highlights, refraction, translucency), adapting per size and system version.
@@ -38,7 +42,16 @@ tvOS/visionOS: add layers directly to an image stack in Xcode (Parallax Previewe
 
 ## Appearances (iOS, iPadOS, macOS)
 
-People pick **default, dark, clear, or tinted** Home Screen icons. Layouts per platform:
+Two different lists, both from Apple, both current (read 2026-11-13):
+
+- **What people choose on the Home Screen** (HIG app-icons, "Appearances"): "In iOS, iPadOS, and macOS, people can choose whether their Home Screen app icons are default, dark, clear, or tinted in appearance. [...] You can design app icon variants for every appearance variant, and the system automatically generates variants you don't provide." HIG sizes table: "Default, dark, clear light, clear dark, tinted light, tinted dark".
+- **What you annotate in Icon Composer** (HIG app-icons "Icon Composer" paragraph: "annotate for default, dark, and mono appearance variants"; https://developer.apple.com/icon-composer/ "Annotate Across Rendering Modes": "choose how your icon looks in Default, Dark, and Mono modes"). Apple names these "rendering modes" on the product page and "appearance variants" in the HIG.
+
+Apple's pages never map Icon Composer's three modes onto the four Home Screen choices. Do not claim that "Mono" equals "Clear" or "Tinted": check the exported icon in Icon Composer and in Device Hub for all four choices. Icon Composer 2 is in beta and requires macOS Tahoe 26.4 or later (https://developer.apple.com/design/whats-new/ lists "Icon Composer 2 beta"; the Icon Composer page states the macOS requirement).
+
+For a bitmap icon the system segments it into two layers (foreground, background) so it works with dark and tinted variants (HIG, "Icon formats").
+
+Layouts per platform:
 
 | Platform | Layout | Mask | Size | Appearances |
 |----------|--------|------|------|-------------|
@@ -57,8 +70,9 @@ People pick **default, dark, clear, or tinted** Home Screen icons. Layouts per p
 Source: https://developer.apple.com/design/human-interface-guidelines/sf-symbols
 
 - Thousands of symbols aligned with San Francisco at every weight and size; availability depends on the OS version targeted.
-- Four rendering modes: monochrome, hierarchical, palette, multicolor. Gradients (SF Symbols 7+) and variable color work across modes.
-- Animations (incl. Draw On/Off, SF Symbols 7+): use judiciously, honour Reduce Motion.
+- Four rendering modes: monochrome, hierarchical, palette, multicolor. Gradients ("SF Symbols 7 and later", HIG revision 2025-07-28) and variable color work across modes.
+- Animations (incl. Draw On/Off, SF Symbols 7 and later): use judiciously, honour Reduce Motion.
+- **Current release naming**: Apple's design What's new page (published 2026-11-06, https://developer.apple.com/design/whats-new/, read 2026-11-13) lists "Download SF Symbols 8 beta" (dated June 8, 2026), in the WWDC26 group next to the HIG "App icons: Refined guidance for Liquid Glass" entry (HIG revision June 8, 2026). The current Design Resources page https://developer.apple.com/design/resources/ (read 2026-11-14) says "Download SF Symbols 27 - Requires macOS Sonoma or later", and https://developer.apple.com/sf-symbols/ shows no "beta" in its text; its download link is `SF-Symbols-27.dmg`, and it says new symbols are available in apps running iOS 27, iPadOS 27, macOS 27, watchOS 27, tvOS 27 and visionOS 27. The HIG sf-symbols page (last revision July 28, 2025) names only SF Symbols 7 and earlier. So: write "SF Symbols 27 (announced at WWDC26 as 'SF Symbols 8 beta')"; both names point to the same app, and symbols are available from OS 27.
 - Icon-only symbols need an accessibility label; symbols get RTL variants automatically.
 
 ## Launch Screen (iOS/iPadOS)

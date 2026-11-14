@@ -4,7 +4,7 @@ description: XcodeBuildMCP for Xcode project discovery, building, testing, runni
 when-to-use: building projects, validating code changes, running tests, launching on simulator, enabling extra workflows
 keywords: Xcode, build, build_run_sim, test_sim, scheme, simulator, session defaults, workflows, clean
 priority: high
-related: xcodebuild-mcp-ui-verification.md, apple-docs-mcp.md
+related: xcodebuild-mcp-ui-verification.md, apple-docs-mcp.md, xcode-agents.md
 ---
 
 # XcodeBuildMCP Usage Guide
@@ -22,7 +22,9 @@ Tool names below were read from the `xcodebuildmcp@2.7.0` package manifests.
 }
 ```
 
-Homebrew alternative: `brew tap getsentry/xcodebuildmcp && brew install xcodebuildmcp`. Requires macOS 14.5+, Xcode 16+.
+Homebrew alternative: `brew tap getsentry/xcodebuildmcp && brew install xcodebuildmcp`. Tool minimum (README read 2026-11-13): macOS 14.5+, Xcode 16.x or later, Node.js 18+ (npm install only) - this plugin targets Xcode 27.2 and the 27.2 SDKs, well above that floor, so no extra setup is needed for them.
+
+Rename notice: the `getsentry/XcodeBuildMCP` README (2026-11-13) now presents the project as **MobileBuildMCP** (npm package `mobilebuildmcp`, CLI `mobilebuildmcp`; `npx -y mobilebuildmcp@latest mcp`). npm registry on 2026-11-13: `mobilebuildmcp` 2.7.1 (published 2026-09-23), `xcodebuildmcp` 2.7.0 (2026-07-23, not deprecated). The `xcodebuildmcp` config above still works; check `npm view mobilebuildmcp version` before pinning.
 
 ## Workflows
 

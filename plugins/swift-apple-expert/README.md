@@ -16,16 +16,20 @@ Verification gate: `build_sim` + `test_sim`, then for UI changes a 10-item HIG g
 
 | Skill | Use when |
 |-------|----------|
-| `swift-core` | Swift 6 fundamentals: concurrency, architecture, testing, i18n, performance |
-| `swiftui-core` | SwiftUI views, navigation, SwiftData, state, Liquid Glass, App Intents, and HIG rules (accessibility, RTL, modality, widgets/Live Activities/notifications/Siri, iPhone Duo) |
+| `swift-core` | Swift Testing first, Swift 6.2 concurrency defaults, architecture, i18n, performance, Xcode 27 agents and `xcrun mcpbridge` |
+| `swiftui-core` | SwiftUI views, navigation, SwiftData 27, WebView, state, Liquid Glass, App Intents runtime, WidgetKit/ActivityKit, and HIG rules (accessibility, RTL, modality, notifications/Siri, iPhone Duo) |
 | `solid-swift` | SOLID/DRY for Swift: feature-modular layout, protocol separation, @Observable, actors |
 | `ios` | iPhone apps: simulator/device testing, UI automation, debugging with XcodeBuildMCP |
-| `ipados` | iPad: split views, keyboard, multitasking, Stage Manager |
-| `macos` | Mac: menu bar extras, windows, AppKit integration, notarization |
+| `ipados` | iPad: split views, keyboard, multitasking, Stage Manager, menu bar, toolbars |
+| `macos` | Mac: menu bar extras, windows, toolbars, touch on Mac, AppKit integration, notarization |
 | `watchos` | Apple Watch: complications (WidgetKit), workouts, HealthKit, connectivity |
 | `tvos` | Apple TV: focus system, Siri Remote, media playback |
-| `visionos` | Vision Pro: spatial computing, RealityKit, ornaments, immersive spaces |
-| `build-distribution` | Signing, TestFlight, App Store, Icon Composer app icons, StoreKit 2 |
+| `visionos` | Vision Pro: spatial computing, RealityKit 27, ARKit, spatial web, ornaments, immersive spaces (no eye-tracking API) |
+| `apple-intelligence` | Foundation Models (on-device and Private Cloud Compute), Writing Tools, Genmoji, Image Playground, Visual Intelligence |
+| `apple-frameworks` | Passkeys, MapKit, CloudKit, Core Data, TipKit, background tasks, MetricKit, App Attest, HealthKit, CarPlay, Chart3D |
+| `graphics-games` | Metal 4, MetalFX, GameKit, Game Controller, Game Porting Toolkit 4; Metal vs RealityKit vs SpriteKit vs SceneKit |
+| `media-vision` | AVFoundation, Now Playing, PhotoKit, Vision, Speech, translation, Core ML, Core Location, WeatherKit, EventKit |
+| `build-distribution` | Signing, TestFlight, App Store, Icon Composer app icons, StoreKit 2; deadlines: Developer ID G2 2027-02-01, age-rating declarations 2027-01-12, April 2027 SDK 27 / iOS 15 / iPhone Duo screenshots |
 | `mcp-tools` | XcodeBuildMCP and Apple Docs MCP usage, UI verification on simulator |
 
 ## Usage Examples
@@ -38,6 +42,8 @@ Verification gate: `build_sim` + `test_sim`, then for UI changes a 10-item HIG g
 "Support iPhone Duo in our toolbar layout"            -> swiftui-core (hig-iphone-duo)
 "Build a menu bar app for macOS"                      -> macos
 "Prepare the dark and tinted app icon"                -> build-distribution
+"Add a Foundation Models summary feature"             -> apple-intelligence
+"Render with Metal 4 and MetalFX upscaling"           -> graphics-games
 ```
 
 ## MCP Servers

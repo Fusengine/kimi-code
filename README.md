@@ -2,7 +2,7 @@
 
 Port of the [Fusengine Claude Code plugins](../claude-plugins/) to **Kimi Code CLI**, re-architected for **K3** (1M-token context, native reasoning, native vision) — not a literal translation.
 
-- **26 plugins** · 230 skills · 40 agents · 34 commands · 71 hook rules
+- **26 plugins** · 234 skills · 40 agents · 34 commands · 71 hook rules
 - Same agentic core as the Claude version: APEX methodology, sniper/challenger verification, domain experts, SOLID/DRY guards — wired through the same `@fusengine/harness` binary
 - Measured parity with Claude Code on the benchmark suite: **3/3 tasks, 3.6–6.3× lower latency** — see [`docs/BENCHMARK.md`](docs/BENCHMARK.md)
 
@@ -39,7 +39,7 @@ kimi-code/
 ~\.kimi-code\plugins\managed\fusengine\setup.ps1       # Windows
 ```
 
-Then `/plugins reload` (or start a new session). One plugin, one namespace: 230 skills, 34 commands (`/fusengine:<cmd>`), 71 harness-backed hook rules. API keys for MCP servers: `cp ~/.kimi-code/plugins/managed/fusengine/.env.example ~/.kimi-code/.env`, fill in, re-run `setup.sh`.
+Then `/plugins reload` (or start a new session). One plugin, one namespace: 234 skills, 34 commands (`/fusengine:<cmd>`), 71 harness-backed hook rules. API keys for MCP servers: `cp ~/.kimi-code/plugins/managed/fusengine/.env.example ~/.kimi-code/.env`, fill in, re-run `setup.sh`.
 
 ## How it works
 

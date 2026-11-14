@@ -9,7 +9,7 @@ related: app-intents.md, hig-accessibility.md
 
 # HIG System Surfaces
 
-Code for intents lives in `app-intents.md`; this file holds the design rules.
+Code for intents lives in `app-intents.md`; WidgetKit/ActivityKit APIs (push handler, controls, CarPlay/visionOS widgets, scheduled Live Activity start) in `widgetkit-activitykit.md`; this file holds the design rules.
 
 ## Widgets
 
@@ -23,6 +23,8 @@ Source: https://developer.apple.com/design/human-interface-guidelines/widgets
 - Standard margins (16 pt for most widgets); use `ContainerRelativeShape` for concentric corners.
 - Rendering modes: full color, **accented** (tinted / clear Liquid Glass Home Screen), **vibrant** (Lock Screen, StandBy low light). Mark accent views with `widgetAccentable(_:)`; read `widgetRenderingMode`; set backgrounds with `containerBackground(_:for:)`.
 - watchOS complications are accessory widget families (`accessoryCircular`, `accessoryRectangular`, `accessoryInline`, `accessoryCorner`).
+- **Apple HomeView** (HIG widgets, updated 2026-10-13; read 2026-11-13): widgets go on the Modular face and Home Screen, use the **small** system family and share the iPhone widget appearance (light, dark, clear, tinted); on the Modular face the widget is scaled up with the background removed. Each enrolled household member has a personal Home Screen.
+- **watchOS Smart Stack widget sizes** (pt, HIG "watchOS dimensions"): 40mm 152x69.5; 41mm 165x72.5; 42mm 176x72.5; 44mm 173x76.5; 45mm 184x80.5; 46mm 194x80.5; 49mm Ultra 3/4 198x81.5; 49mm Ultra 1/2 191x81.5. Default Smart Stack background is black; use a custom color only when it adds meaning.
 
 ## Live Activities
 
@@ -35,6 +37,7 @@ Source: https://developer.apple.com/design/human-interface-guidelines/live-activ
 - Animations max 2 s (none on reduced-luminance Always-On). Update only on new content; alert only for essential updates; never duplicate with push notifications.
 - Max one interactive element ideally; tap deep-links to the related screen. Let people stop it from inside the app; offer an App Shortcut to start it.
 - Types: `ActivityConfiguration`, `DynamicIsland`, `Activity.request(attributes:content:pushType:)`, `ActivityContent`.
+- **Limited-width layouts** (HIG live-activities, updated 2026-10-13; read 2026-11-13): the HIG cites iPhone in landscape; the `isDynamicIslandLimitedInWidth` doc page adds iPhone Duo and iPhone 18 Pro with two or more active Live Activities, where the system renders compact and minimal presentations with reduced width. Fit compact/minimal inside a **28x28 pt circle** (short abbreviation or graphic, no full text). If both limited-width compact views do not make sense, provide the leading view and an empty trailing view; the system hides the trailing one. API: `EnvironmentValues.isDynamicIslandLimitedInWidth` (iOS/iPadOS 27.0; macOS 27.3 is beta in Apple's docs on 2026-11-13) - `@Environment(\.isDynamicIslandLimitedInWidth)`, branch the compact view on it. Live Activity size: `ActivityFamily` `.small` / `.medium` (iOS 18.0; `activityFamily` environment value).
 
 ## Notifications
 

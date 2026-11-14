@@ -62,6 +62,15 @@ Then implement using the platform-specific skill(s) (see Coding Standards below)
 
 **Priority**: Use Apple Docs MCP FIRST before Context7 for Apple-specific queries.
 
+### Xcode 27 agents and Xcode's MCP server
+**Source**: Apple (https://developer.apple.com/documentation/xcode/giving-external-agents-access-to-xcode) — details in `mcp-tools` skill (`xcode-agents.md`)
+
+- **Connect to Xcode**: allow external agents in Xcode > Settings > Intelligence, then add an `xcode` server `{"command":"xcrun","args":["mcpbridge"]}` to `$KIMI_CODE_HOME/mcp.json` (default `~/.kimi-code/mcp.json`; Kimi has no `mcp` subcommand); open the project in Xcode first
+- **Xcode MCP tools**: RenderPreview (SwiftUI preview images with variants), String Catalog read/plan/edit, debugger and run-state control, schemes/destinations, build settings, entitlements; `lldb-mcp` ships with LLDB
+- **Workspace-less preview**: `sudo xcrun mcp-server enable` (beta 5 preview, caveats in the reference)
+- **Inside Xcode**: coding intelligence with plan mode (`/plan`, `/exit-plan`), plug-ins (skills, MCP servers, ACP agents), Agent Client Protocol, Gemini, Antigravity, GitHub Copilot (27.3 beta)
+- XcodeBuildMCP stays the default for build, test and UI evidence (the project is being renamed MobileBuildMCP, see `xcodebuild-mcp.md`)
+
 ---
 
 ## SOLID Rules (MANDATORY)
@@ -81,12 +90,17 @@ Then implement using the platform-specific skill(s) (see Coding Standards below)
 ## Core Rule
 
 - **Verify Before Writing**: Use Context7/Exa to confirm APIs/patterns are correct and up-to-date before writing any code
+- **Complete reference**: verify an Apple API (name, signature, availability) on `developer.apple.com/tutorials/data/documentation/<path>.json` (lowercase path, e.g. `swiftui/toolbarspacer.json`; HIG: `.../tutorials/data/design/human-interface-guidelines/<slug>.json`) via `browser_fetch`; never conclude an API is absent from the apple-docs MCP search alone
 
 ## Coding Standards
 - **@Observable** over ObservableObject, **structured concurrency** (async/await), **value types** (structs over classes)
 - **Protocol-oriented** design, **small views** (extract at 30+ lines), **accessibility** mandatory
 - **i18n** — ALL user-facing text must use String Catalogs
 - See platform-specific skills (`ios`, `macos`, `watchos`, `visionos`, `tvos`, `ipados`) for platform targeting
+- **Routing**: Foundation Models / Writing Tools / Image Playground / Genmoji / Visual Intelligence / Apple Intelligence -> `apple-intelligence` skill
+- **Routing**: passkeys / credential exchange, MapKit, CloudKit, Core Data, TipKit, notifications, background tasks, MetricKit, App Attest, HealthKit, CarPlay, Chart3D -> `apple-frameworks` skill
+- **Routing**: Metal 4, MetalFX, GameKit, Game Controller, Game Porting Toolkit, Metal vs RealityKit/SpriteKit/SceneKit -> `graphics-games` skill
+- **Routing**: camera capture, media playback, Now Playing / MediaDevice / AVSystemRouting, PhotoKit, Vision, Speech, Core ML / Translation / Natural Language / MusicUnderstanding, Core Location / WeatherKit / EventKit -> `media-vision` skill
 - **HIG** — for any UI work load the `swiftui-core` HIG references (`hig-accessibility.md`, `hig-rtl.md`, `hig-modality.md`, `hig-system-surfaces.md`, `hig-iphone-duo.md`, `liquid-glass.md`). Visual specs come from the design-ios handoff when one exists; you implement and verify them.
 
 ## fuse-browser (ZERO TOLERANCE)

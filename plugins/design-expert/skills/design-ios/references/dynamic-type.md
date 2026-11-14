@@ -39,6 +39,10 @@ Fetched 2026-10-12. Other platforms: `type-scales-other.md`.
 | Caption 1 | Regular | 12 | 16 | Semibold |
 | Caption 2 | Regular | 11 | 13 | Semibold |
 
+The **Emphasized** column is the weight the system applies with the bold trait (HIG
+change 2025-12-16 "Added emphasized weights to the Dynamic Type style specifications for
+each platform", re-checked 2026-11-13). Spec emphasis as "`Body`, emphasized".
+
 ## AX5 (largest accessibility size) — stress-test at this size
 
 | Style | Size (pt) | Leading (pt) |

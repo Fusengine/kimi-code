@@ -4,10 +4,12 @@ description: StoreKit 2 in-app purchases, subscriptions, transaction management,
 when-to-use: implementing purchases, subscriptions, restoring transactions
 keywords: StoreKit, in-app purchase, subscription, Product, Transaction
 priority: high
-related: app-store.md, testflight.md
+related: app-store.md, testflight.md, storekit-2026-updates.md
 ---
 
 # StoreKit 2
+
+2025-2026 changes (offer codes for all IAP types, promo codes removed, Bundles/Suites, multiseat, retention messages) and verified symbols: [storekit-2026-updates.md](storekit-2026-updates.md).
 
 ## Product Types
 

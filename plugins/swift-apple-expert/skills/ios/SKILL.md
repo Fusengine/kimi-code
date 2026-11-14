@@ -78,7 +78,21 @@ After implementation, run **sniper** for validation.
 | Device deployment | [device-tools.md](references/device-tools.md) |
 | Touch automation | [ui-automation.md](references/ui-automation.md) |
 | LLDB debugging | [debugging.md](references/debugging.md) |
-| UIKit in SwiftUI | [uikit-integration.md](references/uikit-integration.md) |
+| UIKit in SwiftUI (native `Map` / `WebView` first) | [uikit-integration.md](references/uikit-integration.md) |
+| UIKit 26-27: automatic Observable tracking, iPhone Duo hinge and vertical bars, state restoration, TextKit tables, menu images | [uikit-26-27.md](references/uikit-26-27.md) |
+| Passkeys, MapKit, CloudKit, TipKit, notifications, background tasks, HealthKit, CarPlay, Chart3D | [apple-frameworks](../apple-frameworks/SKILL.md) |
+| Toolbars, search as a tab, tab bar minimize, scroll edge effects, menu icons | [toolbars-navigation.md](../swiftui-core/references/toolbars-navigation.md) |
+
+---
+
+## Liquid Glass on iOS
+
+API table and rules live in [liquid-glass.md](../swiftui-core/references/liquid-glass.md); do not duplicate them here. iOS specifics (HIG, read 2026-11-13):
+
+- The tab bar floats above content at the bottom ([HIG tab-bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars), 2026-06-08); with an accessory (MiniPlayer) it can minimize on scroll (`tabBarMinimizeBehavior(_:)`, `tabViewBottomAccessory(content:)`, iOS 26.0). A dedicated search tab (`Tab(role: .search)`) can sit at the trailing end; alternatives are search in a bottom or top toolbar ([HIG search-fields](https://developer.apple.com/design/human-interface-guidelines/search-fields)).
+- Toolbars ([HIG toolbars](https://developer.apple.com/design/human-interface-guidelines/toolbars), 2025-12-16): space is limited, so put essential actions first and the rest in a More menu; group items with `ToolbarSpacer`; do not paint custom bar backgrounds.
+- Scroll edge effects under bars ([HIG scroll-views](https://developer.apple.com/design/human-interface-guidelines/scroll-views), 2026-06-08): keep `.automatic`; `.soft` needs legibility testing. Standard bars, sheets and menus take glass from the system ([HIG materials](https://developer.apple.com/design/human-interface-guidelines/materials)).
+- Live Activities: limited-width compact/minimal layouts (landscape, iPhone Duo, many activities) - [hig-system-surfaces.md](../swiftui-core/references/hig-system-surfaces.md).
 
 ---
 

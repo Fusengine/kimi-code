@@ -28,8 +28,13 @@ After `design-system` tokens exist.
 |---|---|
 | iPhone | steps below + `references/dynamic-type.md` |
 | iPad, resizable window, iPhone Duo | + `references/ipados-iphone-duo.md` |
-| Mac | + `references/macos.md`, `references/type-scales-other.md` |
+| Mac (incl. touch display) | + `references/macos.md`, `references/type-scales-other.md` |
 | Apple Watch, Apple TV, Vision Pro | + `references/watch-tv-vision.md`, `references/type-scales-other.md` |
+| Any bar, sidebar, menu, scroll view | + `references/bars-menus-scroll.md` |
+| Live Activity, widget | + `references/system-surfaces.md` |
+| AI / generated content, Writing Tools, Genmoji, Image Playground | + `references/generative-ai.md` |
+| App icon | + `references/app-icons.md`, `references/apple-design-tools.md` |
+| App Store screenshots, previews, product page, creative assets | + `references/app-store-assets.md` |
 
 ### Steps
 1. **Map tokens to platform roles.** Typography → the platform's HIG text styles by name
@@ -58,14 +63,22 @@ After `design-system` tokens exist.
    first on iPad. Source:
    https://developer.apple.com/design/human-interface-guidelines/sidebars.
 7. **Platform pass** — apply the platform reference picked above (macOS desktop tinting
-   only under the graphite accent; tvOS 60/80 pt safe area and focus growth; visionOS
-   ornaments for controls only; watchOS ≤3 glyph buttons per row; iPhone Duo controls on
-   the side and the fold reserved region).
+   only under the graphite accent, touch secondary: same control size, larger tap
+   targets, touch-revealed states for hover controls; tvOS 60/80 pt safe area and focus
+   growth; visionOS ornaments for controls only; watchOS ≤3 glyph buttons per row; iPhone
+   Duo controls on the side and the fold reserved region). Bars and menus follow
+   `bars-menus-scroll.md`: tab bar for navigation only, no manual toolbar overflow menu,
+   one prominent action, menu icons for all items of a group or none.
 8. **Look at the render** — screenshot each canvas (light, dark, AX5) and Read the PNGs
    before calling the mockup done; fix what you see, then hand off to `design-review`.
 9. **Write the handoff spec** per `handoff-swiftui.md`: named tokens only, text styles by
    name, semantic colors, sizing (fixed/hug/fill), all states (disabled/pressed/focused,
    plus pointer style on macOS and focus on tvOS), spacing in pt, canvas sources.
+10. **Distribution assets (when asked)** — app icon as a layered Icon Composer file in
+    all appearances (`app-icons.md`); App Store screenshots at accepted pixel sizes, no
+    alpha, required classes plus iPhone Duo; previews, product page, custom product pages
+    and creative assets per `app-store-assets.md`. Name tool versions from
+    `apple-design-tools.md`, never from memory.
 
 ### Failure Handling
 - Screenshot tooling unavailable → say so in the report (`visual check: not run`) and
@@ -93,5 +106,11 @@ After `design-system` tokens exist.
 | `references/macos.md` | Window frame, fixed type, desktop tinting, pointer, sidebars — HIG |
 | `references/ipados-iphone-duo.md` | iPadOS + iPhone Duo poses, reserved regions, vertical controls — HIG |
 | `references/watch-tv-vision.md` | watchOS, tvOS, visionOS basics — HIG |
+| `references/bars-menus-scroll.md` | Tab bars, sidebars, toolbars, menus, scroll edge effects, Look to Scroll — HIG |
+| `references/system-surfaces.md` | Live Activities (limited width), widgets (Apple HomeView), design principles, emphasized weights — HIG |
+| `references/generative-ai.md` | Generative AI rules (refine/revert, generation feedback); Writing Tools / Genmoji / Image Playground — HIG |
+| `references/app-icons.md` | App icon format (Icon Composer layered preferred), appearances, specs — HIG |
+| `references/apple-design-tools.md` | SF Symbols 27 (announced as SF Symbols 8 beta), Icon Composer 2, Pass Designer, UI kits, bezels — Design Resources |
+| `references/app-store-assets.md` | Screenshots (incl. iPhone Duo), previews, product pages, creative assets, guideline 2.3.14 |
 | `references/mockup.md` | Device-frame HTML/CSS technique (safe areas, viewport-fit) |
 | `references/handoff-swiftui.md` | SwiftUI-ready handoff spec format |

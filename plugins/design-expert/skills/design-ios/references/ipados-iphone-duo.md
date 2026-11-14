@@ -55,6 +55,19 @@ designing for iPhone, so iOS rules apply.
   - Space-limited: navigation-focused → toolbar items overflow, tab bar stays;
     task-focused → minimize the tab bar, keep toolbar actions.
   - Use the system overflow menu; reserve the ellipsis symbol for it.
+  - **Asymmetry** (re-checked 2026-11-13): controls sit along one edge, so content space
+    is asymmetrical — use safe areas so controls (including the opposite edge's, when
+    two apps share the inner display) never cover content.
+  - Keep controls' **relative positions** as similar as possible across poses (not every
+    pose puts them on the side).
+  - Controls that belong to another content area stay **next to that area**, not moved to
+    the side bar.
+  - Text-labelled buttons stay in a horizontal bar — that is why symbols are preferred.
+- The outer camera is in a corner, vertically aligned with the side controls; when the
+  inner camera activates, the UI moves aside. Split views expand on the inner display and
+  collapse to one pane on the outer display, as between regular and compact elsewhere.
+- Maintain the same functionality in every pose: controls may overflow and content may
+  move, but stay reachable.
 - Full-width layouts are allowed for bar-less, non-scrolling views (Calculator) if
   nothing collides with the Dynamic Island or status bar.
 - Games: playable in every pose; prefer changing aspect ratio over letter/pillarboxing.
@@ -62,3 +75,6 @@ designing for iPhone, so iOS rules apply.
 ## Not published — do not invent
 The HIG gives no point dimensions for either iPhone Duo display or the fold region. Take
 canvas sizes from Xcode Device Hub (`viewports.md`) and state that source in the spec.
+App Store screenshot pixel sizes (outer 1398×2034, inner 2007×2853) are marketing
+assets, not canvas sizes — `app-store-assets.md`. The iPhone Duo product bezel
+(Design Resources, 2026-09-18) is for marketing frames only — `apple-design-tools.md`.

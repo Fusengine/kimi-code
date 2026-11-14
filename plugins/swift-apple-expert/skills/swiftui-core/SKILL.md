@@ -71,10 +71,14 @@ Modern persistence with @Model. Replaces Core Data for most use cases.
 |------|-----------|
 | Views, modifiers, layouts | [views-modifiers.md](references/views-modifiers.md) |
 | NavigationStack, deep linking | [navigation.md](references/navigation.md) |
-| SwiftData, @Query, CloudKit | [data-swiftdata.md](references/data-swiftdata.md) |
+| SwiftData, @Query, CloudKit, migrations | [data-swiftdata.md](references/data-swiftdata.md) |
+| SwiftData 27: sectioned @Query, `codable`, ResultsObserver, HistoryObserver | [data-swiftdata-27.md](references/data-swiftdata-27.md) |
+| WebView/WebPage, @Animatable, dragContainer, rich TextEditor, item alerts, status bar, TabsPickerStyle, 27.1 hinge toolbar | [swiftui-26-27-apis.md](references/swiftui-26-27-apis.md) |
 | @State, @Observable, Environment | [state-management.md](references/state-management.md) |
 | Liquid Glass all platforms | [liquid-glass.md](references/liquid-glass.md) |
-| Siri, Shortcuts, App Intents | [app-intents.md](references/app-intents.md) |
+| Siri, Shortcuts, App Intents, long-running/cancellable/snippet intents | [app-intents.md](references/app-intents.md) |
+| WidgetKit push, controls, CarPlay/visionOS widgets, scheduled Live Activity | [widgetkit-activitykit.md](references/widgetkit-activitykit.md) |
+| Toolbars (ToolbarSpacer, shared glass background), search as a tab, tab bar minimize, scroll edge effects, menu icons, SF Symbols 27 | [toolbars-navigation.md](references/toolbars-navigation.md) |
 
 ### HIG Rules (load for any UI task)
 
@@ -96,3 +100,4 @@ Modern persistence with @Model. Replaces Core Data for most use cases.
 4. **System colors** - Custom colors ship light, dark and increased-contrast variants ([HIG color](https://developer.apple.com/design/human-interface-guidelines/color))
 5. **Accessibility** - Label icon-only controls, layout survives AX5, targets >= 44 pt on iOS ([hig-accessibility.md](references/hig-accessibility.md))
 6. **Platform adaptation** - Size classes, never fixed widths or device checks ([HIG layout](https://developer.apple.com/design/human-interface-guidelines/layout))
+7. **Verify the symbol on the complete reference** - check name, signature and availability on `https://developer.apple.com/tutorials/data/documentation/<framework>/<path>.json` (e.g. `swiftui/toolbarspacer.json`, lowercase path); HIG pages: `.../tutorials/data/design/human-interface-guidelines/<slug>.json`. Never conclude an API is absent from the apple-docs MCP search alone (it returned 0 results for the real `ToolbarSpacer`)
