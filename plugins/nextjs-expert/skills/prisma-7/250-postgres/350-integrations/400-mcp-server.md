@@ -212,8 +212,7 @@ Adding it via the  **Cursor Settings** settings will modify the global `~/.curso
     "Prisma-Remote": {
       "command": "npx",
       "args": ["-y", "mcp-remote", "https://mcp.prisma.io/mcp"]
-    },
-    // other MCP servers
+    }
   }
 }
 ```
@@ -233,7 +232,6 @@ If you want the Prisma MCP server to be available only in specific Cursor projec
       "command": "npx",
       "args": ["-y", "mcp-remote", "https://mcp.prisma.io/mcp"]
     }
-    // other MCP servers
   }
 }
 ```
@@ -281,8 +279,7 @@ Adding it via the  **Windsurf Settings** will modify the global `~/.codeium/wind
     "Prisma-Remote": {
       "command": "npx",
       "args": ["-y", "mcp-remote", "https://mcp.prisma.io/mcp"]
-    },
-    // other MCP servers
+    }
   }
 }
 ```
@@ -313,19 +310,27 @@ To learn more about Warp's MCP integration, visit the [Warp MCP docs](https://do
 
 ### Kimi Code
 
-Kimi Code is a terminal-based AI tool where you can add MCP server using the `claud mcp add` command for the local MCP server:
+Kimi Code has no `mcp` subcommand. Add the server to `$KIMI_CODE_HOME/mcp.json` (default `~/.kimi-code/mcp.json`), merging it into the existing `mcpServers` object, then start a new session (servers added to `mcp.json` do not join already-open sessions).
 
-```terminal
-kimi mcp add prisma-local npx prisma mcp
+For the local MCP server:
+
+```json
+{
+  "mcpServers": {
+    "prisma-local": { "command": "npx", "args": ["prisma", "mcp"] }
+  }
+}
 ```
 
-or for the remote MCP server:
+or for the remote MCP server (Kimi Code connects to HTTP servers directly through `url`):
 
-```terminal
-kimi mcp add prisma-remote npx mcp-remote https://mcp.prisma.io/mcp
+```json
+{
+  "mcpServers": {
+    "prisma-remote": { "url": "https://mcp.prisma.io/mcp" }
+  }
+}
 ```
-
-Learn more in the [Kimi Code MCP docs](https://docs.anthropic.com/en/docs/agents-and-tools/kimi-code/tutorials#configure-mcp-servers).
 
 ### Kimi Desktop only
 
@@ -346,8 +351,7 @@ Then add the JSON snippet to that configuration file:
     "Prisma-Remote": {
       "command": "npx",
       "args": ["-y", "mcp-remote", "https://mcp.prisma.io/mcp"]
-    },
-    // other MCP servers
+    }
   }
 }
 ```
