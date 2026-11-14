@@ -69,8 +69,14 @@ The remote Prisma MCP server follows the standard JSON-based configuration for M
 You can start the local MCP server as follows:
 
 ```terminal
-npx -y prisma mcp
+npx -y prisma@7 mcp
 ```
+
+:::note
+
+Pin `prisma@7`. The `mcp` command exists in Prisma 7.x only: an unpinned `npx prisma mcp` resolves to the current `latest` (8.0.0-rc.33 at the time of writing) and fails with `[CLI.UNKNOWN_COMMAND] No command registered for 'mcp'`. The current official docs (https://www.prisma.io/docs/ai/tools/mcp-server) document only the remote server.
+
+:::
 
 :::tip
 
@@ -99,7 +105,7 @@ The local Prisma MCP server follows the standard JSON-based configuration for MC
   "mcpServers": {
     "Prisma-Local": {
       "command": "npx",
-      "args": ["-y", "prisma", "mcp"]
+      "args": ["-y", "prisma@7", "mcp"]
     }
   }
 }
@@ -151,7 +157,7 @@ If your browser blocks the link, [you can set it up manually](https://code.visua
   "servers": {
     "Prisma-Local": {
       "command": "npx",
-      "args": ["-y", "prisma", "mcp"]
+      "args": ["-y", "prisma@7", "mcp"]
     },
     "Prisma-Remote": {
       "command": "npx",
@@ -188,7 +194,7 @@ When opening the **Cursor Settings**, you can add the Prisma MCP Server as follo
       "mcpServers": {
         "Prisma-Local": {
           "command": "npx",
-          "args": ["-y", "prisma", "mcp"]
+          "args": ["-y", "prisma@7", "mcp"]
         },
         "Prisma-Remote": {
           "command": "npx",
@@ -207,7 +213,7 @@ Adding it via the  **Cursor Settings** settings will modify the global `~/.curso
   "mcpServers": {
     "Prisma-Local": {
       "command": "npx",
-      "args": ["-y", "prisma", "mcp"]
+      "args": ["-y", "prisma@7", "mcp"]
     },
     "Prisma-Remote": {
       "command": "npx",
@@ -226,7 +232,7 @@ If you want the Prisma MCP server to be available only in specific Cursor projec
   "mcpServers": {
     "Prisma-Local": {
       "command": "npx",
-      "args": ["-y", "prisma", "mcp"]
+      "args": ["-y", "prisma@7", "mcp"]
     },
     "Prisma-Remote": {
       "command": "npx",
@@ -255,7 +261,7 @@ When opening the **Windsurf Settings** (via **Windsurf - Settings** > **Advanced
       "mcpServers": {
         "Prisma-Local": {
           "command": "npx",
-          "args": ["-y", "prisma", "mcp"]
+          "args": ["-y", "prisma@7", "mcp"]
         },
         "Prisma-Remote": {
           "command": "npx",
@@ -274,7 +280,7 @@ Adding it via the  **Windsurf Settings** will modify the global `~/.codeium/wind
   "mcpServers": {
     "Prisma-Local": {
       "command": "npx",
-      "args": ["-y", "prisma", "mcp"]
+      "args": ["-y", "prisma@7", "mcp"]
     },
     "Prisma-Remote": {
       "command": "npx",
@@ -294,7 +300,7 @@ You can add the Prisma MCP to Warp as a globally available tool. First, [visit y
     "command": "npx",
     "args": [
       "-y",
-      "prisma",
+      "prisma@7",
       "mcp"
     ],
     "env": {},
@@ -312,25 +318,18 @@ To learn more about Warp's MCP integration, visit the [Warp MCP docs](https://do
 
 Kimi Code has no `mcp` subcommand. Add the server to `$KIMI_CODE_HOME/mcp.json` (default `~/.kimi-code/mcp.json`), merging it into the existing `mcpServers` object, then start a new session (servers added to `mcp.json` do not join already-open sessions).
 
-For the local MCP server:
+Both entries below were checked against a real Kimi Code 2.6.1 (`POST /api/v2/mcp/servers:test`): the pinned local one connects and lists 3 tools (`migrate-status`, `migrate-dev`, `Prisma-Studio`); the remote one is reachable and answers `requires OAuth`. Kimi Code connects to HTTP servers directly through `url`; the remote entry is the one in the Prisma docs (https://www.prisma.io/docs/ai/tools/mcp-server).
 
 ```json
 {
   "mcpServers": {
-    "prisma-local": { "command": "npx", "args": ["prisma", "mcp"] }
-  }
-}
-```
-
-or for the remote MCP server (Kimi Code connects to HTTP servers directly through `url`):
-
-```json
-{
-  "mcpServers": {
+    "prisma-local": { "command": "npx", "args": ["-y", "prisma@7", "mcp"] },
     "prisma-remote": { "url": "https://mcp.prisma.io/mcp" }
   }
 }
 ```
+
+The remote server needs a one-time OAuth login with your Prisma account (pick a workspace): run `/mcp-config login prisma-remote` in Kimi Code. The local server needs the `prisma@7` pin: it exists only in Prisma 7.x and is missing from the current `latest` CLI.
 
 ### Kimi Desktop only
 
@@ -346,7 +345,7 @@ Then add the JSON snippet to that configuration file:
   "mcpServers": {
     "Prisma-Local": {
       "command": "npx",
-      "args": ["-y", "prisma", "mcp"]
+      "args": ["-y", "prisma@7", "mcp"]
     },
     "Prisma-Remote": {
       "command": "npx",
@@ -390,7 +389,7 @@ async def main():
     async with MCPServerStdio(
         params={
             "command": "npx",
-            "args": ["-y", "prisma", "mcp"]
+            "args": ["-y", "prisma@7", "mcp"]
         }
     ) as local_server, MCPServerStdio(
         params={
