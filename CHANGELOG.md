@@ -3,6 +3,14 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.33] - 2026-11-14
+
+### Added
+- swift-apple-expert: new skills `apple-intelligence`, `apple-frameworks`, `graphics-games`, `media-vision` (swift-apple-expert 1.1.24).
+
+### Changed
+- swift-apple-expert: Apple 27 refresh of the `swift-expert` agent and 10 skills, plus design-expert `design-ios`, ported from claude-plugins v1.40.0; the Xcode MCP bridge is documented as an `mcp.json` entry; the suite now ships 234 skills (swift-apple-expert 1.1.24, design-expert 2.2.12).
+
 ## [1.0.32] - 2026-11-13
 
 ### Added
