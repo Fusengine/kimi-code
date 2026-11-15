@@ -3,6 +3,16 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.35] - 2026-11-15
+
+### Fixed
+- nextjs-expert (prisma-7 MCP docs): the Prisma MCP stdio entries are pinned to `npx -y prisma@7 mcp`, because the unpinned `prisma mcp` fails on the prisma 8 RC; the Kimi section lists `prisma-local` and `prisma-remote`, with the `/mcp-config` OAuth step for the remote server; the non-existent `@prisma/mcp-server` reference is replaced (nextjs-expert 1.1.28).
+- ai-pilot: the `update-harness` command is rewritten for the Kimi harness layout (ai-pilot 1.2.47).
+- core-guards: the README setup steps, statusline config and feature table now match the installer (core-guards 1.1.45).
+
+### Changed
+- docs: the decisions log records that a go relayed by the launching lead counts as the owner's go.
+
 ## [1.0.34] - 2026-11-15
 
 ### Fixed
