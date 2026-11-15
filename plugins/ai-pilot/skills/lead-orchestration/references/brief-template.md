@@ -52,7 +52,7 @@ Code comments, docs, commit messages: English. Replies to the user: the user's l
 
 ## REPORT (your final message is the entire handoff, short)
 - Block: stop early and return it in your final message, with the routes already tried (Exit: Retry / Rollback / Ask / Escalate); the lead answers by resuming you.
-- Final: done | not done -- proof per part -- not verified -- files touched (path:line) -- skills consulted.
+- Final: done | not done -- proof per part -- not verified -- files touched (path:line) -- skills consulted -- Suggestions: one line each « Suggestion: <idea> → gain: <benefit> », grounded per rule 08, or "none".
 - Open points: decide them yourself from the measurement and the mandate's goal, and report the decision. Return ONE binary question for the lead (never the owner, never an option menu) only for the part where incoming information contradicts OWNER RULES; finish the rest first. Irreversible git (push to a protected branch, force-push, reset) stays gated by template HARD STOP 1, not by a question.
 - Re-dispatch of an already-delivered mandate -> verify the disk and refuse to re-execute.
 ```

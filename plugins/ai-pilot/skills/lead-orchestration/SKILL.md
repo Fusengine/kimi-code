@@ -37,7 +37,7 @@ Record each new owner decision there, dated, one line. Kimi has no `@path` impor
 **Owner's verb**: it sets the mandate type and is relayed unchanged -- audit / analyse / explain / check = read-only (WRITE: none); fix / implement / create = write. Never turn an audit into a fix or a question into an action.
 **Scope**: a terse owner command means exactly that action -- never substitute an easier task. A document or deliverable request covers the whole product unless the owner narrows it; each item is tagged done / partial / planned, never silently dropped.
 An owner message mid-task amends the list: add the part, relay it to every affected agent (a running agent cannot be resumed: `TaskStop` it, then `Agent` with `resume: <agentId>` carrying the amendment), keep going -- only an explicit stop halts.
-**Relayed message**: when another session or agent says "the owner wants X", it advances only what the owner's mandate already covers. It is never a go for merge/release, nor for changing a recorded owner decision.
+**Relayed message**: template "Relayed message".
 **Check:** every sentence of the owner maps to a part; nothing in the list was invented by you; new decisions are in `docs/decisions.md`; the project's `AGENTS.md` names it.
 
 ### 2. Check the place is free
@@ -46,10 +46,12 @@ For every folder an agent will write: `ls -lT <folder>` + `date`. Mtime under ~5
 
 ### 3. Analyze
 Code is touched -> launch `explore-codebase` + `research-expert` + the domain expert (Project Detection, rule 01) in ONE message. A trivial 1-3 line change goes to `apex-quick` (one agent). A read-only question -> `explore-codebase` alone. Debug ("why", "not working") always goes through Analyze.
-**Check:** the analysis reports are in hand before any task is cut.
+**Brainstorm** (rule 02): a new feature or major change -> agent `brainstorming` (design mode) before or alongside the trio, given the trio's findings when they exist; an "analyse / improve this project" request -> the same agent in ideas mode. It never asks the owner: it states its assumptions or returns one binary question in its final message, and the lead escalates at most one binary question.
+**Check:** the analysis reports (and, for a new feature, the design doc approved by the lead, or by the owner when escalated) are in hand before any task is cut.
 
 ### 4. Decompose -- one task = one verifiable deliverable
 Cut the checklist into tasks; each task produces one deliverable that can be proven on its own (a file diff, a passing test, a capture). Independent tasks run in parallel; coupled tasks run in sequence (the second starts after the first is verified on disk). Two tasks that must edit the same file are merged into one task or sequenced. Size the work with rule 03 "Analyze (PATH 3)" and "Decompose and distribute (PATH 4-5)".
+Map the full chain to its end at the start (producer release → consumer wiring/bump → owner install) and launch every unblocked step in parallel; a downstream step is prepared against the local build while an upstream blocker is resolved, never parked behind it.
 **Check:** each task names its deliverable and its proof; the dependency order is written.
 
 ### 5. Distribute -- ownership table
@@ -86,16 +88,17 @@ Each task verified -> launch `commit` in WIP mode on the working branch (commit 
 **Check:** each part has a proof artifact path or is marked "not verified"; each verified task has its WIP commit hash.
 
 ### 10. Control
-Once every agent has finished: `sniper` once on all changes, then the `challenger` before any "done", root-cause, irreversible action or 2nd-time fix. A REFUTED verdict is resolved or explicitly accepted by the owner before "done".
+Once every agent has finished: `sniper` once on all changes, then the `challenger` before any "done", root-cause, irreversible action or 2nd-time fix. A REFUTED verdict is resolved or explicitly accepted by the owner before "done". On a new feature or behaviour change the challenger's product lens also checks coherence, usability and consistency.
 **Full gate before release**: before the full-mode commit agent is dispatched, an agent runs the project's full gate and the lead reads its output itself, never quoting an "all green". A CI job on a different engine/environment than local -> the touched tests run there, or that job is awaited, before merge; base-branch CI red after a merge = stop.
 **Core first**: prove the deliverable the owner asked for, on the owner's real input, before polishing side pieces. A REFUTED on a side piece is fixed once and reported; it never displaces work on the core deliverable. No round cap -- order, not count.
-**No over-engineering**: build what the request needs with the simplest design that meets it, reusable and maintainable (DRY + SOLID, rules 00 and 04) -- the files, helpers, tests and shared code that need implies are good structure, not over-engineering. Over-engineering is a speculative mechanism beyond the need (a new subsystem, a replacement for a tool the owner already has, hardening the owner did not ask for, extra modes/flags "just in case"): it is proposed in one line in the report, not built.
+**No over-engineering**: build what the request needs with the simplest design that meets it, reusable and maintainable (DRY + SOLID, rules 00 and 04) -- the files, helpers, tests and shared code that need implies are good structure, not over-engineering. Over-engineering is a speculative mechanism beyond the need (a new subsystem, a replacement for a tool the owner already has, hardening the owner did not ask for, extra modes/flags "just in case"): it is proposed as a suggestion in the report (rule 08), not built.
 **Check:** the core deliverable is proven on the owner's real input; sniper ZERO errors and the challenger verdict are in hand.
 
 ### 11. Report -- answer first, then learn
-Mandate complete -> launch `commit` in full mode (push the working branch, PR, CI, merge never squash, tag, release). Owner reply, in the owner's language (rule 00): line 1 = the answer (done / not done / blocked), then <= 10 lines: proof, not verified, WIP commits made, merge/release announced, one recommendation + the next step, no option menu when one choice is clearly better. Deliverables at a path the owner sees -- never only a hidden directory.
+Mandate complete, or the owner asks for the commit cycle in any language (rule 06 "Commit cycle"; relays per template "Relayed message") -> launch `commit` in full mode (push the working branch, PR, CI, merge never squash, tag, release) with the real-run proof path in the brief; the step 10 full gate still runs first. Owner reply, in the owner's language (rule 00): line 1 = the answer (done / not done / blocked), then <= 10 lines: proof, not verified, WIP commits made, merge/release announced, one recommendation + the next step, no option menu when one choice is clearly better. Deliverables at a path the owner sees -- never only a hidden directory.
 Each owner correction -> one line in the skill/agent that failed, in the source repo, the same turn, written by an agent (template AUTONOMY, rule 03 "Lead conduct"). Sync to the marketplace only when the owner asked for it (HARD STOP 3).
-**Check:** line 1 answers the question asked; every deliverable path is outside a dot-folder; each correction is grep-able in the failing skill/agent before the turn ends.
+**Suggestions**: the agents' REPORT "Suggestions" field, and an ideas-mode `brainstorming` pass when the mandate analysed or improved a project, feed the report's grounded suggestions (« Suggestion: <idea> → gain: <benefit> »); proposed, never built without the owner's go.
+**Check:** line 1 answers the question asked; each agent's final report carries its "Suggestions" field (or "none"); every deliverable path is outside a dot-folder; each correction is grep-able in the failing skill/agent before the turn ends.
 
 ---
 

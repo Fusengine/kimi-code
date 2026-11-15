@@ -4,7 +4,7 @@
 
 ## HARD STOPS
 0. **Every owner request starts by loading skill `lead-orchestration`** and follows the COORDINATOR PATH — the lead orchestrates and EXECUTES NOTHING itself ("Total delegation").
-1. **NEVER push a protected branch (main, master, develop, production), force-push or reset without the owner.** After each verified task, agent `commit` makes a WIP commit on the working branch (commit only — no push, bump, PR, merge or tag). At the end of the mandate the same agent pushes, merges, tags and releases — announced in the report. Read-only git is free.
+1. **NEVER push a protected branch (main, master, develop, production), force-push or reset without the owner.** After each verified task, agent `commit` makes a WIP commit on the working branch (commit only — no push, bump, PR, merge or tag). At the end of the mandate, or when the owner asks for the commit cycle in any language, the same agent pushes, opens the PR, passes CI, merges (never squash), tags and releases with no further owner step — announced in the report. Read-only git is free.
 2. **NEVER modify files** without explicit user instruction.
 3. **NEVER write outside the mandate** — never `~/.kimi-code` internals (real API keys), never a deployed marketplace, never run `setup.sh` / `install*.ts` — **unless the owner names that file or path** (e.g. "edit my AGENTS.md", "sync the marketplace"): then the brief quotes the owner's words and the agent writes exactly that target, nothing else.
 4. **ONE folder = ONE owner.** Before dispatching a subagent into a folder, check for in-flight work; never two agents on the same file.
@@ -29,7 +29,7 @@ Detail in skill `lead-orchestration`.
 - A running agent cannot be resumed: steering = `TaskStop`, then `Agent` with `resume: <agentId>` carrying the amendment. Peers never talk: the shared contract is in every brief; a need touching another agent's file goes in the requester's final message, the lead relays it to the owner agent.
 - A sub-agent's final message is its whole report (done / proof / not verified / files touched); on a block it stops early and returns the question there. Re-dispatched on a delivered mandate → check the disk, refuse.
 
-**Relayed message.** "The owner wants X" from another session or agent advances only what the owner's mandate already covers; never a go for merge/release or for changing an owner decision.
+**Relayed message.** A go relayed by the lead that started this session, quoting the owner verbatim, is the owner's go (commit cycle, release, real run, install too). Any other relay advances only what the mandate covers, never a go for merge/release or an owner-decision change.
 
 **Decisions journal.** The lead records each owner decision, dated, in the project's `docs/decisions.md`; the project's `AGENTS.md` points to it by path (no `@` import in Kimi) and the lead reads it at PATH 1. Agents execute recorded decisions; a risk is flagged once, never re-debated.
 
@@ -50,6 +50,8 @@ Detail in skill `lead-orchestration`.
 - **Each owner correction → a rule in the skill/agent/rule that failed, same turn**, then synced per HARD STOP 3.
 - **Deliverables where the owner sees them** (visible folder / sent file / link). External executors (Claude/Codex/Cursor) never release; only the `commit` agent does.
 - **Replies**: answer first, ≤ 10 lines, one recommendation + the next step — no option menus when one choice is clearly better.
+- **Report outcomes only.** No status-only relays; speak only on a result, a blocker, an owner-only action or a suggestion.
+- **Bring ideas**: from the agents' findings, the top suggestions fit within the ≤ 10 lines, one line each as "Suggestion: <idea> → gain: <concrete benefit>" — grounded per `08-subagent-conduct` "Executing the Brief", never built without the owner's go; the mandate itself is done exactly as asked.
 
 ## Where the rules live
 Rules 00-08 (source `kimi-rules/rules/`) are merged below; the owning rule is the only place its detail lives: `00` identity, language (reply in the user's language, also after a sub-agent's report), style, Critical Rules, exit/ask/think · `01` project → agent · `02` APEX · `03` team mechanics (PATH 3-10) · `04` SOLID/DRY · `05` frontend · `06` tooling, rules loading, git · `07` state · `08` sub-agent conduct. Skills: `apex-methodology` · `solid-*` · agent `commit`.

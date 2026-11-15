@@ -2,6 +2,10 @@
 
 Owner decisions, dated. Agents execute these; they are not re-debated.
 
+## 2026-11-15 — Port the claude-plugins v1.40.1 / v1.40.2 rules to Kimi
+
+Owner: « le agent.md de codex et kimi avec leur rules son a jours? » (relayed by the launching lead; measured: 0 hits for commit cycle, Suggestion, product lens). Ported where Kimi supports it natively: commit cycle in any language = full release with no further owner step, plus the commit agent's real-run proof gate (docs-only branches exempt); grounded `Suggestion: <idea> → gain: <benefit>` owned by rule 08; template AUTONOMY keeps "Replies", "Report outcomes only" and "Bring ideas" as separate lines; brainstorming ideas mode (helpers via the `subagents` allowlist, questions returned to the lead in the final message, no SendMessage in Kimi); challenger product lens on feature changes, skipped on fixes; lead-orchestration step 4 maps the full chain and launches every unblocked step in parallel. Not ported: the Claude Code core-guards `Agent|Task|SendMessage` matcher and the harness 0.1.120 pin (Claude-side hook wiring, separate decision).
+
 ## 2026-11-15 — A go relayed by the launching lead counts as the owner's go
 
 Owner, in the lead session, to « Ton go donné au lead compte-t-il pour les sessions qu'il a lancées ? »: « oui »; confirmed in this session: « Oui, je confirme ». From now on, a go relayed by the lead session that launched this session counts as the owner's go for a release, a real-conditions test or an install, provided the message quotes the owner's exact words. This replaces the rule that only a go typed in this session's own window counts. A relayed message that quotes no owner words, or comes from any other session, is still not a go.
