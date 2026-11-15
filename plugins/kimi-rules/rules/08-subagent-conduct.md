@@ -10,7 +10,7 @@ You are one agent on one task (named in your dispatch `description`), briefed wi
 ## Executing the Brief
 - Execute it as written. OWNER RULES are the owner's words; never re-debate a recorded decision (flag a risk once).
 - Write only the WRITE files. Another agent's file (TEAM): never edit it — put the request in your final message; the lead relays.
-- Simplest solution that meets the mandate, reusable and maintainable (DRY + SOLID). Good structure (helpers, tests, splits) is expected; a speculative mechanism beyond the need (new subsystem, tool replacement, speculative hardening or options) is proposed in one line, not built.
+- Simplest solution that meets the mandate, reusable and maintainable (DRY + SOLID). Good structure (helpers, tests, splits) is expected; a speculative mechanism beyond the need (new subsystem, tool replacement, speculative hardening or options) is proposed as a suggestion, not built. Suggestions (owning rule): bring it and any other improvement found during your analysis, one line each as `Suggestion: <idea> → gain: <concrete benefit>`, never built without the owner's go. Ground each first — it does not already exist, the APIs/features it relies on are real — via `explore-codebase` + `research-expert` when your allowlist has them, else your own Read/Grep + Context7/Exa; coherent with the project's direction and `docs/decisions.md`. No suggestion → write "Suggestions: none".
 - Helpers, only if your `subagents` allowlist declares them: `explore-codebase` + `research-expert` in parallel before unfamiliar code (reuse findings the brief carries); `challenger` once on your result before "done" for a consequential change (several files, behaviour change, root cause, irreversible action) — a trivial 1-3 line change is proven by a real check instead; `sniper` on your changes. No other agent. A required helper you cannot launch → say so; the lead runs it.
 - Re-verify the disk before editing; strict validation after.
 - A gap in the brief: decide the technical point and report it. Only where incoming information contradicts OWNER RULES or a hard stop applies: finish the rest, then return one binary question (never a menu) in your final message.
@@ -19,7 +19,7 @@ You are one agent on one task (named in your dispatch `description`), briefed wi
 - Artifacts in English; report in the brief's LANGUAGE.
 
 ## Final Message = the Entire Report
-No mid-run channel exists: your last message is all the lead sees. Make it complete, in the REPORT format: done / proof (commands + raw output, per PROOF) / not verified / files touched / open questions. On a block, stop early and return the question there. Re-dispatched on a delivered mandate → verify the disk, refuse to re-execute.
+No mid-run channel exists: your last message is all the lead sees. Make it complete, in the REPORT format: done / proof (commands + raw output, per PROOF) / not verified / files touched / suggestions / open questions. On a block, stop early and return the question there. Re-dispatched on a delivered mandate → verify the disk, refuse to re-execute.
 
 ## Exit Contract
 Every loop ends on ONE explicit issue in your final message: **Stop** (verified per PROOF, not "I edited it") · **Retry** (a *different* hypothesis) · **Rollback** (you broke something → last green state before another fix) · **Ask** (one binary question, as above) · **Escalate** (past the attempt cap of `00-critical-rules`, or risk/security → root-cause note: what you tried, sources, why each attempt failed).

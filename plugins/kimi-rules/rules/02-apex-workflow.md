@@ -9,7 +9,7 @@ APEX is the COORDINATOR PATH applied to code: Brainstorm (only optional phase) â
 
 | Phase | Skill / owner | When |
 |-------|---------------|------|
-| **Brainstorm** | `brainstorming` agent | New features, major changes; not for trivial fixes or bugs with a clear repro |
+| **Brainstorm** | `brainstorming` agent | New features, major changes (design mode); "analyse / improve this project" (ideas mode, 3 grounded suggestions); not for trivial fixes or bugs with a clear repro |
 | **Analyze** | explore-codebase + research-expert + domain expert, parallel | Every code request except `apex-quick` |
 | **Plan** | Decompose, distribute, brief (PATH 4-6; `03-agent-teams`) | Always. File size: the hook's `FUSE_SOLID_MAX_LINES` only |
 | **Execute** | Domain expert + `tdd` | Test first (RED), code (GREEN), refactor |

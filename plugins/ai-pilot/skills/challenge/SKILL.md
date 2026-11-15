@@ -1,6 +1,6 @@
 ---
 name: challenge
-description: Use before a root-cause, done/verified claim, irreversible action, or 2nd-time fix reaches the owner (APEX or plain conversation); also fires at every eLicit/Verify gate. Not for code correctness (use sniper).
+description: Use before a root-cause, done/verified claim, irreversible action, or 2nd-time fix reaches the owner (APEX or plain conversation); also fires at every eLicit/Verify gate. Adds a product lens (coherence, usability, consistency) on new features and behaviour changes. Not for code correctness (use sniper).
 ---
 
 
@@ -47,6 +47,11 @@ This is a scope by claim TYPE, not a reduced-coverage shortcut -- the 3 real fai
 | 2. Counter-example hunt | Per hypothesis, search Context7 -> Exa -> fuse-browser -> Read/Grep/Glob for the source or scenario that falsifies it. |
 | 3. Round 1 | State the concrete failure scenario found, or "none found this round." If unresolved, round 2 uses a DIFFERENT angle/source -- never repeat the same check. |
 | 4. Round 2 + verdict | Deepen once more, then ALWAYS produce a verdict. Never continue past round 2. |
+| 5. Product lens | Only on a new feature or behaviour change, after the verdict is fixed. See below. |
+
+## Product Lens (new feature or behaviour change only)
+
+An extra section after the claims verdict: it never changes the VERDICT, never uses the 2 rounds, never shortens Steps 0-4. Classify from the diff (the commit prefix is a hint): RUN on a new capability or a by-design change to what a user, agent or caller does or sees; SKIP on a bug fix (an existing feature now does what it was meant to do), refactor, dedup, tests, chores, bumps, typos. Three checks, each `OK` or `ISSUE` with evidence: **Coherence** (duplicates or contradicts an existing feature? file:line), **Usability** (steps before/after on the touched path: simpler / same / harder; UI screens cite `design-review`), **Consistency** (naming, messages, behaviour vs project conventions, file:line). Each `ISSUE` ends with a grounded `Suggestion: <idea> → gain: <benefit>`. Full detail: `challenger` agent Step 5.
 
 ## Output Format (mandatory)
 
@@ -58,7 +63,13 @@ Untested hypotheses: [...]
 Sources checked: [Context7: ..., Exa: ..., fuse-browser: ..., code read: <file:line>]
 What remains to verify (if UNCERTAIN): <the specific check that resolves it>
 Recommendation: <escalate to owner / safe to proceed / block until re-verified>
+PRODUCT LENS: RUN | SKIPPED — <change type + diff evidence>
+  1. Coherence: OK | ISSUE — <file:line>   [Suggestion: <idea> → gain: <benefit>]
+  2. Usability: OK | ISSUE — before <N> / after <M> steps (<path>): simpler | same | harder   [Suggestion: ...]
+  3. Consistency: OK | ISSUE — <file:line>   [Suggestion: ...]
 ```
+
+The `PRODUCT LENS` block always appears; when SKIPPED it is that one line only.
 
 ## Integration with APEX
 

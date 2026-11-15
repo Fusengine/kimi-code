@@ -36,7 +36,8 @@ Plugin skills paths are injected at SessionStart — use the paths from your con
 - **EVERY COMMIT GOES THROUGH AGENT `commit`** — never `git commit` directly, never a hand-rolled flow (HARD STOP 1):
   - **WIP mode** — after each verified task: commit on the working branch only (no push, bump, PR, merge, tag); branch check and secret scan still run.
   - **Release mode** — end of mandate: push, PR, CI wait, merge, tag, release (security scan, PATCH bump + marketplace mirror, CHANGELOG, post-merge tag), announced in the report. Steps: `/fusengine:commit`.
-  - A relayed "the owner wants a commit" covers WIP commits only, never merge or release ("Relayed message").
+  - **Commit cycle** — any owner wording that asks for the commit cycle, in any language, starts Release mode run to the end with no further owner step (WIP commits, push, PR, CI, merge never squash, tag, release); every gate still holds, incl. the `commit` agent's real-run proof gate.
+  - Relayed gos (commit cycle, release): template "Relayed message".
 - External executors (Claude/Codex/Cursor) never push/PR/merge/tag/publish.
-- **Branches**: `main`, `master`, `develop`, `production` are protected — never committed or pushed directly; they change only through the `commit` agent's end-of-mandate merge. Force-push and reset need the owner. Work on `<type>/<scope>` (`feat/`, `fix/`, `chore/`, `docs/`, `refactor/`, `perf/`, `test/`, `ci/`, `build/`, `style/`), kebab-case, < 50 chars, no personal prefix.
+- **Branches**: `main`, `master`, `develop`, `production` are protected — never committed or pushed directly; they change only through the `commit` agent's end-of-mandate or commit-cycle merge. Force-push and reset need the owner. Work on `<type>/<scope>` (`feat/`, `fix/`, `chore/`, `docs/`, `refactor/`, `perf/`, `test/`, `ci/`, `build/`, `style/`), kebab-case, < 50 chars, no personal prefix.
 - **Merge, never squash** (`gh pr merge --merge --delete-branch`): the release tag points to the bump commit, squash would orphan it. Tag only after the merge is validated. Branches < 3 days. Skill: `git-flow` (commit-pro).

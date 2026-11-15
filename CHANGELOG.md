@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.36] - 2026-11-15
+
+### Changed
+- kimi-rules: port the claude-plugins v1.40.1/v1.40.2 rules — a commit cycle asked in any language runs the full release with no further owner step, every gate kept incl. the commit agent's real-run proof gate; a go relayed by the launching lead quoting the owner counts as the owner's go; reports carry grounded `Suggestion:` lines (rule 08); the Brainstorm row gains an ideas mode (kimi-rules 1.39.25).
+- ai-pilot: the commit agent gates push/publish on real-run proof; the challenger adds a product lens on features (skipped on fixes); brainstorming gains an ideas mode; lead-orchestration maps the full chain and launches unblocked steps in parallel (ai-pilot 1.2.48).
+- docs: the decisions log records the v1.40 rules port.
+
 ## [1.0.35] - 2026-11-15
 
 ### Fixed
