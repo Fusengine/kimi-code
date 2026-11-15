@@ -83,7 +83,7 @@ If your browser blocks the link, [you can set it up manually](https://code.visua
   "servers": {
     "Prisma-Local": {
       "command": "npx",
-      "args": ["-y", "prisma", "mcp"]
+      "args": ["-y", "prisma@7", "mcp"]
     },
     "Prisma-Remote": {
       "command": "npx",

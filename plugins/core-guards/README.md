@@ -68,19 +68,21 @@ Security guards and SOLID enforcement hooks for Kimi Code.
 
 ### Statusline
 
-Modular SOLID statusline for Kimi Code terminal.
+Native statusline for Kimi Code (`statusline/native/statusline-native.mjs`). Segments are printed in this order, joined by ` · ` (lines 271-281); optional ones are omitted when empty.
 
-| Segment | Description |
-|---------|-------------|
-| **kimi** | Kimi version |
-| **directory** | Path + git (branch, dirty, staged/unstaged) |
-| **model** | Model name + tokens |
-| **context** | Context usage progress bar |
-| **cost** | Session cost |
-| **limits** | 5h/7d limits with reset time |
-| **dailySpend** | Daily spending |
-| **node** | Node.js version |
-| **edits** | Edit counter |
+| Segment | Description | Source line |
+|---------|-------------|-------------|
+| **time** | Current time `HH:MM` | 271 |
+| **git branch** | `⎇ branch` plus staged `+n`, unstaged `~n`, untracked `?n` counts (`git status --porcelain`) | 272 (counts: 166-180) |
+| **cwd** | Middle-truncated working directory (`first/…/last2`) | 273 (241-245) |
+| **edited lines** | `± +added/-removed` for the session (only when > 0) | 274 |
+| **agents** | `⚙ foreground \| n bg` sub-agent counts (only when > 0) | 275 |
+| **quota** | `5h:` and `7D:` usage % with time to reset, colored by consumption | 276 (198-238) |
+| **model** | Model alias, followed by the thinking effort when set | 277 |
+| **permission mode** | Current permission mode | 278 |
+| **plan** | `PLAN` when plan mode is active | 279 |
+| **version** | `V <Kimi Code version>` | 280 |
+| **session age** | Compact `H:MM` since the session was created | 281 (138-154) |
 
 ## Installation
 
@@ -99,33 +101,22 @@ Run inside Kimi Code. This installs the whole Fusengine suite, which includes th
 ~\.kimi-code\plugins\managed\fusengine\setup.ps1       # Windows
 ```
 
-This script will:
-- Install hooks loader in `~/.kimi-code/settings.json`
-- Install statusline bun dependencies
-- Configure `statusLine` in `~/.kimi-code/settings.json`
-- Create a backup of your settings
+This script runs the installer (`bun run scripts/install-kimi.ts --yes`) against `$KIMI_CODE_HOME` (default `~/.kimi-code`). Kimi Code has no `settings.json`; the relevant steps are:
+- Back up `config.toml`, `AGENTS.md` and `mcp.json` as `<file>.bak-<timestamp>` before changing anything
+- Hooks: before the plugin suite is installed, write the guards as global `[[hooks]]` between the `# >>> fusengine hooks >>>` / `# <<< fusengine hooks <<<` markers in `~/.kimi-code/config.toml` (shim copied to `~/.kimi-code/hooks/fusengine-hook-shim.mjs`). Once the managed plugin copy exists (after `/plugins install`), the next setup run removes that block and the plugin's own hooks take over
+- Statusline: copy `statusline-native.mjs` to `~/.kimi-code/bin/` and set `command` under `[status_line]` in `~/.kimi-code/tui.toml` (created when missing; every other line is preserved)
+- Stage the shared `@fusengine/harness` (installer dependencies are installed with `bun install`; there are no separate statusline dependencies)
 
-### 3. Configure Statusline Options
+### 3. Statusline Configuration
 
-Edit `statusline/config.json` to enable/disable segments:
+The native statusline has no segment options: there is no `statusline/config.json` and no `bun run config` configurator. The segments are fixed (time, git branch + staged/unstaged/untracked counts, cwd, edited lines +/-, agents, quota, model + effort, permission mode, plan, version, session age; lines 271-281). What it reads (`statusline/native/statusline-native.mjs`):
+- `KIMI_CODE_HOME` env var (default `~/.kimi-code`) — the only environment variable (line 16)
+- the Kimi CLI's JSON snapshot on stdin (line 254)
+- `[thinking].effort` from `$KIMI_CODE_HOME/config.toml` (lines 41-45)
+- the session's `wire.jsonl` / `state.json` under `$KIMI_CODE_HOME/sessions` for the edited-line stats, agent counts and session age (lines 49-60, 78-117, 120-136, 139-154)
+- quota: `$KIMI_CODE_HOME/cache/statusline-usage.json` (5 min cache), else `credentials/kimi-code.json` to call `https://api.kimi.com/coding/v1/usages` (lines 199-218)
 
-```json
-{
-  "kimi": { "enabled": true },
-  "directory": { "enabled": true, "showGit": true },
-  "model": { "enabled": true, "showTokens": true },
-  "context": { "enabled": true, "progressBar": { "style": "blocks" } },
-  "cost": { "enabled": true },
-  "limits": { "enabled": true, "show5h": true, "show7d": true }
-}
-```
-
-Or use the interactive configurator:
-
-```bash
-bun run config        # Web configurator
-bun run config:term   # Terminal configurator
-```
+The only setting is where Kimi finds it: `[status_line] command` in `$KIMI_CODE_HOME/tui.toml`, written by the installer (`scripts/lib/install/statusline.ts:48-75`, upsert logic at lines 26-45). Edit or remove that `command` line to change or disable the statusline; re-running setup restores it.
 
 ## Configuration
 
