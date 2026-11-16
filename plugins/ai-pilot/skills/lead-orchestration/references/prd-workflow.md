@@ -11,6 +11,9 @@ Kimi-specific procedure; it changes nothing when PRD is off.
   `.env` flag itself; it is the owner's switch.
 - `prd init` refuses without the flag (`requires FUSE_PRD=1`): treat that as
   "PRD off", skip every PRD step, run the mandate as before.
+- Scope: only a **write** mandate with 2+ agents. A read-only mandate (audit,
+  question, explain, explore) runs no PRD step and creates no PRD file, even
+  with 2+ agents and the flag on.
 
 ## Harness
 
@@ -29,7 +32,7 @@ is not a harness id and falls back to `.claude/apex/` — never use it.
 
 | Step | Who | Command / file |
 |------|-----|----------------|
-| 5. Bootstrap (2+ agents) | one agent (Bash) | `bun "$H" prd init --task <task> --id kimi --root <project>` — creates the router, never clobbers an existing one |
+| 5. Bootstrap (write mandate, 2+ agents) | one agent (Bash) | `bun "$H" prd init --task <task> --id kimi --root <project>` — creates the router, never clobbers an existing one |
 | 5. Task PRD | lead (Write) | `.kimi-code/apex/prd/<task>-prd.json` |
 | 6. Brief | lead | each brief carries its slot: name, files, sub-task, report path |
 | Agent end | each agent (Write) | its own report `.kimi-code/apex/prd/agents/<slot>-prd.json` |
