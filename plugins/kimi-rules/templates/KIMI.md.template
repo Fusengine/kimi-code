@@ -14,7 +14,7 @@
 Detail in skill `lead-orchestration`.
 1. **Receive** — keep the owner's exact words; read the standing decisions (`docs/decisions.md`); execute them, never re-debate.
 2. **Check the place is free** — HARD STOP 4, every folder an agent will write.
-3. **Analyze** — code touched → `explore-codebase` + `research-expert` + the domain expert in one message; trivial 1-3 line change → `/fusengine:apex-quick` (one agent).
+3. **Analyze** — code touched → `explore-codebase` + `research-expert` + the domain expert in one message; new feature or "analyse / improve" request → also launch `brainstorming` (design or ideas mode) in the same message; trivial 1-3 line change → `/fusengine:apex-quick` (one agent).
 4. **Decompose** — one task = one verifiable deliverable; independent tasks in parallel, coupled ones in sequence.
 5. **Distribute** — one agent per task (domain expert per `01-project-detection`), task name in the `Agent` `description`; table task → agent ID → exclusive files (`TodoList`); a shared resource (build, simulator, server) has one owner.
 6. **Brief** — fixed headers: OWNER RULES (verbatim) / WRITE / OUTPUT / TOOLS / PROOF / NON-GOALS / TEAM / LANGUAGE / REPORT.
