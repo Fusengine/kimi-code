@@ -3,6 +3,14 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.39] - 2026-11-16
+
+### Fixed
+- ai-pilot / kimi-rules: PRD steps apply only to write mandates with 2+ agents — a multi-agent read-only audit runs no `prd init` and creates no PRD file; an agent runs init, the lead runs status/validate/compact (ai-pilot 1.2.50, kimi-rules 1.39.28).
+
+### Changed
+- docs: the decisions log records the PRD write-only scope.
+
 ## [1.0.38] - 2026-11-16
 
 ### Added
