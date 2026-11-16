@@ -19,7 +19,7 @@
     "@clack/prompts": "^1.8.1"
   },
   "fusengine": {
-    "harnessMinVersion": "0.1.116"
+    "harnessMinVersion": "0.1.121"
   },
   "devDependencies": {
     "bun-types": "^1.4.3"
