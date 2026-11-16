@@ -2,6 +2,10 @@
 
 Owner decisions, dated. Agents execute these; they are not re-debated.
 
+## 2026-11-16 — Per-project roadmap + project skill, and the PRD lead workflow, ported to Kimi
+
+Owner (relayed by the launching lead): « le lead sait qu'il doit faire un init ?? » then « pareille pour codex cursor kimi? ». Port of claude-plugins v1.40.5 + the PRD lead workflow: `docs/roadmap.md` and ONE project skill at Kimi's own project skill root `.kimi-code/skills/project-<name>/` (measured in Kimi 2.6.1 source: project roots `.kimi-code/skills`, `.agents/skills`), bootstrapped by `skill-creator` from the explore report and updated once per mandate at the commit cycle; created only by a mandate that writes files and reaches the commit cycle, never by a read-only mandate. PRD (2+ agents, `FUSE_PRD=1`): an agent runs `prd init --id kimi` (`--id kimi-code` is not a harness id and falls back to `.claude/`), the lead writes the task PRD, `prd status` on resume, `prd validate` exit 0 before done; PRD off = no change. Harness floor 0.1.121 (first with `prd init`).
+
 ## 2026-11-15 — Port the claude-plugins v1.40.1 / v1.40.2 rules to Kimi
 
 Owner: « le agent.md de codex et kimi avec leur rules son a jours? » (relayed by the launching lead; measured: 0 hits for commit cycle, Suggestion, product lens). Ported where Kimi supports it natively: commit cycle in any language = full release with no further owner step, plus the commit agent's real-run proof gate (docs-only branches exempt); grounded `Suggestion: <idea> → gain: <benefit>` owned by rule 08; template AUTONOMY keeps "Replies", "Report outcomes only" and "Bring ideas" as separate lines; brainstorming ideas mode (helpers via the `subagents` allowlist, questions returned to the lead in the final message, no SendMessage in Kimi); challenger product lens on feature changes, skipped on fixes; lead-orchestration step 4 maps the full chain and launches every unblocked step in parallel. Not ported: the Claude Code core-guards `Agent|Task|SendMessage` matcher and the harness 0.1.120 pin (Claude-side hook wiring, separate decision).

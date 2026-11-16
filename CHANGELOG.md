@@ -3,6 +3,16 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.38] - 2026-11-16
+
+### Added
+- ai-pilot / kimi-rules: per-project memory for Kimi — `docs/roadmap.md` plus ONE project skill at Kimi's project skill root `.kimi-code/skills/project-<name>/`, bootstrapped by `skill-creator` from the explore report and updated once per mandate at the commit cycle; never created by a read-only mandate (ai-pilot 1.2.49, kimi-rules 1.39.27).
+- ai-pilot: PRD lead workflow (`lead-orchestration/references/prd-workflow.md`) — with 2+ agents and `FUSE_PRD=1`, an agent runs `prd init --id kimi`, the lead writes the task PRD, `prd status` on resume, `prd validate` exit 0 before done; PRD off = no change (ai-pilot 1.2.49).
+
+### Changed
+- deps: harness floor raised to @fusengine/harness 0.1.121 (`fusengine.harnessMinVersion`, `harness-floor.json` beside every shim) — first release with `harness prd init`. Existing installs below the floor self-update at the next SessionStart.
+- docs: the decisions log records the per-project roadmap, project skill and PRD workflow port.
+
 ## [1.0.37] - 2026-11-16
 
 ### Changed

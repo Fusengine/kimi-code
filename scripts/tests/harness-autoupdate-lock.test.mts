@@ -28,10 +28,10 @@ describe("single-flight", () => {
 		const f = makeFixture("0.1.110");
 		runShim(SHIM, f, "SessionStart", { INSTALL_SLEEP_MS: "1200" });
 		expect(await waitFor(() => installs(f) === 1)).toBe(true);
-		writeFileSync(join(f.home, "node_modules/@fusengine/harness/package.json"), JSON.stringify({ version: "0.1.116" }));
+		writeFileSync(join(f.home, "node_modules/@fusengine/harness/package.json"), JSON.stringify({ version: FLOOR }));
 		expect(await waitFor(() => lockFiles(f.home).length === 0)).toBe(true); // the worker finished and released its lock
 		expect(existsSync(join(f.home, "harness-current"))).toBe(false);
-		expect(answer(SHIM, f)?.ver).toBe("0.1.116");
+		expect(answer(SHIM, f)?.ver).toBe(FLOOR);
 	});
 
 	test("pid record after a >30 s stall: a lock reclaimed meanwhile is NOT resurrected; a held one is fully rewritten", async () => {
