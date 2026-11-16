@@ -59,7 +59,8 @@ fences, and loaded natively every session. Keep this file project-only.
 4. **Hook commands**: every hook in a `kimi.plugin.json` must invoke
    `kimi-hook-shim.mjs` — enforced by `scripts/lib/validate-checks.ts`.
 5. **Harness floor**: `package.json` `fusengine.harnessMinVersion` (currently
-   0.1.122 — PRD agent reports: absolute report path in SubagentStart, a
+   0.1.123 — `prd init` on an existing router answers `exists`, exit 0,
+   rewrites nothing; 0.1.122 — PRD agent reports: absolute report path in SubagentStart, a
    `*-prd.json` under `<project>/prd/agents` or `<cwd>/prd/agents` refused;
    0.1.121 — `harness prd init` for the lead's PRD workflow;
    0.1.116 — fixes the false shell-redirect CONFIRM on `( … 2>&1) || true`;
