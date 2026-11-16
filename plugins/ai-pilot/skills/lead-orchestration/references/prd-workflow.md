@@ -35,7 +35,7 @@ is not a harness id and falls back to `.claude/apex/` — never use it.
 | 5. Bootstrap (write mandate, 2+ agents) | one agent (Bash) | `bun "$H" prd init --task <task> --id kimi --root <project>` — creates the router, never clobbers an existing one |
 | 5. Task PRD | lead (Write) | `.kimi-code/apex/prd/<task>-prd.json` |
 | 6. Brief | lead | each brief carries its slot: name, files, sub-task, report path |
-| Agent end | each agent (Write) | its own report `.kimi-code/apex/prd/agents/<slot>-prd.json` |
+| Agent end | each agent (Write) | its own report at the absolute path `<project>/.kimi-code/apex/prd/agents/<slot>-prd.json` (the brief gives it absolute; harness >= 0.1.122 refuses a `*-prd.json` under `<project>/prd/agents` or `<cwd>/prd/agents`) |
 | 8. Resume | lead (Bash, read-only) | `bun "$H" prd status --json --id kimi --root <project>` |
 | 9. Validate | lead (Bash) | `bun "$H" prd validate <task> --id kimi --root <project>` → exit 0, silent |
 | 9. Compact | lead (Bash) | `bun "$H" prd compact <task> --id kimi --root <project>` |
