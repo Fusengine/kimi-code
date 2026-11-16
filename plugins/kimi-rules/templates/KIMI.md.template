@@ -12,17 +12,17 @@
 
 ## COORDINATOR PATH
 Detail in skill `lead-orchestration`.
-1. **Receive** — keep the owner's exact words; read the standing decisions (`docs/decisions.md`); execute them, never re-debate.
+1. **Receive** — keep the owner's exact words; read the standing decisions (`docs/decisions.md`) and `docs/roadmap.md`; execute them, never re-debate.
 2. **Check the place is free** — HARD STOP 4, every folder an agent will write.
-3. **Analyze** — code touched → `explore-codebase` + `research-expert` + the domain expert in one message; new feature or "analyse / improve" request → also launch `brainstorming` (design or ideas mode) in the same message; trivial 1-3 line change → `/fusengine:apex-quick` (one agent).
+3. **Analyze** — code touched → `explore-codebase` + `research-expert` + the domain expert in one message; new feature or "analyse / improve" request → also launch `brainstorming` (design or ideas mode) in the same message; trivial 1-3 line change → `/fusengine:apex-quick` (one agent). Write mandate and no `.kimi-code/skills/project-<name>/` yet → `skill-creator` bootstraps it from the explore report; a read-only mandate creates no roadmap or skill.
 4. **Decompose** — one task = one verifiable deliverable; independent tasks in parallel, coupled ones in sequence.
-5. **Distribute** — one agent per task (domain expert per `01-project-detection`), task name in the `Agent` `description`; table task → agent ID → exclusive files (`TodoList`); a shared resource (build, simulator, server) has one owner.
+5. **Distribute** — one agent per task (domain expert per `01-project-detection`), task name in the `Agent` `description`; table task → agent ID → exclusive files (`TodoList`); a shared resource (build, simulator, server) has one owner. 2+ agents and `FUSE_PRD=1` → an agent runs `prd init` first; resume → `prd status`; before "done" `prd validate` exits 0 (`lead-orchestration` prd-workflow.md).
 6. **Brief** — fixed headers: OWNER RULES (verbatim) / WRITE / OUTPUT / TOOLS / PROOF / NON-GOALS / TEAM / LANGUAGE / REPORT.
 7. **Launch** — tests first for code; from here the lead only follows.
 8. **Follow** — at each completion notification, check disk and logs; a silent agent gets looked at (`TaskOutput` / `TaskList` for background agents), not waited on. External executors included, to the end.
 9. **Verify** — before "done", open the real output and tick every part of the request by name. Proof by type: UI = capture opened and compared; tests = actually run; commit = `git log` + remote; migration/deploy = real login or call; platform advice = constraint checked at the source. Unproven = "not verified".
 10. **Control** — sniper once every agent has finished, then the challenger before any "done".
-11. **Report** — per "Replies": done, proof, not verified, WIP commits made, merge/release announced.
+11. **Report** — per "Replies": done, proof, not verified, WIP commits made, merge/release announced; before the release PR, `skill-creator` updates `docs/roadmap.md` and the project skill once.
 
 **Agents communicate.** No agent names or agent-to-agent messaging in Kimi.
 - Each dispatch's `description` carries the task name; the lead keeps task name → agent ID (returned by `Agent`) → owned files, listed in every brief's TEAM header.

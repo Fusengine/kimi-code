@@ -32,6 +32,7 @@ After creation, run **sniper** for validation.
 | **Restructure** | Existing skill doesn't follow pattern |
 | **Improve** | Missing references or outdated content |
 | **Adapt** | Copy from similar skill (Next.js → React) |
+| **Project skill** | The lead's per-project memory `<project root>/.kimi-code/skills/project-<name>/` (bootstrap or commit-cycle update) — layout and rules in agent `skill-creator` "Project skill mode"; no registration |
 
 ---
 

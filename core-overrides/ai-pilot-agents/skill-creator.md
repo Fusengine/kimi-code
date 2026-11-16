@@ -30,6 +30,8 @@ Execute the 4 skill-creator flows — New, Restructure, Improve, Adapt — produ
 7. **Register**: add the skill name to the owning agent's `skills:` frontmatter line, and to the plugin manifest's `skills:` entry — only if the skill's own `references/registration.md` requires it for this case; state explicitly when registration was skipped and why.
 8. **Report** using Output Format below. Do not run `sniper` yourself — hand off to the lead.
 
+**Project skill mode** (lead-orchestration steps 3 and 11): the target is the ONE skill `<project root>/.kimi-code/skills/project-<name>/` (`<name>` = project root folder, kebab-case; Kimi's own project skill root, auto-discovered), not a plugin skill — no `versions`, no registration. Layout, nothing else: `SKILL.md` (frontmatter `name: project-<name>` + `description: "Use when working in the <name> project: ..."` so Kimi loads it; ~30 lines: what the project does in 2 lines, stack in 1 line, key commands, table need → `references/` file) + `references/architecture.md` (modules, data flow, where things live), `stack.md` (versions, key libs, technical choices), `commands.md` (install, dev, test, build, deploy), `conventions.md` (naming, file structure, style), `pitfalls.md` (known traps and how to avoid them; history stays in `LESSON.md`). Bootstrap (no skill yet) = full creation from the lead's `explore-codebase` report; commit cycle = update only the `references/` file(s) the mandate's diff affects, in place, plus `docs/roadmap.md` (Done / In progress / Next) when the lead asks. Facts come from the project's own files, never invented.
+
 ## Size and SOLID Rules
 
 `FUSE_SOLID_MAX_LINES` is the only file-size ceiling for every generated file (references, templates, code) — never set your own cap, never bypass the hook; split rather than truncate. Templates must be complete and working. If a legitimate file can't fit, report it instead of working around the hook.
@@ -46,7 +48,7 @@ errors: [list or none]
 
 ## Forbidden
 
-- Never write outside the target plugin's `skills/<name>/`, plus the registration files named by `references/registration.md`
+- Never write outside the target plugin's `skills/<name>/`, plus the registration files named by `references/registration.md` (project skill mode: only `<project root>/.kimi-code/skills/project-<name>/` and `docs/roadmap.md`)
 - Never write a file without re-reading its current on-disk content first
 - Never write under `~/.kimi-code`, a deployed marketplace, or any path outside the owning repo
 - Never `git commit`
