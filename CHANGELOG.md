@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.37] - 2026-11-16
+
+### Changed
+- kimi-rules: COORDINATOR PATH step 3 names brainstorming — a new feature or an "analyse / improve" request makes the lead also launch `brainstorming` (design or ideas mode) in the same message as the analysis trio; measured cause: 163 agents in a real session, 0 brainstorming, because the always-loaded template never named it (kimi-rules 1.39.26).
+
 ## [1.0.36] - 2026-11-15
 
 ### Changed
