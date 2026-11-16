@@ -5,6 +5,7 @@ Owner decisions, dated. Agents execute these; they are not re-debated.
 ## 2026-11-16 — Per-project roadmap + project skill, and the PRD lead workflow, ported to Kimi
 
 Owner (relayed by the launching lead): « le lead sait qu'il doit faire un init ?? » then « pareille pour codex cursor kimi? ». Port of claude-plugins v1.40.5 + the PRD lead workflow: `docs/roadmap.md` and ONE project skill at Kimi's own project skill root `.kimi-code/skills/project-<name>/` (measured in Kimi 2.6.1 source: project roots `.kimi-code/skills`, `.agents/skills`), bootstrapped by `skill-creator` from the explore report and updated once per mandate at the commit cycle; created only by a mandate that writes files and reaches the commit cycle, never by a read-only mandate. PRD (2+ agents, `FUSE_PRD=1`): an agent runs `prd init --id kimi` (`--id kimi-code` is not a harness id and falls back to `.claude/`), the lead writes the task PRD, `prd status` on resume, `prd validate` exit 0 before done; PRD off = no change. Harness floor 0.1.121 (first with `prd init`).
+Amendment 2026-11-16 (lead, from the Claude challenger round 2): PRD steps apply only to WRITE mandates with 2+ agents; a multi-agent read-only audit runs no `prd init` and creates no PRD file. An agent runs `init`; the lead runs `status` / `validate` / `compact`.
 
 ## 2026-11-15 — Port the claude-plugins v1.40.1 / v1.40.2 rules to Kimi
 
