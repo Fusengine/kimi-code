@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.41] - 2026-11-17
+
+### Fixed
+- shim: under the `yolo`, `auto` or an unknown Kimi permission mode, the hook shim now forwards a `[CONFIRM]` deny with a `[downgraded from ask — Kimi permission mode <mode> has no interactive approval]` prefix instead of letting `rm -rf`, `git push` or `ssh … | sh` run unprompted; `manual` mode is unchanged. The mode is read by the new `kimi-permission-mode.mjs`, shipped beside the shim in every plugin (ai-pilot 1.2.52, astro-expert 1.0.16, cartographer 1.0.14, changelog-watcher 1.0.17, commit-pro 1.2.30, core-guards 1.1.46, design-expert 2.2.13, devops-expert 1.0.2, fuse-lessons 1.0.8, go-expert 1.0.10, hermes-expert 1.0.3, kimi-rules 1.39.30, laravel-expert 1.2.11, nextjs-expert 1.1.29, php-expert 1.0.11, prompt-engineer 1.1.14, react-expert 1.0.25, rust-expert 1.0.11, security-expert 1.0.22, seo 1.0.15, shadcn-expert 1.0.21, solid 1.0.21, swift-apple-expert 1.1.25, tailwindcss 1.1.15, tanstack-start-expert 1.0.10, typescript-expert 1.0.11).
+
 ## [1.0.40] - 2026-11-17
 
 ### Fixed
