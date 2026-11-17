@@ -3,6 +3,14 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.40] - 2026-11-17
+
+### Fixed
+- ai-pilot / kimi-rules: the lead always runs `prd init` on a multi-agent write mandate — init was conditioned on `FUSE_PRD=1`, which the lead cannot see when the flag lives in the project `.env`, so a real Kimi run skipped PRD entirely; init's answer is now the only on/off test (ai-pilot 1.2.51, kimi-rules 1.39.29).
+
+### Changed
+- deps: harness floor raised to @fusengine/harness 0.1.123 (`fusengine.harnessMinVersion`, `harness-floor.json` beside every shim) — an agent PRD report path is absolute and a `*-prd.json` under `<project>/prd/agents` is refused (0.1.122); `prd init` on an existing router answers `exists`, exit 0, rewriting nothing (0.1.123). Existing installs below the floor self-update at the next SessionStart.
+
 ## [1.0.39] - 2026-11-16
 
 ### Fixed
