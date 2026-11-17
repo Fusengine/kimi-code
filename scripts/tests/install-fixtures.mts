@@ -59,6 +59,7 @@ export function makeRepo(dir: string): void {
 	write(join(dir, "plugins", "kimi-rules", "rules", "00-test-rule.md"), "# Test Rule\n\nAlways test.");
 	write(join(dir, "plugins", "kimi-rules", "templates", "KIMI.md.template"), "# Fake Global Template\n");
 	write(join(dir, "plugins", "fake-one", "scripts", "kimi-hook-shim.mjs"), "// fake shim\n");
+	write(join(dir, "plugins", "fake-one", "scripts", "kimi-permission-mode.mjs"), "// fake shim sibling\n");
 }
 
 /** Run the installer; FAKE_TOKEN is scrubbed unless passed in extraEnv. */

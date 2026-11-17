@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { REPO } from "./harness-fixtures.mts";
 
-const MODULES = ["kimi-hook-shim.mjs", "harness-autoupdate.mjs", "harness-update-worker.mjs"];
+const MODULES = ["kimi-hook-shim.mjs", "kimi-permission-mode.mjs", "harness-autoupdate.mjs", "harness-update-worker.mjs"];
 const pluginDirs = readdirSync(join(REPO, "plugins"), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
 
 describe("shipped hook modules", () => {

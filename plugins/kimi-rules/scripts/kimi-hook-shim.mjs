@@ -5,10 +5,9 @@
  * The harness's NATIVE kimi adapter (>= 0.1.83) reads KIMI_CODE_HOME and
  * KIMI_PLUGIN_ROOT itself and returns denials as JSON on stdout (exit 0).
  *
- * Deny classification, on permissionDecisionReason: "[CONFIRM]" (git/install/rm)
- * → SUPPRESSED so Kimi's permission system prompts instead of dead-ending;
- * "[BLOCKED]" (rm -rf /, force-push) → forwarded verbatim. Fail-open on any
- * setup problem.
+ * Deny classification ([BLOCKED] forwarded; [CONFIRM] suppressed only in Kimi
+ * permission mode manual, else forwarded with a downgrade prefix) lives in the
+ * REQUIRED sibling kimi-permission-mode.mjs. Fail-open on any other setup problem.
  *
  * Env: $KIMI_HOME/.env is overlaid ON TOP of the inherited environment (the
  * harness's loadDotenv never overrides, so shell pollution would win otherwise).
@@ -22,6 +21,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { asJson, downgradedDeny, isConfirmDeny, kimiPermissionMode } from "./kimi-permission-mode.mjs";
 
 const HARNESS_SUB = "dist/cli/bin.mjs";
 const HARNESS_REL = `node_modules/@fusengine/harness/${HARNESS_SUB}`;
@@ -61,19 +61,6 @@ function readStdin() {
 		process.stdin.on("end", () => resolve(data));
 		process.stdin.on("error", () => resolve(data));
 	});
-}
-
-/** Parse the harness stdout as JSON; undefined when it is plain text. */
-function asJson(stdout) {
-	try { return stdout.startsWith("{") ? JSON.parse(stdout) : undefined; } catch { return undefined; }
-}
-
-/** True when the harness output is a confirmation-class denial (not a hard block). */
-function isConfirmDeny(stdout) {
-	const hso = asJson(stdout)?.hookSpecificOutput;
-	return hso?.permissionDecision === "deny"
-		&& typeof hso.permissionDecisionReason === "string"
-		&& hso.permissionDecisionReason.includes("[CONFIRM]");
 }
 
 /** Rules scope: the corpus lives in the kimi-rules sub-plugin but kimi sets KIMI_PLUGIN_ROOT to the SUITE root — remap it there when its rules/ exists. */
@@ -186,11 +173,16 @@ async function main() {
 	}
 	const stdout = (child.stdout ?? "").toString();
 	const stderr = (child.stderr ?? "").toString();
+	let shown = stdout;
 	if (isConfirmDeny(stdout)) {
-		process.stderr.write("kimi-hook-shim: confirmation-class deny suppressed — Kimi permission system will prompt instead\n");
-		process.exit(0);
+		const mode = kimiPermissionMode(process.env.KIMI_CODE_HOME === "" ? "" : kimiHome); // Kimi uses `??`: a set-but-empty home is not the default
+		if (mode === "manual") {
+			process.stderr.write("kimi-hook-shim: confirmation-class deny suppressed — Kimi permission system will prompt instead\n");
+			process.exit(0);
+		}
+		shown = downgradedDeny(stdout, mode);
 	}
-	const out = renderForKimi(stdout, scope, eventName, kimiHome);
+	const out = renderForKimi(shown, scope, eventName, kimiHome);
 	if (out) process.stdout.write(out);
 	if (stderr) process.stderr.write(stderr);
 	process.exit(child.status ?? 0);

@@ -4,7 +4,7 @@
  *
  * - removes plugins/claude-rules (mechanical copy) and installs core-overrides/kimi-rules
  * - overwrites plugins/ai-pilot/agents/*.md with the hand-optimized versions
- * - ensures every plugin ships scripts/kimi-hook-shim.mjs
+ * - ensures every plugin ships scripts/kimi-hook-shim.mjs and its sibling modules
  */
 import { cpSync, rmSync, existsSync, mkdirSync, copyFileSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -49,7 +49,7 @@ function installShims(): number {
     const dir = join(PLUGINS, d.name, "scripts");
     mkdirSync(dir, { recursive: true });
     copyFileSync(shim, join(dir, "kimi-hook-shim.mjs"));
-    for (const sibling of ["harness-autoupdate.mjs", "harness-update-worker.mjs"]) {
+    for (const sibling of ["kimi-permission-mode.mjs", "harness-autoupdate.mjs", "harness-update-worker.mjs"]) {
       copyFileSync(join(ROOT, "scripts", "hooks", sibling), join(dir, sibling));
     }
     // A lone marketplace plugin has no suite package.json: ship the harness floor beside the shim.

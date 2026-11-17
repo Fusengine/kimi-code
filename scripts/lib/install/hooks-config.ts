@@ -5,12 +5,15 @@
  * markers. When the managed plugin copy appears (after /plugins install),
  * the block is REMOVED on the next setup run — plugin hooks take over.
  */
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { existsSync, readdirSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import type { InstallContext, InstallStepResult } from "../../../src/interfaces/index.ts";
 import { START, buildBlock, mergeIntoConfig, stripFromConfig } from "./hooks-block";
 import { info, plan } from "./ui";
+
+/** Module the shim imports by relative path: deployed under the same name beside it. */
+const SHIM_SIBLING = "kimi-permission-mode.mjs";
 
 /** Shim source: repo scripts/hooks copy, else any plugin's bundled copy. */
 function shimSource(ctx: InstallContext): string | null {
@@ -47,8 +50,15 @@ export async function installHooks(ctx: InstallContext): Promise<InstallStepResu
 		res.notes.push("kimi-hook-shim.mjs not found in repo or plugins");
 		return res;
 	}
+	const sibling = join(dirname(shim), SHIM_SIBLING);
+	if (!existsSync(sibling)) {
+		res.status = "fail";
+		res.notes.push(`${SHIM_SIBLING} missing next to ${shim} (the shim imports it)`);
+		return res;
+	}
 	await mkdir(join(ctx.kimiHome, "hooks"), { recursive: true });
 	await copyFile(shim, join(ctx.kimiHome, "hooks", "fusengine-hook-shim.mjs"));
+	await copyFile(sibling, join(ctx.kimiHome, "hooks", SHIM_SIBLING));
 	const current = existsSync(configPath) ? await readFile(configPath, "utf8") : "";
 	const next = pluginOwns ? stripFromConfig(current) : mergeIntoConfig(current, buildBlock(ctx));
 	await writeFile(configPath, next);
