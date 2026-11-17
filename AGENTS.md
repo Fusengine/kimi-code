@@ -59,6 +59,10 @@ fences, and loaded natively every session. Keep this file project-only.
 4. **Hook commands**: every hook in a `kimi.plugin.json` must invoke
    `kimi-hook-shim.mjs` — enforced by `scripts/lib/validate-checks.ts`.
 5. **Harness floor**: `package.json` `fusengine.harnessMinVersion` (currently
+   0.1.125 — fair track-lock acquisition, writes to `~/.fuse-harness/state/`
+   and its HMAC key denied, design-gate matched on the project-relative path;
+   0.1.124 — NotebookEdit/MultiEdit payloads reach the write gates, receipt
+   journal bound to session + hash chain, one-shot Bash-write credit;
    0.1.123 — `prd init` on an existing router answers `exists`, exit 0,
    rewrites nothing; 0.1.122 — PRD agent reports: absolute report path in SubagentStart, a
    `*-prd.json` under `<project>/prd/agents` or `<cwd>/prd/agents` refused;

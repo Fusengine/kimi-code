@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.42] - 2026-11-17
+
+### Changed
+- deps: harness floor raised to @fusengine/harness 0.1.125 (`fusengine.harnessMinVersion`, `harness-floor.json` beside every shim) — NotebookEdit and MultiEdit reach the write gates, the receipt journal is bound to the session with a hash chain (0.1.124); fair track-lock, writes to `~/.fuse-harness/state` and the HMAC key are denied, the receipt-store deny wins over the `rm` ask, the design gate reads the project-relative path (0.1.125). Existing installs below the floor self-update at the next SessionStart (ai-pilot 1.2.53, kimi-rules 1.39.31).
+
 ## [1.0.41] - 2026-11-17
 
 ### Fixed

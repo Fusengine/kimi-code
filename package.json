@@ -1,6 +1,6 @@
 {
   "name": "@fusengine/kimi-code",
-  "version": "1.0.41",
+  "version": "1.0.42",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -19,7 +19,7 @@
     "@clack/prompts": "^1.8.1"
   },
   "fusengine": {
-    "harnessMinVersion": "0.1.123"
+    "harnessMinVersion": "0.1.125"
   },
   "devDependencies": {
     "bun-types": "^1.4.3"
